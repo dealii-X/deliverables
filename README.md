@@ -4,7 +4,21 @@ This repository contains a LaTeX template for dealii-X project deliverables, and
 
 ## Creating a New Deliverable
 
-Follow these steps to create a new deliverable document:
+To create a new deliverable, use the provided script:
+
+```bash
+./new_deliverable.sh <deliverable_number> <short_title> "<full_title>"
+```
+
+For example:
+
+```bash
+./new_deliverable.sh 3.4 performance_benchmarks "D3.4: Performance benchmarks for deal.II-X solvers"
+```
+
+This will create a file named `D3.4_performance_benchmarks.tex` with the proper title and template structure.
+
+Follow these steps to create a new deliverable document by hand:
 
 1. Create a new directory for your deliverable:
 
