@@ -1,0 +1,187 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{../deliverable}
+\usepackage{xspace}
+
+\usepackage{lipsum}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{X.Y}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Deliverable Title}
+
+\newpage
+
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{[Full deliverable title]}
+    \tableEntry{Deliverable number}{D[X.Y]}
+    \tableEntry{Deliverable version}{[Version number]}
+    \tableEntry{Date of delivery}{[Planned date]}
+    \tableEntry{Actual date of delivery}{[Actual date]}
+    \tableEntry{Nature of deliverable}{[Report/Demonstrator/Website/etc.]}
+    \tableEntry{Dissemination level}{[Public/Confidential]}
+    \tableEntry{Work Package}{WP[X]}
+    \tableEntry{Partner responsible}{[Lead partner acronym]}
+\end{deliverableTable}
+
+% Abstract and Keywords Section
+\begin{deliverableTable}
+    \tableEntry{Abstract}{\lipsum[1][1-5]}
+    \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
+\end{deliverableTable}
+
+\newpage
+
+\begin{documentControl}
+    \addVersion{0.1}{[Date]}{[Author name]}{Initial draft}
+    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: [Name] \\
+Approval Date: [Date]
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{{Introduction}}
+
+\lipsum[1-2]
+
+\subsection{{Purpose of the Document}}
+\lipsum[3]
+
+\subsection{{Structure of the Document}}
+\begin{itemize}
+    \item Section \ref{sec:section2}: [Section Title]
+    \item Section \ref{sec:section3}: [Section Title]
+    \item Section \ref{sec:section4}: [Section Title]
+    \item Section \ref{sec:section5}: [Section Title]
+    \item Section \ref{sec:section6}: [Section Title]
+\end{itemize}
+
+\newpage
+
+\section{{[Section Title]}}
+\label{sec:section2}
+
+\lipsum[4-5]
+
+\subsection{{[Subsection Title]}}
+\lipsum[6]
+
+\subsection{{[Subsection Title]}}
+\lipsum[7]
+
+\newpage
+
+\section{{[Section Title]}}
+\label{sec:section3}
+
+\lipsum[8-9]
+
+\subsection{{[Subsection Title]}}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \lipsum[10][1-2]
+    \item \lipsum[10][3-4]
+    \item \lipsum[10][5-6]
+\end{itemize}
+
+\subsection{{[Subsection Title]}}
+\lipsum[11]
+
+\newpage
+
+\section{{[Section Title]}}
+\label{sec:section4}
+
+\lipsum[12-13]
+
+\begin{center}
+    \begin{table}[h!]
+    \small
+    \caption{[Table Caption]}
+    \renewcommand{\arraystretch}{1.25}
+    \label{tab:example_table}
+    \begin{tabular}{|l|l|l|c|}
+    \hline
+    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
+    \hline
+    Item 1 & Description & Category & Value \\
+    Item 2 & Description & Category & Value \\
+    Item 3 & Description & Category & Value \\
+    \hline
+    \end{tabular}
+    \end{table}
+\end{center}
+
+\newpage
+
+\section{{[Section Title]}}
+\label{sec:section5}
+
+\lipsum[14-15]
+
+\subsection{{[Subsection Title]}}
+\lipsum[16]
+
+\subsection{{[Subsection Title]}}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{[Item Title]}: \lipsum[17][1-2]
+    \item \textbf{[Item Title]}: \lipsum[17][3-4]
+    \item \textbf{[Item Title]}: \lipsum[17][5-6]
+\end{itemize}
+
+\newpage
+
+\section{{[Section Title]}}
+\label{sec:section6}
+
+\lipsum[18-19]
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
+\hline
+Item 1 & Description & Value \\
+\hline
+Item 2 & Description & Value \\
+\hline
+Item 3 & Description & Value \\
+\hline
+\end{tabular}}
+\label{tab:example_table2}
+\end{center}
+
+\newpage 
+
+\section{{Conclusion}} \label{sec:conclusion}
+
+\lipsum[20]
+
+\label{MyLastPage}
+
+\end{document}

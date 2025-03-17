@@ -1,0 +1,190 @@
+\ProvidesPackage{deliverable}[2024/05/01 dealii-X Deliverable Format]
+
+% Required packages
+\RequirePackage{fancyhdr}
+\RequirePackage{hyperref}
+\RequirePackage{graphicx}
+\RequirePackage{longtable}
+\RequirePackage{setspace}
+\RequirePackage{textpos}
+\RequirePackage{fancyhdr}
+\RequirePackage[table,xcdraw]{xcolor}
+\RequirePackage{tabularx}
+\RequirePackage{geometry}
+\RequirePackage{enumitem}
+
+% Define custom commands
+\newcommand*{\Num}{N\textsuperscript{o}\xspace}
+\newcommand*{\deliverableTitle}{}
+\newcommand*{\deliverableNumber}{}
+
+% Command to generate title page
+\newcommand{\maketitlepage}[1]{%
+  \renewcommand{\deliverableTitle}{#1}%
+  \begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    \Huge
+    \textbf{\textcolor{EUblue}{\deliverableNumber\\
+    \deliverableTitle}}
+
+    \vspace{0.5cm}
+    \LARGE
+    % \textcolor{EUblue}{European Horizon Project}
+
+    \vspace{2cm}
+  \begin{table}[h!]
+    \renewcommand{\arraystretch}{1.5} % Adjust row height
+    \setlength{\tabcolsep}{10pt}      % Adjust column spacing
+    \raggedright
+    % \large
+    \begin{tabular}{|p{5cm}|p{10cm}|}
+        \hline
+        \textbf{Project Title} & dealii-X: an Exascale Framework for Digital Twins of the Human Body \\ \hline
+        \textbf{Project Number} & 101172493 \\ \hline
+        \textbf{Funding Program} & European High-Performance Computing Joint Undertaking \\ 
+        \hline
+        \textbf{Project start date} & 1 October 2024 \\ 
+        \hline
+        \textbf{Duration} & 27 months \\ 
+        \hline
+    \end{tabular}
+  \end{table}
+    
+    \centering
+
+    \vspace{2cm}
+
+    \includegraphics[width=0.3\textwidth]{logos/dealii-x_logo.jpeg} % Project logo
+
+    \vspace{0.8cm}
+  % \normalize
+  \centering
+  \begin{textblock}{11}(0.1,1.2)  % Adjust the width and position
+    \fbox{ % Creating a box
+      \begin{minipage}{0.15\textwidth}
+        \includegraphics[width=\textwidth]{logos/Flag_of_Europe.png}  % Image on the left
+      \end{minipage}
+      \hspace{0.5cm}  % Space between the image and the text
+      \begin{minipage}{0.85\textwidth}  % Text next to the image
+        \setstretch{0.7}{\footnotesize  dealii-X has received funding from the European High-Performance Computing Joint Undertaking Programme under grant agreement \Num 101172493 }
+      \end{minipage}
+    }
+  \end{textblock}
+  \end{titlepage}
+}
+
+% Command to set deliverable number
+\newcommand{\setdeliverableNumber}[1]{%
+  \renewcommand{\deliverableNumber}{D#1}%
+}
+
+% Define EU colors
+\definecolor{EUblue}{RGB}{0,32,91} % EU Blue
+\definecolor{EUyellow}{RGB}{255,221,51} % EU Yellow
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=EUblue,
+    filecolor=EUblue,      
+    urlcolor=EUblue,
+    pdfpagemode=FullScreen,
+}
+
+% Font and spacing settings
+\renewcommand{\rmdefault}{phv} % Arial font
+\renewcommand{\sfdefault}{phv} % Arial font
+\setlength{\parskip}{1em} % Add space between paragraphs
+\setlength{\oddsidemargin}{0cm} % Set margins
+\setlength{\evensidemargin}{0cm}
+\setlength{\topmargin}{-1cm}
+\setlength{\textheight}{23.5cm}
+\setlength{\textwidth}{15.5cm}
+\setlength{\headheight}{15pt} % Header height
+\setlength{\footskip}{2cm}  % Set the footer distance from the bottom of the text
+
+% Line spacing
+\onehalfspacing
+
+% Header settings
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{EUblue}{dealii-X}}
+\fancyhead[C]{\small \textcolor{EUblue}{\deliverableNumber: \deliverableTitle}}
+\fancyhead[R]{\small \textcolor{EUblue}{ page {\thepage} of \pageref{MyLastPage}}}
+
+% Set graphics path
+\graphicspath{{../logos/}{./figures/}{../}}
+
+% Footer with logo
+\fancyfoot[L]{% 
+    \includegraphics[width=4cm]{logos/dealiix_logo_footer.png}
+}
+
+% Define a new column type for tables
+\newcolumntype{L}{>{\arraybackslash}m{5cm}}
+
+% Deliverable table environment and entry command
+\newenvironment{deliverableTable}{%
+  \renewcommand{\arraystretch}{2.5}
+  \begin{center}
+  \begin{tabular}{|>{\bfseries\color{EUblue}}L|>{\arraybackslash}m{10cm}|}
+  \hline
+}{%
+  \end{tabular}
+  \end{center}
+}
+
+% Command for table entries
+\newcommand{\tableEntry}[2]{%
+  #1 & #2 \\ \hline
+}
+
+% Redefine section headings to use EUblue color automatically
+% First store the original commands
+\let\oldsection\section
+\let\oldsubsection\subsection
+\let\oldsubsubsection\subsubsection
+
+% Redefine the commands with proper color handling
+\renewcommand{\section}{\@ifstar{\@EUbluesectionstar}{\@EUbluesection}}
+\renewcommand{\subsection}{\@ifstar{\@EUbluesubsectionstar}{\@EUbluesubsection}}
+\renewcommand{\subsubsection}{\@ifstar{\@EUbluesubsubsectionstar}{\@EUbluesubsubsection}}
+
+% Helper commands for regular sections
+\newcommand{\@EUbluesection}[1]{\oldsection{\textcolor{EUblue}{#1}}}
+\newcommand{\@EUbluesubsection}[1]{\oldsubsection{\textcolor{EUblue}{#1}}}
+\newcommand{\@EUbluesubsubsection}[1]{\oldsubsubsection{\textcolor{EUblue}{#1}}}
+
+% Helper commands for starred sections
+\makeatletter
+\newcommand{\@EUbluesectionstar}[1]{\oldsection*{\textcolor{EUblue}{#1}}}
+\newcommand{\@EUbluesubsectionstar}[1]{\oldsubsection*{\textcolor{EUblue}{#1}}}
+\newcommand{\@EUbluesubsubsectionstar}[1]{\oldsubsubsection*{\textcolor{EUblue}{#1}}}
+\makeatother
+
+
+\newcommand{\disclaimer}{\noindent \textbf{Disclaimer}: This project has received funding from the European Union. The views and opinions expressed are those of the author(s) only and do not necessarily reflect those of the European Union or the European High-Performance Computing Joint Undertaking (the "granting authority"). Neither the European Union nor the granting authority can be held responsible for them.}
+
+% Document Control Information environment
+\newenvironment{documentControl}{%
+  \section*{Document Control Information}
+  \begin{center}
+    \renewcommand{\arraystretch}{1.25}
+    \small
+    \begin{tabular}{|c|c|l|l|}
+    \hline
+    \textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Changes Made} \\
+    \hline
+}{%
+    \hline
+    \end{tabular}
+  \end{center}
+}
+
+% Command to add a version entry to the Document Control Information table
+\newcommand{\addVersion}[4]{%
+  #1 & #2 & #3 & #4 \\
+}

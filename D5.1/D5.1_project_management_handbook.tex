@@ -1,0 +1,1150 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{graphicx} % For images (logos)
+\usepackage{longtable}
+\usepackage{lipsum}
+\usepackage{setspace}
+% \usepackage[absolute,overlay]{textpos}  % For positioning the image
+\usepackage{textpos}
+\usepackage{setspace}
+\usepackage{xspace}
+\usepackage{fancyhdr}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{tabularx}
+\usepackage{geometry}
+\usepackage{enumitem}
+
+\newcommand*{\Num}{N\textsuperscript{o}\xspace}
+
+%     \usepackage[
+%     firstpage=true,
+%     contents={
+%         \includegraphics[width=0.3cm]{logos/eu_flag_logo.png}
+%     },
+%     placement=bottom,
+%     position={current page.south west},
+%     anchor={},
+%     nodeanchor={south west}
+% ]{background}
+
+% Define EU colors
+\definecolor{EUblue}{RGB}{0,32,91} % EU Blue
+\definecolor{EUyellow}{RGB}{255,221,51} % EU Yellow
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=EUblue,
+    filecolor=EUblue,      
+    urlcolor=EUblue,
+    pdfpagemode=FullScreen,
+    }
+
+% Set font to Arial or Calibri and line spacing
+\renewcommand{\rmdefault}{phv} % Arial font
+\renewcommand{\sfdefault}{phv} % Arial font
+\setlength{\parskip}{1em} % Add space between paragraphs
+\setlength{\oddsidemargin}{0cm} % Set margins
+\setlength{\evensidemargin}{0cm}
+\setlength{\topmargin}{-1cm}
+% \setlength{\bottommargin}{-1cm}
+\setlength{\textheight}{23.5cm}
+\setlength{\textwidth}{15.5cm}
+\setlength{\headheight}{15pt} % Header height
+\setlength{\footskip}{2cm}  % Set the footer distance from the bottom of the text
+
+% Line spacing
+\onehalfspacing
+
+% Header settings
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small \textcolor{EUblue}{dealii-X}}
+\fancyhead[C]{\small \textcolor{EUblue}{D5.1: Project Management Handbook}}
+\fancyhead[R]{\small \textcolor{EUblue}{ page {\thepage} of \pageref{MyLastPage}}}
+
+% \pagestyle{fancy}
+% \fancyhf{}  % Clear all header and footer fields
+
+
+\fancyfoot[L]{% 
+    \includegraphics[width=4cm]{logos/dealiix_logo_footer.png}  % Replace with your logo file path
+}
+% \fancyfoot[R]{\thepage}
+
+\graphicspath{{../logos/}{./figures/}{../}}
+
+% Cover page settings
+\begin{document}
+
+% Cover page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    \Huge
+    \textbf{\textcolor{EUblue}{D5.1\\Project Management Handbook}}
+
+    \vspace{0.5cm}
+    \LARGE
+    % \textcolor{EUblue}{European Horizon Project}
+
+    \vspace{2cm}
+  \begin{table}[h!]
+    \renewcommand{\arraystretch}{1.5} % Adjust row height
+    \setlength{\tabcolsep}{10pt}      % Adjust column spacing
+    \raggedright
+    % \large
+    \begin{tabular}{|p{5cm}|p{10cm}|}
+        \hline
+        \textbf{Project Title} & dealii-X: an Exascale Framework for Digital Twins of the Human Body \\ \hline
+        \textbf{Project Number} & 101172493 \\ \hline
+        \textbf{Funding Program} & European High-Performance Computing Joint Undertaking \\ 
+        \hline
+        \textbf{Project start date} & 1 October 2024 \\ 
+        \hline
+        \textbf{Duration} & 27 months \\ 
+        \hline
+    \end{tabular}
+\end{table}
+    
+    \centering
+
+    \vspace{2cm}
+
+    \includegraphics[width=0.3\textwidth]{logos/dealii-x_logo.jpeg} % European Commission logo (replace 'ec_logo.png' with the logo image path)
+
+    \vspace{0.8cm}
+% \normalize
+\centering
+\begin{textblock}{11}(0.1,1.2)  % Adjust the width and position
+ \fbox{ % Creating a box
+            % \begin{minipage}[t]{\textwidth}
+            \begin{minipage}{0.15\textwidth}
+                \includegraphics[width=\textwidth]{logos/Flag_of_Europe.png}  % Image on the left
+            \end{minipage}
+                \hspace{0.5cm}  % Space between the image and the text
+                % \hfill
+                \begin{minipage}{0.85\textwidth}  % Text next to the image
+                    \setstretch{0.7}{\footnotesize  dealii-X has received funding from the European High-Performance Computing Joint Undertaking Programme under grant agreement \Num 101172493 }
+                \end{minipage}
+            % \end{minipage}
+        }
+    \end{textblock}
+
+    % \Large
+    % [Your Name] \\
+    % 27.01.2025
+\end{titlepage}
+
+\newpage
+
+
+\renewcommand{\arraystretch}{2.5} % Adjust row spacing
+\newcolumntype{L}{>{\arraybackslash}m{5cm}} % Fixed width for left-aligned column
+% \newcolumntype{l}{>{\arraybackslash}m{5cm}} 
+
+
+% Main Table
+\begin{table}[h!]
+\centering   
+\begin{tabular}{|>{\bfseries\color{EUblue}}L|>{\arraybackslash}m{10cm}|}
+\hline
+Deliverable title & Project management handbook \\ \hline
+Deliverable number & D5.1 \\ \hline
+Deliverable version & 5.0 \\ \hline
+Date of delivery & 31 January 2025 \\ \hline
+Actual date of delivery & 31 January 2025 \\ \hline
+Nature of deliverable & Report \\ \hline
+Dissemination level & Public \\ \hline
+Work Package & WP5 \\ \hline
+Partner responsible & RUB \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+% Abstract and Keywords Table
+\begin{table}[h!]
+\centering
+\begin{tabular}{|>{\bfseries\color{EUblue}}L|>{\arraybackslash}m{10cm}|}
+\hline
+Abstract &
+D5.1 outlines the management and administrative procedures for the project, focusing on efficient execution and high-quality results. It covers governance structures, lifecycle processes, and essential tools, and provides a framework for communication, stakeholder engagement, risk and issue management, and quality assurance. The deliverable ensures alignment with Horizon Europe objectives and includes templates and guidelines to support consistency throughout the project. \\ \hline
+Keywords &
+Project Management; Governance Structures; Communication Framework; Risk and Issue Management;  Reporting and Monitoring; Quality Assurance; Stakeholder Engagement\\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\newpage
+
+\section*{\textcolor{EUblue}{Document Control Information}}
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.25}
+    \small
+    \begin{tabular}{|c|c|l|l|}
+    \hline
+    \textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Changes Made} \\
+    \hline
+    1.0 & 12.01.2025 & I. Prusak, R. Schussnig & Initial draft \\
+    2.0 & 19.01.2025 & M. Kronbichler, I. Prusak, R. Schussnig & Internal revision \\
+    3.0 & 20.01.2025 & Representatives from all partners & Review in Consortium \\
+    4.0 & 30.01.2025 & M. Kronbichler, I. Prusak, R. Schussnig & Final revision \\
+    5.0 & 31.01.2025 & M. Kronbichler & Submission \\
+    \hline
+    \end{tabular}
+\end{center}
+
+\subsection*{\textcolor{EUblue}{Approval Details}}
+Approved by: M. Kronbichler \\
+Approval Date: 31.01.2025
+
+\subsection*{\textcolor{EUblue}{Distribution List}}
+% \setlength{\leftmargini}{2.5cm} % Adjust the indentation of the itemize list
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+
+\vspace*{2cm}
+\noindent \textbf{Disclaimer}: This project has received funding from the European Union. The views and opinions expressed are those of the author(s) only and do not necessarily reflect those of the European Union or the European High-Performance Computing Joint Undertaking (the “granting authority”). Neither the European Union nor the granting authority can be held responsible for them.
+
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{\textcolor{EUblue}{Introduction}}
+
+The \emph{dealii-X: an Exascale Framework for Digital Twins of the Human Body} project is aimed at developing
+a scalable, high-performance computational platform using the deal.II finite element library to create accurate digital twins of human organs focusing on applications to the heart, the lung, the brain, the liver and cellular processes. This framework will leverage exascale computing capabilities and existing lighthouse applications to simulate complex biological processes in real-time, aiding in personalized medicine and advancing the diagnosis and treatment strategies of neurological disorders. 
+% --> Rest of the abstract is skipped 
+%The computational complexity to solve the underlying mathematical models has previously prevented the simulation knowledge from being translated into clinical practice. By integrating cutting-edge HPC technologies with multiphysics and multidisciplinary approaches, dealii-X will deliver unprecedented computational efficiency and fidelity in biological modeling. The project represents a significant leap toward the future of medical diagnostics and treatment planning, offering a robust tool for researchers and clinicians alike.
+
+To ensure smooth operation and seamless transitions between project phases, fundamental processes related to management and general operations are outlined within this project management handbook.
+
+% \subsection{\textcolor{EUblue}{Purpose of the Handbook}}
+This handbook provides guidance for managing the dealii-X project, following the PM$^2$ methodology, which ensures a structured approach across all project stages, from planning to closure. It is designed for all stakeholders, including consortium members, the European Commission (EC), and external partners, and encompasses the entire project lifecycle.
+
+\subsection{\textcolor{EUblue}{Structure of the Handbook}}
+\begin{itemize}
+    \item Section \ref{sec:consortium}: Consortium
+    \item Section \ref{sec:work_plan}: Work Plan
+    \item Section \ref{sec:governance_model}: Governance Model
+    % \item Section \ref{sec:project_phases}: Project Phases and Processes
+    \item Section \ref{sec:roles_responsabilities}: Roles and Responsibilities
+    \item Section \ref{sec:communication_management}: Communication and Stakeholder Management
+    \item Section \ref{sec:risk_management}: Risk and Issue Management
+    \item Section \ref{sec:change_management}: Change Management
+    \item Section \ref{sec:quality_assurance}: Quality Assurance
+    \item Section \ref{sec:monitoring_and_reporting}: Monitoring and Reporting
+    % \item Section \ref{sec:project_closure}: Closure and Lessons Learned
+    % \item Section \ref{sec:appendices}: Appendices
+\end{itemize}
+
+\newpage
+
+\section{\textcolor{EUblue}{Consortium}}
+\label{sec:consortium}
+
+The consortium working on the project \emph{dealii-X: an Exascale Framework for Digital Twins of the Human Body} consists of 13 partners from 4 countries (Germany, Italy, France, Belgium), including academia (universities, computing and research centers), research institutions, and industry, namely a start-up and a medium-sized enterprise (SME). There are three associated entities in the project.
+
+\subsection{\textcolor{EUblue}{Participating Institutions}}
+
+Table~\ref{tab:participating_isntitutions} lists the participating institutions with the respective country and the corresponding acronym referenced to within this document.
+
+\begin{center}
+    \begin{table}[h!]
+    \small
+    \caption{Participating institutions of the dealii-X project.}
+    \renewcommand{\arraystretch}{1.25}
+    \label{tab:participating_isntitutions}
+    \begin{tabular}{|l|l|l|c|}
+    \hline
+    \textbf{Number} & \textbf{Acronym} & \textbf{Name} & \textbf{Country} \\
+    \hline
+    1 & RUB   & \href{https://www.ruhr-uni-bochum.de/de}{Ruhr-Universit\"at Bochum} (Coordinator) & DEU \\
+    2 & UNIPI & \href{https://www.unipi.it/}{Universit\`a di Pisa} & ITA \\
+    3 & UNIBS & \href{https://www.unibs.it/it}{Universit\`a Degli Studi di Brescia} & ITA \\
+    4 & BADW-LRZ & \href{https://badw.de/die-akademie.html}{Bayerische Akademie der Wissenschaften} & DEU \\
+    5 & SISSA & \href{https://www.sissa.it/it}{Scuola Internazionale Superiore di} & ITA \\
+      &       & \href{https://www.sissa.it/it}{Studi Avanzati di Trieste} & \\
+    6 & UNITOV & \href{https://web.uniroma2.it/}{Universit\`a Degli Studi di Roma Tor Vergata} & ITA \\
+    6.1 & CNR & \href{https://www.cnr.it/}{Consiglio Nazionale Delle Ricerche} & ITA \\
+    7 & INPT & \href{https://www.inp-toulouse.fr/fr/index.html}{Institut National Polytechnique de Toulouse} & FRA \\
+    7.1 & CNRS & \href{https://www.cnrs.fr/fr}{Centre National de la Recherche Scientifique} & FRA \\
+    8 & TUM & \href{https://www.tum.de/}{Technische Universit\"at M\"unchen} & DEU \\
+    9 & POLIMI & \href{https://www.polimi.it/}{Politecnico di Milano} & ITA \\
+    10 & FAU & \href{https://www.fau.de/}{Friedrich-Alexander-Universität Erlangen-N\"urnberg} & DEU \\
+    11 & FVB-WIAS & \href{https://www.fv-berlin.de/institute/wias}{Forschungsverbund Berlin EV} & DEU \\
+    12 & EXACT LAB & \href{https://www.exact-lab.it/}{Exact Lab SRL} & ITA \\
+    12.1 & Dualistic & \href{https://www.dualistic.it/}{Dualistic -- Societ\`a a Responsibilit\`a Limitata} & ITA \\
+    13 & VPHI & \href{https://www.vph-institute.org/}{Virtual Physiological Human Institute for} & BEL\\
+       &               & \href{https://www.vph-institute.org/}{Integrative Biomedical Research VZW} & \\
+    \hline
+    \end{tabular}
+    \end{table}
+\end{center}
+
+\subsection{\textcolor{EUblue}{Expertise and Role within the Project}}
+
+The consortium assembled for this project brings together a diverse and complementary range of expertise, facilities, and experiences necessary to achieve the ambitious objectives of the project. Each participating institution contributes unique strengths that collectively form a robust and interdisciplinary team capable of tackling the complex challenges of exascale computing and digital twin development. Key competences and the role within the project are summarized in Table~\ref{tab:roles_within_project}.
+
+% these are shortened from the section 3.2 in the grant agreement
+\begin{center}
+%    \begin{table}[h!] DO NOT FLOAT
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{longtable}{|l|l|}
+    \caption{Expertise, contribution and role of the individual project partners within the dealii-X project.}
+    \label{tab:roles_within_project}
+    \\
+    \hline
+    \textbf{Partner} & \textbf{Scientific expertise and main role in dealii-X} \\
+    \hline
+    RUB   & 
+    Applied numerics, especially finite element and matrix-free methods;
+    \\
+    & contributes to core numerical strategies and exascale computing. 
+    \\
+    UNIPI & 
+    Numerical linear algebra and high-performance computing and software\\
+    & development, especially within deal.II.
+    \\
+    UNIBS & 
+    Mechanobiology and multiscale mechanics; leads modelling of cellular\\
+    & processes and contributes to the cellular digital twin initiative.
+    \\
+    BADW-LRZ & 
+    Bridges the gap between mathematical software and hardware to solve\\
+    & scientific challenges, contributing to co-design aspects of the project \\
+    & and providing hardware access.
+    \\
+    SISSA & 
+    Computational- and reduced order modelling; advances core building\\
+    & blocks in digital twin development and polygonal discretization methods.
+    \\
+    UNITOV & 
+    Leads PSBLAS and PSCToolkit projects and computational aspects in\\
+    & the project, focusing on GPU computing and high-performance workflows.
+    \\
+    CNR & 
+    Vast research experience in various scientific fields, enhancing the\\
+    & interdisciplinarity and focusing on linear algebra within the project.
+    \\
+    INPT & 
+    Expertise in solving large, sparse linear systems on parallel\\
+    & supercomputers, enhancing the MUMPS solver's capabilities within deal.II. 
+    \\
+    CNRS & 
+    Fundamental research; grants access to extensive research networks and\\
+    & resources, enhances development of the MUMPS solver and its integration. 
+    \\
+    TUM & 
+    Expertise in computational biomedical engineering; leads the lung\\
+    & mechanics simulation efforts, advancing respiratory system models. 
+    \\
+    POLIMI & 
+    Leader in scientific computing; contributes to cardiac computational\\
+    & medicine and the lifex solver based on the deal.II library.
+    \\
+    FAU & 
+    Renowned for its work on brain mechanics; offers vital insights and\\
+    & methodologies for the development of digital twins of the brain.
+    \\
+    FVB-WIAS & 
+    Leading in applied and basic research linking analysis and stochastics.\\
+    & Contributes to numerical methods for the liver digital twin.
+    \\
+    EXACT LAB & 
+    SME specialized on programming and optimization; leads the development\\
+    & of user-friendly platforms for creating and managing digital twins.
+    \\
+    Dualistic & 
+    Startup focusing on digital twin technologies; provides innovative solutions 
+    \\
+    & for digital twin lifecycle management. % via an advanced software platforms.
+    \\
+    VPHI & 
+    Dedicated to creating a virtual human model for biomedical research;\\
+    & integration and validation of digital twin models with real-world medical data. 
+    \\
+    \hline
+    \end{longtable}
+%    \end{table}
+\end{center}
+Collectively, these participants form a consortium with unparalleled capabilities to push the boundaries of current computational limits and create digital twins that have the potential to transform the scientific landscape.
+
+% This is skipped from the 
+% On the numerical side, the competences of the RUB group on high-order finite element methods and HPC complement the activities on meshing, volume-surface coupling and large-scale linear systems at UNIPI. With the strong competences of SISSA on polygonal finite element methods, the consortium can develop cutting-edge finite-element algorithms from a mathematical point of view. For method development of coupling algorithms, the research background and ongoing activities at TUM, UNIPI, and POLIMI promise significant progress beyond the state-of-the-art when combined with the finite-element and HPC framework of deal.II. The numerical linear algebra side is a very strong part of the proposal, bringing together some of Europe’s most prolific researchers regarding sparse direct solvers via the MUMPS package from the INPT and CNRS groups, matrix-based iterative solvers and efficient preconditioners via PSCToolkit of UNITOV and CNR as well as the matrix-free iterative solvers and multigrid methods of RUB. On the application side, the expertise of TUM group's biomedical engineering expertise and method development can establish a path of simulations in the respiratory system to a later clinical applicability of these computational models, and similarly for the advanced numerical methods for the cardiovascular system from POLIMI. Both TUM and POLIMI have strong ties with the numerical algorithm partners, which is reflected in the activities of the work packages. FAU’s expertise on brain mechanics adds further aspects, which integrate well with UNIPI’s competences in meshing and INPT/CNRS’ capabilities on solvers. FVB-WIAS enriches the consortium with its robust numerical methods and scientific computing for the modeling of the liver, interacting intensively also with the meshing activities of UNIPI. The research on cellular dynamics and mechanobiological processes from UNIBS further augments the modelling capabilities of the consortium. Taken together, the consortium is in a unique position to push challenging applications to the next level and to integrate modern numerical algorithms through the whole solution chain, from meshing to solving (non-)linear systems to post-processing and visualization of results. Furthermore, the activities of BADW-LRZ in terms of co-design, including code tuning, benchmarking and hardware-specific algorithm selection against the background of operating large-scale parallel hardware within the European eInfrastructure network ensure the alignment of the method-driven research with hardware evolution. The contributions from eXact lab and Dualistic in HPC and digital twin technology development ensure a path from academia into the clinical and technological sectors, which is further boosted by the VPHI in terms of connection of the technical advancements with healthcare professionals, fostering a bridge between in silico models and clinical applications. Their involvement ensures that the consortium's innovations are grounded in clinical needs and can navigate the complex healthcare landscape. Overall, the interconnected expertise of these groups creates a synergistic consortium that is well-equipped to exploit exascale computing to create novel insights into biomedical applications and digital twins.
+
+\subsection{\textcolor{EUblue}{Personnel involved}}
+
+The dealii-X project is led by a group of three Project Coordinators ---- Martin Kronbichler, Luca Heltai and Alberto Salvadori, who jointly coordinate the project. Among these, Martin Kronbichler holds the final responsibility for project coordination. The personnel involved in the dealii-X project is summarized in Table~\ref{tab:personnel_involved}, including roles such as Project Coordinators (PCs), Project Management Board (PMB) members, Project Management Team (PMT) members, Steering Committee (SC) members, Work Package (WP) members, and Work Package Leaders (WPLs). The responsibilities associated with these roles are outlined in Sections~\ref{sec:governance_model} and \ref{sec:roles_responsabilities}.
+
+
+
+% \textcolor{red}{See sec 5: SC = all PIs; PMB = one PI per partner}
+
+% \textcolor{red}{maybe put here the people with a special function only. So no members, as we have not al people employed and its also of no use to put employees here?}
+% \newpage
+\begin{center}
+%    \begin{table}[h!] DO NOT FLOAT
+    \small
+    \renewcommand{\arraystretch}{1.0}
+    \begin{longtable}{|l|l|l|}
+    \caption{Participating partners and personell with specific roles within the dealii-X project.}
+    \label{tab:personnel_involved}\\
+    \hline
+    \textbf{Partner} & \textbf{Member} & \textbf{Main role in dealii-X} \\
+    \hline
+    RUB   
+    & M. Kronbichler & \textbf{PC}, \textbf{PMB}, \textbf{WPL}1/5, WP1/2/3/4/5\\
+    & I. Prusak & \textbf{PMT}, WP1/2/4/5\\
+	& R. Schussnig & \textbf{PMT}, WP1/2/4/5\\
+    % & E.M. Soydan & WP1/2
+    % \\
+    UNIPI 
+    & L. Heltai & \textbf{PC}, \textbf{PMB}, \textbf{WPL}2, WP1/2/5 \\
+    & F. Durastante & WP1 \\
+    & S. Massei & WP1 \\
+    & C. Pagliantini & WP1 \\
+    & B. Meini & WP1\\
+    % \\
+    UNIBS 
+    & A. Salvadori & \textbf{PC}, \textbf{PMB}, WP2/5 \\
+    & A. Ghidoni & WP2 \\
+    & A. Carini & WP2
+    \\
+    BADW-LRZ 
+    & G. Mathias & \textbf{PMB},\textbf{WPL}3
+    \\
+    SISSA  
+    % & P.C. Africa & WP1/2\\
+    & A. Cangiani & \textbf{PMB}, WP1 \\
+    & G. Rozza & WP2 \\
+    % \\
+    UNITOV 
+    & S. Filippone & \textbf{PMB}, WP1 \\
+    & V. Cardellini & WP1\\
+    & M. Mazza & WP1\\
+    % \\
+    CNR 
+    & P. D’Ambra & \textbf{PMB}, WP1
+    \\
+    INPT/CNRS 
+    & A. Buttari & \textbf{PMB}, WP1
+    \\
+    % CNRS & A. Buttari & 
+    % \\
+    TUM
+    % & A. Gebauer & WP2 \\
+    % & S. Pr\"oll & WP2 \\
+    % & M. Sidorovic & WP2\\
+    % & B. Tem\"ur & WP2 \\
+    & W.A. Wall &  \textbf{PMB}, WP2
+    \\
+    POLIMI 
+    & L. Ded\`e& \textbf{PMB}, WP2 \\
+    % & A. Quarteroni & WP2\\
+    FAU 
+    & S. Budday & \textbf{PMB}, WP2 \\
+    & P. Steinmann & WP2
+    \\
+    FVB-WIAS 
+    & A. Caiazzo & \textbf{PMB}, WP2 \\
+    % & C. Belponer & WP2
+    % \\
+    EXACT LAB 
+    & F. De Giorgi & \textbf{PMB}, WP1
+    % & A. Angelone & WP3 \\
+    % & M. Barnaba & WP3 \\
+    % & F. De Giorgi & WP3\\
+    % & M. Poggi & WP3 
+    \\
+    Dualistic & G. Brandino & WP1
+    \\
+    VPHI & L. Geris & \textbf{PMB}, \textbf{WPL}4 \\
+    & Goran Stanic & WP4 \\
+    % \\
+    \hline
+    \end{longtable}
+\end{center}
+    
+%    \end{table}
+
+% \begin{center}
+% %    \begin{table}[h!] DO NOT FLOAT
+%     \small
+%     \renewcommand{\arraystretch}{1.0}
+%     \begin{longtable}{|l|l|l|}
+%     \caption{Participating partners and personell with specific roles within the dealii-X project.}
+%     \label{tab:personnel_involved}\\
+%     \hline
+%     \textbf{Partner} & \textbf{Member} & \textbf{Main role in dealii-X} \\
+%     \hline
+%     RUB   
+%     & M. Kronbichler & \textbf{PC}, \textbf{WPL}1,\textbf{WPL}5\\
+%     & I. Prusak & \textbf{PMT}, WP1/2/5\\
+% 	& R. Schussnig & \textbf{PMT}, WP1/2/5\\
+%     & E.M. Soydan & WP1/2
+%     % I am making myself only PMT member so that it is not only Ivan. We can also put him Project manager. Then it can be one person.
+%     \\
+%     UNIPI 
+%     & L. Heltai & \textbf{PC}, \textbf{WPL}2 \\
+%     & F. Durastante & WP2 \\
+%     & S. Massei & WP2 \\
+%     & B. Meini & WP2 \\
+%     & C. Pagliantini & WP2 \\
+%     & L. Robol & WP2
+%     \\
+%     UNIBS 
+%     & A. Carini & WP2 \\
+%     & A. Ghidoni & WP2 \\
+%     & A. Salvadori & WP2
+%     \\
+%     BADW-LRZ 
+%     & M. Allalen & WP3 \\
+%     & G. Mathias & \textbf{WPL}3
+%     \\
+%     SISSA 
+%     & P.C. Africa & WP1/2\\
+%     & A. Cangiani & WP2 \\
+%     & G. Rozza & WP2 
+%     \\
+%     UNITOV 
+%     & V. Cardellini & WP2 \\
+%     & S. Filippone & WP2 \\
+%     & M. Mazza & WP2
+%     \\
+%     CNR 
+%     & P. D’Ambra & WP2
+%     \\
+%     INPT 
+%     & A. Buttari & WP2
+%     \\
+%     CNRS & & 
+%     \\
+%     TUM
+%     & A. Gebauer & WP2 \\
+%     & S. Pr\"oll & WP2 \\
+%     & M. Sidorovic & WP2\\
+%     & B. Tem\"ur & WP2 \\
+%     & W.A. Wall &  WP2
+%     \\
+%     POLIMI 
+%     & M. Bucchelli & WP2 \\
+%     & L. Dede'& WP2 \\
+%     & S. Pagani & WP2 \\
+%     & F. Regazzoni & WP2 \\
+%     & A. Quarteroni & WP2
+%     \\
+%     FAU 
+%     & S. Budday & WP2 \\
+%     & P. Steinmann & WP2
+%     \\
+%     FVB-WIAS 
+%     & A. Caiazzo & WP2 \\
+%     & C. Belponer & WP2
+%     \\
+%     EXACT LAB 
+%     & A. Angelone & WP3 \\
+%     & M. Barnaba & WP3 \\
+%     & F. De Giorgi & WP3\\
+%     & M. Poggi & WP3 
+%     \\
+%     Dualistic & &
+%     \\
+%     VPHI & L. Geris & \textbf{WPL}4 \\
+%     & J. Raman Rangarajan & WP4 \\
+%     & Z. Van Horenbeeck & WP4
+%     \\
+%     \hline
+%     \end{longtable}
+% %    \end{table}
+% \end{center}
+
+\newpage
+
+\section{\textcolor{EUblue}{Work Plan}}
+\label{sec:work_plan}
+% we put here the work packages here in concise form p. 5--21
+The work plan is structured in accordance with the objectives, concepts, and approach outlined in the Grant Agreement. It consists of three groups of complementary work packages:
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+% \setlength{\itemsep}{0.5em} % Reduced space between items
+    \item Two technical work packages, on our two key research directions (WP1 and WP2);
+    \item  One co-design and architecture work package (WP3), essential to establish global consistency and to interact with various stakeholders, making sure that our design and results shall fit in the global European HPC landscape;
+    \item Two non-technical work packages coordinating and exposing the project: WP4 -- Communication, Dissemination \& Exploitation, and WP5 -- Management.
+\end{itemize}
+%
+\subsection{\textcolor{EUblue}{Work Package Descriptions}}
+%Table~\ref{tab:wp_overview}
+The following table lists the Work Packages (WPs) within the project, along with their corresponding lead beneficiaries, effort in person-months, and the duration (start and end months) for each WP.
+
+%\begin{table}[h!] 
+%\centering
+%\caption{Work Packages Overview}
+\noindent\renewcommand{\arraystretch}{1.2} % Adjust row height
+\setlength{\tabcolsep}{4pt} % Adjust cell padding
+\begin{tabularx}{\textwidth}{|c|>{\hsize=14\hsize\arraybackslash}X|>{\hsize=5.5\hsize\arraybackslash}X|>{\hsize=4\hsize\arraybackslash}X|>{\hsize=3\hsize\arraybackslash}X|>{\hsize=3\hsize\arraybackslash}X|}
+\hline
+\textbf{WP \Num} & \textbf{WP Name} & \textbf{Lead Beneficiary} & \textbf{Effort (Person-Months)} & \textbf{Start Month} & \textbf{End Month} \\ 
+\hline
+WP1 & dealii-X exascale building blocks and support tool & 1 - RUB & 165.00 & 1 & 27 \\ 
+\hline
+WP2 & dealii-X lighthouse applications for Digital Twins of the Human Body & 2 - UNIPI & 203.00 & 1 & 27 \\ 
+\hline
+WP3 & Co-Design, Technology Exploitation, and Energy Efficiency & 4 - BADW-LRZ & 67.00 & 1 & 27 \\ 
+\hline
+WP4 & Dissemination, Communication, and Exploitation & 13 - VPH INSTITUTE & 62.00 & 1 & 27 \\ 
+\hline
+WP5 & Project Management & 1 - RUB & 38.00 & 1 & 27 \\ 
+\hline
+\end{tabularx}
+%\label{tab:wp_overview}
+%\end{table}
+
+\newpage
+
+\section{\textcolor{EUblue}{Governance Model}}
+\label{sec:governance_model}
+
+The dealii-X governance structure is designed to guarantee smooth cooperation and optimal management of all operational, scientific and technical aspects of the project. It is described in this section and involves the main project-related functions:
+\begin{enumerate}
+	\item \textbf{Coordination and decision making}, implemented by the PMB;
+	\item \textbf{Operational management}, performed by the SC;
+        \item \textbf{Project execution and monitoring}, carried out by the PMT.
+        \item \textbf{Work package leadership}, ensured by the WPLs.
+	% \item \textcolor{red}{Can/Should we have any of the following:} Advisory, carried out through the (i) Exploitation \& Intellectual Property Rights Advisory Board, (ii) Regulatory Advisory Board, (iii) Scientific and Clinical Advisory Board, (iv) Ethical Manager and (v) Ethical, Legal and Social Issues Working Group.
+\end{enumerate}
+
+\subsection{\textcolor{EUblue}{Governance Structure}}
+The project governance model is designed to ensure clear accountability and deci\-sion-making. The structure includes:
+\begin{itemize}[left=2em, itemsep=1pt, topsep=0pt] 
+% \setlength{\leftmargini}{0.1em}
+    \item \textbf{PMB:} Composed of the PCs and one PI per partner. Oversees operational issues and guides the entire consortium to respond to potential risks in cooperation with the SC.
+    \item \textbf{SC:} Composed of the WPLs. It provides strategic oversight in scientific and technical affairs and ensures effective WP coordination.
+    \item \textbf{PMT:} A small team based at the official PC's institution, RUB, responsible for day-to-day operations and ensuring efficient communication within the consortium.
+    \item \textbf{WPLs:} Lead their respective WPs, monitor progress and coordinate related activities.
+\end{itemize}
+
+\subsection{\textcolor{EUblue}{Decision-Making Mechanisms}}
+Decisions are made at different levels, with operational decisions handled by the PMT and strategic decisions requiring approval from the SC and the PMB. Scientific decisions are taken by the WPLs in accordance with the principal investigators (PIs) in the respective WPs, including the WPs affected. Major deviations from the work plan are to be reported to the WPL, which in turn reports to the SC and the PMB. The SC and the PMB report back the decision on a project-wide level, depending on which project partners are involved. 
+
+\newpage
+
+% \section{\textcolor{EUblue}{Project Phases and Processes}}
+% \label{sec:project_phases}
+% REMOVED, since we include these parts in the other section, we do not need to list what we are gonna do if we do it later on..?
+% \subsection{\textcolor{EUblue}{PM$^2$ Phases}}
+% The PM$^2$ methodology divides the project lifecycle into four key phases:
+% \begin{itemize}
+%     \item \textbf{Initiating:} Defining the project, securing approvals, and aligning stakeholders.
+%     \item \textbf{Planning:} Detailed planning of tasks, timelines, budgets, and risks.
+%     \item \textbf{Executing:} Implementing the plan, managing resources, and ensuring stakeholder engagement.
+%     \item \textbf{Closing:} Finalizing deliverables, closing contracts, and evaluating project performance.
+% \end{itemize}
+
+% \subsection{\textcolor{EUblue}{Key Processes}}
+
+% PM$^2$ includes the following critical processes:
+% \begin{itemize}
+%     \item \textbf{Risk Management:} Identifying, assessing, and mitigating risks throughout the project lifecycle.
+%     \item \textbf{Issue Management:} Addressing and resolving project issues.
+%     \item \textbf{Quality Management:} Ensuring deliverables meet defined quality standards.
+%     \item \textbf{Change Management:} Managing scope and schedule changes.
+%     \item \textbf{Communication Management:} Ensuring timely and accurate communication with stakeholders.
+% \end{itemize}
+
+% \newpage
+
+\section{\textcolor{EUblue}{Roles and Responsibilities}}
+\label{sec:roles_responsabilities}
+
+\subsection{\textcolor{EUblue}{Project Roles}}
+The key roles within the dealii-X project in accordance to the PM$^2$ methodology include:
+\begin{itemize}[left=2em, itemsep=1pt, topsep=0pt] 
+	% \setlength{\itemindent}{-0.5cm}
+    %
+    \item \textbf{PCs:} The Project Coordinators oversee the project's scientific and technical progress while maintaining direct communication with the EC. Together, they provide leadership by leveraging their specialized expertise to ensure smooth project implementation in alignment with the research plan. Each of them contributes distinct knowledge and skills to guide decision-making and drive the project's overall direction.
+    %
+    \item \textbf{PMB:} Composed of one PI per partner and chaired by the PCs, the PMB serves as the primary executive and decision-making body. It addresses strategic issues, including budget reallocations, major work plan modifications, requests for contractual changes, and conflict resolution within the consortium. The PMB convenes yearly or as needed, and decisions are made by a relative majority system, with one vote per member.
+    %
+    \item \textbf{SC:} Provides strategic oversight and ensures the day-to-day management of research activities. Composed of the WPLs and coordinated by the PCs and the PMT, the SC makes operational decisions for each WP, monitors milestones, and manages internal risks to WP objectives. It also implements the PMB's decisions and tracks corrective actions.
+    %
+    \item \textbf{PMT:} Responsible for the day-to-day management and monitoring of the pro\-ject. The PMT coordinates project progress, ensures deadlines are met, and supports dissemination activities. It facilitates communication across work packages and monitors overall performance.
+    %
+    \item \textbf{WPLs:} Responsible for managing specific work packages and ensuring pro\-gress according to the work plan. The WPLs coordinate WP-related activities closely with the respective WP members. They monitor the timely completion of tasks and deliverables, report on progress, identify risks, and propose technical solutions. They report scientific and technical progress to the PCs and management issues to the PMT.
+\end{itemize}
+
+\subsection{\textcolor{EUblue}{Responsibilities Overview}} 
+Each project role entails specific responsibilities to ensure successful project delivery. Below is a brief overview of the responsibilities aligned with each role:
+
+\begin{itemize}[left=2em, itemsep=1pt, topsep=0pt] 
+    \item \textbf{PCs:} Ensure the overall scientific and technical leadership of the project. They maintain communication with the EC, supervise project implementation, and guide strategic decision-making by utilizing their combined expertise.
+    %
+    \item \textbf{SC:} Make operational decisions for each WP based on milestone monitoring and progress. Address risks that could affect WP objectives, propose risk mitigation strategies, and ensure that decisions made by the PMB are implemented.
+    %
+    \item \textbf{PMT:} Manage the day-to-day operational tasks, ensuring the project progresses according to timelines, milestones, and deliverables. They coordinate WP activities and track overall performance.
+    %
+    \item \textbf{WPLs:} Lead specific work packages, ensuring the timely completion of tasks and deliverables while identifying risks. The WPLs report both scientific and technical progress to the PCs and management issues to the PMT.
+\end{itemize}
+
+
+\newpage
+
+\section{\textcolor{EUblue}{Communication and Stakeholder Management}}
+\label{sec:communication_management}
+
+\subsection{\textcolor{EUblue}{Stakeholder Management Plan}} 
+
+Effective stakeholder management is crucial for the success of the dealii-X project. A comprehensive Stakeholder Management Plan has been developed to engage key stakeholders, both internal and external, in a structured and proactive manner. The plan ensures that all relevant parties are kept informed, their concerns are addressed, and their input is actively sought through regular consultations, feedback sessions, and engagement in decision-making processes when required. The stakeholder management approach is designed to facilitate collaboration, ensure alignment with project goals, and maintain positive relationships with both the consortium members and external partners.
+
+Key stakeholders in the project include consortium partners, the EC, and external organizations involved in dissemination, exploitation, or related fields. The plan outlines tailored communication strategies for each stakeholder group to meet their specific needs and expectations, ensuring the flow of information is both effective and efficient throughout the project lifecycle.
+
+
+% \subsection{\textcolor{EUblue}{Communication Plan}}
+% Communication tools include:
+% \begin{itemize}
+%     \item \textbf{Internal:} Weekly meetings, emails, and document sharing (e.g., SharePoint).
+%     \item \textbf{External:} Quarterly newsletters, project website updates.
+% \end{itemize}
+
+% PUT HERE ALSO THE HINT WHAT TO WRITE ON A PUBLICATION OR ANY OTHER MATERIAL  --- see VPHi report
+
+
+\subsection{\textcolor{EUblue}{Communication Plan}} A structured Communication Plan has been devised to ensure consistent, timely, and clear communication within the project team and with external stakeholders. The plan defines the tools, methods, and frequency of communication to maintain engagement and ensure project transparency.
+
+Communication tools and strategies include:
+
+\subsubsection*{\textbf{Internal Communication}}
+
+\begin{itemize}[left=2em, itemsep=1pt, topsep=0pt] 
+    \item \textbf{Element Platform:} The dealii-X project uses the EU-based Element platform for secure, encrypted communication, ensuring compliance with EU regulations. 
+    \item \textbf{Project Group and Mailing Lists:} Dedicated rooms on Element facilitate communication by WP and topic. A general mailing list ("Project-dealii-X") and separate lists for each WP and working group ensure targeted communication. 
+    \item \textbf{File Sharing and Remote Meetings:} Google Drive is used for file sharing, while Element and Google Meet will support real-time communication and remote meetings. \end{itemize}
+
+\subsubsection*{External Communication}
+\begin{itemize}[left=2em, itemsep=1pt, topsep=0pt] 
+    \item \textbf{Quarterly Newsletters:} The project will produce quarterly newsletters for external stakeholders to highlight key achievements, upcoming milestones, and important news about the project’s outcomes.
+    \item \textbf{Project Website Updates:} The project website will serve as a central hub for public-facing communications. It will be regularly updated with the latest news, events, and results, making the project’s progress transparent to a wider audience.
+    \item \textbf{LinkedIn Outreach:} As part of the broader communication strategy, the project will also utilize its LinkedIn page to foster direct engagement with a dynamic network of professionals and stakeholders. This platform complements the project website, promoting collaboration, visibility, and knowledge sharing, and ensuring that the dealii-X initiative reaches a wider audience.
+    \item \textbf{Periodic Reports to the EC:} Progress reports will be prepared and submitted to the EC at months 12 and 22, as outlined in the Grant Agreement. These reports will include detailed information on project progress, milestones achieved, financial updates, and any challenges encountered, ensuring that the EC remains fully informed.
+    \item \textbf{Scientific Publications and Conferences:} The project will disseminate research through peer-reviewed publications and conference presentations, ensuring visibility within the scientific community. These efforts will comply with EU regulations, including open access requirements, and contribute to international collaboration and knowledge sharing.
+\end{itemize}
+
+\subsubsection*{Internal and External Communication Plans}
+More concrete and detailed plans for both internal and external communication will be developed and included in deliverable D4.1, the ``Communication and Dissemination Plan'', which will be prepared by the WPL4. This deliverable will outline specific strategies, tools, and timelines for communication activities throughout the project lifecycle.
+
+\newpage
+
+\section{\textcolor{EUblue}{Risk and Issue Management}}
+\label{sec:risk_management}
+
+This section provides an overview of the processes and guidelines for managing risks and issues within the project, ensuring a proactive approach to minimize their impact on project objectives. The risk management strategies outlined in the Grant Agreement are further developed and detailed in this handbook, offering detailed procedures and tools for ongoing risk and issue management.
+
+Effective project management requires not only anticipating and mitigating risks but also addressing issues that arise during the project's execution. While risk management focuses on identifying and mitigating potential threats before they impact the project, issue management deals with problems that have already occurred and require resolution to ensure the project stays on track. By addressing risks early, we can minimize disruptions and reduce the likelihood of urgent issues arising later on.
+
+Transitioning from planning to execution, this section ensures that all project stakeholders are equipped to address potential challenges effectively while maintaining alignment with PM$^2$ methodologies.
+
+\subsection{\textcolor{EUblue}{Risk Management Process}}
+The Risk Management Process ensures that risks are systematically identified, evaluated, mitigated, and monitored throughout the project lifecycle. The following guidelines and tools are tailored for the initial phase of the project and serve as a framework for consistent risk management practices:
+
+\subsubsection*{Risk Identification}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Team Discussions}: Engage consortium members and stakeholders in discussions to identify potential risks related to project activities.
+    \item \textbf{SWOT Analysis}: Use the SWOT (Strengths, Weaknesses, Opportunities \& Threats) framework to identify risks from internal and external factors.
+    \item \textbf{Review of Historical Data}: Review lessons learned from similar projects to anticipate common challenges.
+\end{itemize}
+
+\subsubsection*{Risk Assessment}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+     \item \textbf{Likelihood and Impact}: Evaluate each risk based on how likely it is to occur and how much it could impact the project. Use straightforward categories like Low, Medium, or High.
+    \item \textbf{Prioritization}: Focus on addressing risks with high likelihood and high impact first.
+\end{itemize}
+
+\subsubsection*{Risk Mitigation Planning}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+   \item \textbf{Action Plans}: Develop clear and simple actions to reduce or avoid high-priority risks (e.g., scheduling extra time for tasks with potential delays).
+    \item \textbf{Accountability}: Assign responsibility for each risk to specific team members or groups to ensure follow-through.
+    \item \textbf{Contingency Planning}: In addition to risk mitigation, contingency plans should be developed for high-priority risks in case mitigation strategies fail to yield the expected results.
+\end{itemize}
+
+\subsubsection*{Risk Monitoring and Review}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+     \item \textbf{Risk Register}: Regularly update the risk register to track identified risks, mitigation actions, and current status.
+    \item \textbf{Regular Risk Reviews}: Hold regular risk review meetings as part of governance to evaluate the effectiveness of mitigation measures and ensure alignment with project objectives.
+\end{itemize}
+
+
+\subsubsection*{Risk Register Example}
+% \renewcommand{\arraystretch}{1.25}
+\begin{table}[h!]
+    \centering
+    % \caption{Example of a Risk Register}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|l|c|c|l|l|}
+        \hline
+        \textbf{Risk ID} & \textbf{Description} & \textbf{Likelihood} & \textbf{Impact} & \textbf{Mitigation Plan} & \textbf{Owner} \\ \hline
+        R1 & [Risk description] & [Low/Med/High] & [Low/Med/High] & [Mitigation actions] & [Name/Team] \\ \hline
+    \end{tabular}
+    }
+    \label{tab:risk_register}
+\end{table}
+
+\subsection{\textcolor{EUblue}{Issue Management Process}} 
+The Issue Management Process provides a framework to handle issues encountered during the project execution. The goal of Issue Management is to respond effectively to problems that have already emerged, resolving them in a timely manner to avoid disrupting the project's progress and ensuring that project timelines and outcomes are maintained. Key steps include:
+
+\subsubsection*{Issue Identification and Logging} 
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Detection and Logging}: Issues should be identified as soon as they arise. They can be detected through team discussions, monitoring, or stakeholder feedback. They should be documented in an issue log with a description, severity, and affected areas.
+    \item \textbf{Categorization}: Classify the issue based on type (e.g., technical, financial) and prioritize based on severity.
+\end{itemize}
+
+\subsubsection*{Issue Assessment and Resolution Planning} 
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Impact and Priority}: Assess the issue’s potential impact on the project, assign a priority (low/medium/high), and define a timeline for resolution. 
+    \item \textbf{Solution Development}: Identify the root cause and develop a clear action plan. This may involve proposing alternative solutions if necessary.
+\end{itemize}
+
+\subsubsection*{Issue Resolution and Escalation} 
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Execution}: Assign resources and personnel to execute the resolution plan. Track the progress and ensure timely resolution.
+    \item \textbf{Escalation}: If the issue is not resolved within the set timeframe or if it impacts key deliverables, escalate it to the PMB. For example, if a key resource is unavailable and this delays a critical milestone, immediate escalation ensures that higher-level decision-makers can reallocate resources or adjust timelines accordingly.
+\end{itemize}
+
+\subsubsection*{Issue Closure and Documentation} 
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Verification and Documentation}: Verify that the issue is fully resolved and update the issue log. Include actions taken, timeline, and outcome. 
+    \item \textbf{Lessons Learned}: Once an issue is resolved, the team should conduct a brief review to identify any lessons learned. This review should involve documenting the actions taken, outcomes achieved, and potential improvements to prevent similar issues in the future. The lessons learned should be shared with the broader project team during regular meetings to ensure continuous improvement and better preparation for future challenges.
+\end{itemize}
+
+\subsubsection*{Issue Log Example} 
+
+\begin{table}[h!]
+    \centering 
+    % \caption{Example of an Issue Log}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|l|c|l|l|l|c|} 
+    \hline 
+    \textbf{Issue ID} & \textbf{Description} & \textbf{Severity} & \textbf{Resolution Plan} & \textbf{Owner} & \textbf{Status} & \textbf{Resolution Date} \\
+    \hline
+    I1 & [Issue description] & [Low/Med/High] & [Resolution actions] & [Name/Team] & [Open/Closed] & [Date] \\
+    \hline
+    \end{tabular} }
+    \label{tab:issue_log} 
+\end{table}
+
+
+
+\newpage
+
+\section{\textcolor{EUblue}{Change Management}} \label{sec:change_management}
+
+Changes are an inevitable aspect of project management, and their effective handling is critical to maintaining alignment with project objectives and minimizing disruptions. A structured approach to change management is essential to prevent scope modifications that could affect resources, timelines, and overall project direction. Importantly, any changes to the project must respect the EU project duration and established milestones to ensure continued compliance with EU regulations and funding requirements. This section outlines the Change Control Process, which provides a clear framework for evaluating, approving, and implementing any changes to the project’s scope, schedule, or budget.
+
+\subsection{\textcolor{EUblue}{Change Control Process}}
+
+The Change Control Process is a critical component of the overall change management strategy. It ensures that any modifications to the project are systematically evaluated and approved, minimizing the risk of hasty or poorly coordinated decisions that could jeopardize the project's success.
+
+The process consists of five stages: Change Identification and Request, Change Evaluation, Change Approval, Change Implementation, and Change Review and Closure. Each stage ensures that changes are introduced systematically, with clear accountability and stakeholder involvement at each step.
+
+\subsubsection*{Change Identification and Request}
+
+The first step in the process is identifying the need for a change. A formal change request should be submitted, which includes the following information:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Change Description}: A brief explanation of the change and its rationale. 
+    \item \textbf{Reason for Change}: The circumstances prompting the change (e.g., new requirements or unforeseen risks).
+    \item \textbf{Impact Assessment}: An evaluation of how the change might affect scope, schedule, budget, and resources.
+    \item \textbf{Proposed Solution}: A suggestion for addressing the change, such as potential scope adjustments, rescheduling, or additional funding.
+    \item \textbf{Requestor Information}: Contact details of the individual or group requesting the change. 
+    \item \textbf{Desired Resolution Timeline}: The proposed timeline for implementing the change. 
+\end{itemize}
+
+Early submission of a change request helps facilitating smoother integration into the project plan.
+
+\subsubsection*{Change Evaluation}
+
+Once a change request is submitted, the PMT evaluates its potential impact across several key areas:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Scope Impact}: How the change will affect project objectives and deliverables. 
+    \item \textbf{Schedule Impact}: Whether the change will modify project milestones or deadlines. 
+    \item \textbf{Budget Impact}: The financial implications, including the need for additional funding.
+    \item \textbf{Risk Impact}: Identification of new risks or uncertainties introduced by the proposed change. 
+    \item \textbf{Resource Availability}: Whether additional or reallocated resources are required. 
+    \item \textbf{Stakeholder Impact}: The effect of the change on stakeholders, their expectations, and communication requirements. 
+\end{itemize}
+
+The PMT’s assessment forms the basis for decision-making by the PMB.
+
+\subsubsection*{Change Approval}
+
+The PMB is responsible for reviewing the change request and its evaluation. The process includes:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Impact Analysis Presentation}: The PMT presents a detailed analysis of the proposed change, covering its impact on scope, schedule, budget, resources, and other key project aspects. 
+    \item \textbf{Decision Making}: The PMB evaluates the analysis and discusses the potential benefits, risks, and implications of the change, deciding whether to approve or reject the change request.
+    \item \textbf{Formal Approval}: If the change is approved, the necessary project documentation is updated, and resources are allocated to implement the change. 
+\end{itemize}
+
+If the change is rejected, the project team revises the request or explores alternative solutions.
+
+\subsubsection*{Change Implementation}
+
+Once approved, the project team begins implementing the change, which includes:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Updating Project Documentation}: All relevant project documents (scope, budget, schedule, etc.) are updated to reflect the approved change. 
+    \item \textbf{Resource Allocation}: Resources are reassigned or new resources are identified to support the change. 
+    \item \textbf{Task Assignment}: Specific tasks for implementing the change are assigned to team members, with clear deadlines and progress tracking. 
+    \item \textbf{Schedule Adjustments}: The project timeline is updated to reflect any new deadlines or milestones, ensuring alignment with the overall project duration and EU-established milestones.
+\end{itemize}
+
+Project management tools should be used to monitor and track the implementation process to ensure alignment with the updated project plan.
+
+\subsubsection*{Change Review and Closure}
+
+After the change has been implemented, the project team conducts a review to assess its effectiveness:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Monitoring and Evaluation}: Continuous tracking of the change's outcomes and comparison with the initial expectations. 
+    \item \textbf{Stakeholder Feedback}: Gathering input from stakeholders to evaluate how well the change was implemented and whether it met their expectations. 
+    \item \textbf{Lessons Learned}: Documenting insights gained from the change process to improve future change management efforts. 
+\end{itemize}
+
+Once the change has been successfully reviewed and its outcomes documented, the change request is formally closed.
+
+To facilitate transparency and proper tracking of all changes, a Change Log is maintained. Below is an example of how this log is structured:
+
+\subsubsection*{Change Log Example}
+\begin{table}[h!] 
+    \centering 
+    % \caption{Example of a Change Log} 
+    \resizebox{\textwidth}{!}{ 
+        \begin{tabular}{|c|l|c|c|c|l|c|} 
+            \hline 
+            \textbf{Change ID} & \textbf{Description} & \textbf{Date of Request} & \textbf{Impact Assessment} & \textbf{Approval Status} & \textbf{Implementation Date} & \textbf{Responsible Party} \\
+            \hline
+            C1 & [Change description] & [Date] & [Scope/Time/Cost impact] & [Approved/Rejected] & [Date] & [Team/Person] \\
+            \hline 
+        \end{tabular} } 
+
+\end{table}
+
+
+\newpage
+
+\section{\textcolor{EUblue}{Quality Assurance} }\label{sec:quality_assurance}
+
+Effective quality assurance is critical to ensuring that the project meets its objectives and delivers high-quality outputs. This section outlines the mechanisms, standards, and processes in place to guarantee quality throughout the project’s lifecycle, emphasizing compliance with the Grant Agreement, the PM$^2$ Quality Management Framework, and alignment with best practices.
+
+
+\subsection{\textcolor{EUblue}{Quality Management System}}
+
+The project adheres to a structured Quality Management System (QMS) designed to maintain consistency, reliability, and excellence across all deliverables and processes. This system is based on the following principles:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Compliance with Standards}: Adherence to relevant quality standards, including those specified in the Grant Agreement, EC guidelines, and the PM$^2$ Quality Management Framework. 
+    \item \textbf{Continuous Improvement}: Regularly reviewing and optimizing processes to enhance efficiency and effectiveness.
+    \item \textbf{Stakeholder Involvement}: Ensuring active participation and feedback from all partners and stakeholders to align outputs with expectations.
+\end{itemize}
+
+The QMS encompasses internal and external review mechanisms to uphold high-quality deliverables and processes, as described in the subsequent subsections.
+
+\subsection{\textcolor{EUblue}{Internal Quality Assurance}}
+
+Internal quality assurance focuses on monitoring and improving deliverables and activities through rigorous review processes within the project consortium. Key components include:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Internal Peer Review}: Each deliverable undergoes a structured peer review by at least two consortium partners to ensure alignment with project objectives and technical requirements.
+    \item \textbf{Milestone Reviews}: Regular milestone reviews, aligned with predefined project phases, assess progress against key deliverables and objectives, allowing early identification and resolution of potential issues. 
+    \item \textbf{Partner Feedback}: Periodic feedback sessions facilitate knowledge exchange, address challenges, and refine methodologies, directly contributing to ongoing process improvements.
+\end{itemize}
+
+These mechanisms collectively ensure the quality and consistency of project outputs.
+
+\subsection{\textcolor{EUblue}{External Quality Assurance}}
+
+External quality assurance ensures transparency and accountability by involving relevant stakeholders. The approach includes:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Stakeholder Engagement}: External stakeholders, including end users and domain experts, provide feedback on deliverables, methodologies, and overall project outcomes to ensure alignment with best practices and industry standards.
+    \item \textbf{EC Reporting}: Regular submission of progress reports and deliverables to the EC, ensuring compliance with EU standards and expectations outlined in the Grant Agreement.
+\end{itemize}
+
+These external mechanisms complement internal processes, providing an additional layer of validation to enhance the quality of project outputs.
+
+\subsection{\textcolor{EUblue}{Risk Mitigation in Quality Assurance}}
+
+To manage risks related to quality, the project employs proactive strategies, including:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Early Identification of Quality Risks}: Conducting risk assessments to identify potential quality issues early and implementing preventive measures. This responsibility rests with the PMB and relevant WPLs.
+    \item \textbf{Issue Escalation Procedure}: Establishing a structured procedure for promptly escalating quality-related issues to the PMB through a predefined communication channel, ensuring clear accountability and timely resolution.
+    \item \textbf{Corrective Action Plans}: Developing and executing plans to address quality deficiencies, ensuring minimal impact on project outcomes.
+\end{itemize}
+
+This risk-focused approach ensures that quality challenges are managed effectively, maintaining the integrity of the project’s deliverables and processes.
+
+\subsection{\textcolor{EUblue}{Key Performance Indicators}}
+
+To assess the effectiveness of quality assurance, the project tracks key indicators, including:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Deliverable Quality}: Percentage of deliverables accepted without major revisions.
+    \item \textbf{Timeliness}: Percentage of milestones achieved on schedule and meeting predefined quality criteria.
+    \item \textbf{Stakeholder Feedback}: Satisfaction scores from partners, stakeholders, and end users.
+\end{itemize}
+
+These indicators are reviewed periodically to ensure continuous improvement and alignment with project objectives.
+
+
+
+\newpage
+
+\section{\textcolor{EUblue}{Monitoring and Reporting}} 
+\label{sec:monitoring_and_reporting}
+
+Effective monitoring and reporting are critical to the success of the project, ensuring that it remains on track, meets its objectives, and delivers high-quality results within the allocated budget. This section outlines the tools, reports, and formats used to track progress, manage risks, assess performance, and ensure transparency in communication, with a particular focus on the timely delivery of results, alignment with ethical standards, and compliance with the EC requirements.
+
+\subsection{\textcolor{EUblue}{Monitoring Tools}}
+
+The project utilizes a range of monitoring tools to track the progress of both technical and administrative tasks. These tools allow for real-time assessments of key project areas, ensuring that goals are met efficiently and consistently. The primary monitoring tools include:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Key Performance Indicators (KPIs)}: KPIs are utilized to measure the project’s performance in areas such as deliverable quality, milestone completion, stakeholder satisfaction, and compliance with ethical standards. KPIs will be tracked throughout the project lifecycle and reviewed during periodically project reviews. 
+    \item \textbf{Project Dashboard}:  A real-time digital dashboard that provides an overview of the project's progress in terms of time, budget, and quality. It allows for the quick identification of potential issues and areas requiring corrective actions.
+    \item \textbf{Risk Register}: Ongoing monitoring of identified risks and issues through the project’s risk register, which is regularly updated and reviewed by the PMB.
+\end{itemize}
+
+These tools ensure comprehensive monitoring of the project’s overall health and allow for corrective actions to be implemented promptly, promoting transparency and consistency throughout the project.
+
+\subsection{\textcolor{EUblue}{Reporting Formats}}
+
+To ensure effective communication with both internal partners and the EC, various reporting formats will be employed. These reports are essential for tracking progress, verifying the timely delivery of results, and ensuring compliance with ethical standards. The following reporting formats will be used:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Status Updates}: Regular status reports provide updates on project activities, including progress against key deliverables and milestones. These reports will highlight any deviations from the project plan and outline corrective actions taken or planned. 
+    \item \textbf{Financial Summaries}: Periodic financial reports will be submitted to the EC on a yearly basis. These reports will ensure that the project remains within budget and that any financial discrepancies are identified and addressed promptly.
+    \item \textbf{Milestone Achievements}: Formal reports at key milestones, as defined in the project plan, will be submitted throughout the project to confirm the successful completion of deliverables. These reports will highlight the objectives met, the results achieved, and their alignment with the overall project goals.
+\end{itemize}
+
+All reports will follow standardized templates to ensure consistency, clarity, and alignment with EU reporting requirements. These templates will cover all necessary sections, including objectives, progress updates, financial summaries, and corrective actions where applicable.
+
+\subsection{\textcolor{EUblue}{Milestones and Deliverables}}
+
+Milestones serve as critical checkpoints for tracking project progress and ensuring the timely completion of deliverables. These milestones are tied to specific project objectives and will be closely monitored. The following types of reports will be submitted to track these:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+    \item \textbf{Deliverables Reports}: Each deliverable will be reviewed and reported on at the completion of its respective work package. This will include descriptions of the deliverable, any testing or validation procedures, and the overall alignment with project objectives. 
+    \item \textbf{Milestone Reports}: At the completion of each milestone, a report will outline the achieved objectives, completed deliverables, and the overall project status in relation to the project timeline. These reports will be submitted to both internal partners and the EC for review and approval.
+\end{itemize}
+
+The format for these reports will be standardized to ensure consistency, including sections for objectives, outcomes, and any adjustments made to the project plan as needed. These reports will serve as the foundation for discussions with stakeholders and the EC.
+
+\subsection{\textcolor{EUblue}{Periodic Reporting and Project Reviews}}
+
+The PMT is responsible for preparing and submitting periodic reports to the EC, in accordance with the timelines set in the Grant Agreement. These reports ensure that the project remains on schedule, within budget, and complies with the defined ethical standards.
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+    \item \textbf{Midterm Reports}: The PMT will submit midterm reports at the 12-month and 22-month marks of the project. These reports will include updates on progress, challenges faced, and any adjustments made to the project plan. The reports will be aligned with the requirements outlined in the Grant Agreement.
+    \item \textbf{Project Reviews}: The PMB will be responsible for preparing and organizing the formal project reviews, which will involve internal partners and external stakeholders. These reviews will be held periodically to assess the project’s progress, identify areas for improvement, and ensure the timely and quality delivery of the project’s objectives.
+\end{itemize}
+
+\subsection{\textcolor{EUblue}{Reporting Summary}}
+
+For clarity and ease of reference, the following table summarizes the key monitoring tools, reports, and their respective deadlines or frequencies as defined by the Grant Agreement:
+
+% \begin{table}[h!]
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Report/Tool}             & \textbf{Frequency}            & \textbf{Deadline/Submission}          \\ \hline
+\textbf{Status Updates}           & Regularly                & Ongoing, as per project needs   \\ \hline
+\textbf{Financial Summaries}      & Periodically             & As required (e.g., annually)    \\ \hline
+\textbf{Midterm Reports}          & Twice during project     & After month 12 and 22           \\ \hline
+\textbf{Deliverables Reports}     & At work package completion & Upon completion of each work package \\ \hline
+\textbf{Milestone Reports}        & At project milestones    & Upon completion of each milestone \\ \hline
+\textbf{Risk Register Updates}    & Ongoing                  & Regular reviews by PMB          \\ \hline
+\textbf{Project Dashboard}        & Real-time                & Continuous (updated as needed)  \\ \hline
+\textbf{Project Reviews}          & Periodically             & As defined in the Grant Agreement \\ \hline
+\end{tabular}}
+\label{tab:report_summary}
+\end{center}
+% \end{table}
+
+% \section{\textcolor{EUblue}{Monitoring and Reporting}}
+% \label{sec:monitoring_and_reporting}
+
+% \subsection{\textcolor{EUblue}{Monitoring Tools}}
+% Key performance indicators (KPIs) are used to track project progress, including scope, time, cost, and quality.
+
+% \subsection{\textcolor{EUblue}{Reporting Formats}}
+% Reports include status updates, financial summaries, and milestone achievements, which are submitted to stakeholders and the EC.
+
+% MILESTONES, DELIVERABLES, FORMATTING ACCORDING TO THIS TEMPLATE
+
+
+% \newpage
+
+% \section{\textcolor{EUblue}{Closure and Lessons Learned}}
+% \label{sec:project_closure}
+
+% \subsection{\textcolor{EUblue}{Project Closure Activities}}
+% At the close of the project, all deliverables are finalized, and a closure report is submitted to the EC.
+
+% \subsection{\textcolor{EUblue}{Lessons Learned}}
+% A lessons-learned workshop is held to document successes, challenges, and recommendations for future projects.
+
+% \newpage
+
+% \section*{\textcolor{EUblue}{References}}
+% \begin{itemize}
+%     \item PM$^2$ Project Management Methodology Guide 3.0.1, European Commission
+%     \item Horizon Europe Participant Portal: Guidelines for Horizon Europe Project Management
+% \end{itemize}
+
+% \newpage
+
+% \section{\textcolor{EUblue}{Appendices}}
+% \label{sec:appendices}
+
+% \begin{itemize}
+%     \item Appendix A: Risk Register Template
+%     \item Appendix B: Project Milestones and Gantt Chart
+%     \item Appendix C: Budget Allocation Template
+% \end{itemize}
+
+\newpage 
+
+\section{\textcolor{EUblue}{Conclusion}} \label{sec:conclusion}
+
+This Project Management Handbook serves as a comprehensive guide to the effective planning, execution, and monitoring of the project. It outlines essential processes and structures to ensure that all project activities are aligned with the overall objectives, delivered on time, and within budget, while adhering to ethical standards and the EC's requirements.
+
+The handbook covers the core areas of governance, risk management, communication, quality assurance, and stakeholder engagement. It also provides a detailed framework for monitoring and reporting, ensuring transparency and accountability throughout the project lifecycle. By establishing clear roles, responsibilities, and decision-making mechanisms, this document lays the foundation for efficient collaboration among all consortium partners.
+
+Furthermore, the emphasis on periodic project reviews, milestone tracking, and risk mitigation allows the project management team to proactively address any challenges that may arise, ensuring that corrective actions can be taken promptly to keep the project on track.
+
+In summary, this handbook is designed to facilitate the smooth execution of the project, providing all stakeholders with the necessary tools and information to meet project goals, maintain high standards, and achieve successful outcomes. By adhering to the guidelines and processes outlined herein, the project consortium is positioned to deliver impactful and sustainable results in line with the objectives set forth in the Grant Agreement.
+
+
+
+\label{MyLastPage}
+
+
+\end{document}
