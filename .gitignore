@@ -13,8 +13,8 @@
 *.fdb_latexmk
 *.synctex.gz
 *.dvi
-*.pdf
 *.ps
+D*.pdf
 *.idx
 *.ilg
 *.ind
