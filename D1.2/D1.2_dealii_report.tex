@@ -35,7 +35,7 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{\lipsum[1][1-5]}
+    \tableEntry{Abstract}{This report details the progress made during the first semester (Months 1-6) of the dealii-X project in enhancing the deal.II finite element library. The focus is on improvements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as the initial performance evaluation of the polygonal discretization module (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
     \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
 \end{deliverableTable}
 
@@ -68,123 +68,327 @@ Approval Date: [Date]
 
 \newpage
 
-\section{{Introduction}}
+\section{Introduction}
+    \subsection{Overview of the dealii-X Project and Objectives}
 
-\lipsum[1-2]
+The dealii-X project is a pioneering initiative dedicated to developing a
+high-performance and scalable computational platform based on the deal.II finite
+element library. The project directly addresses the
+HORIZON-EUROHPC-JU-2023-COE-03-01 topic, specifically focusing on the
+``Personalised Medicine / Digital twin of the human body'' as an Exascale
+Lighthouse application area. The overarching goal of dealii-X is to advance
+existing pre-exascale digital twin applications for human organs, such as some
+deal.II based applications dedicated to the simulation of the brain, heart,
+lungs, liver, and cellular interactions, to achieve exascale readiness. 
 
-\subsection{{Purpose of the Document}}
-\lipsum[3]
+The project aims to enable real-time simulations of intricate biological
+processes, thereby contributing to personalized medicine and cutting-edge
+healthcare research. Ultimately, this enhanced simulation capability holds the
+potential to significantly improve medical diagnostics and treatment planning.
 
-\subsection{{Structure of the Document}}
+\subsection{Objectives of Work Package 1 (WP1)}
+
+The main objective of Work Package 1 (WP1) is to serve as the foundation
+for the dealii-X Centre of Excellence by enhancing and expanding the
+capabilities of the deal.II library to address the challenges of exascale
+computing and facilitate the creation of advanced digital twins of human
+organs.
+
+The key steps of WP1 include:
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
+    \item Extending and improving the exascale capabilities of deal.II;
+    \item Improving pre-exascale modules of the deal.II library;
+    \item Developing an experimental polygonal discretization module for deal.II;
+    \item Integrating PSCToolkit within deal.II;
+    \item Integrating MUMPS within deal.II.
 \end{itemize}
 
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section2}
-
-\lipsum[4-5]
-
-\subsection{{[Subsection Title]}}
-\lipsum[6]
-
-\subsection{{[Subsection Title]}}
-\lipsum[7]
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section3}
-
-\lipsum[8-9]
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \lipsum[10][1-2]
-    \item \lipsum[10][3-4]
-    \item \lipsum[10][5-6]
+Specifically, the sub-work packages aim to:
+\begin{itemize}
+    \item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational methods optimized for GPU architectures and enhance the scalability of solvers;
+    \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators, enhance reduced order modelling capabilities, integrate low-rank approximation methods, and develop block preconditioners;
+    \item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize polygonal discretization methods within deal.II and develop related multigrid techniques;
+    \item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into deal.II, leveraging GPU computing and developing efficient preconditioners for multiphysics problems;
+    \item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver directly into deal.II for use in multigrid methods and explore low-rank and mixed-precision techniques;
 \end{itemize}
 
-\subsection{{[Subsection Title]}}
-\lipsum[11]
+In summary, WP1 is dedicated to developing and integrating fundamental software components within the deal.II library and external libraries, with a strong emphasis on enabling exascale computation for the digital twin applications in WP2.
 
-\newpage
+\subsection{Purpose and Scope of this Report (Deliverable D1.2)}
 
-\section{{[Section Title]}}
-\label{sec:section4}
+The purpose of this initial report on Work Package 1 is to provide a
+comprehensive overview of the foundational activities and progress achieved
+during the early stages of the dealii-X project. Specifically, it aims to
+document the strategies and initial advancements made in enhancing the deal.II
+library to meet the demands of exascale computing and to support the development
+of sophisticated digital twins of human organs. This report serves to establish
+a baseline understanding of the technical developments within WP1, including the
+optimization of computational methods, the integration of key external
+libraries, and the exploration of novel discretization techniques. The scope of
+this report encompasses the activities undertaken within each of the sub-work
+packages of WP1. 
 
-\lipsum[12-13]
+The report will highlight the initial outcomes, any challenges encountered, and
+the solutions identified, thus providing a clear picture of the progress towards
+achieving the objectives of WP1 and its contribution to the overall goals of the
+dealii-X project. It will serve as an initial benchmark for assessing the
+development of the exascale building blocks and support tools for the subsequent
+work packages.
 
-\begin{center}
-    \begin{table}[h!]
-    \small
-    \caption{[Table Caption]}
-    \renewcommand{\arraystretch}{1.25}
-    \label{tab:example_table}
-    \begin{tabular}{|l|l|l|c|}
-    \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
-    \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
-    \hline
-    \end{tabular}
-    \end{table}
-\end{center}
+A quantitative assessment of the overall advancement of WP1 will be provided in
+the form of a list of pull requests (PRs) and issues opened in the deal.II
+GitHub repository, along with a summary of the improvements made in satellite
+repositories.
 
-\newpage
+\section{Improvements for Exascale Readiness}    
+    \subsection{Matrix-free GPU Integration}
+        \subsubsection{Objectives and Planned Activities (Task WP1.1.1)}
+        \subsubsection{Progress Made in Algorithm Development for Fast Finite Element Integrals on GPUs}
+        \subsubsection{Development of User Interfaces for Simplified GPU Integration (e.g., for AMG Preconditioners)}
+        \subsubsection{Initial Results and Performance Metrics (if available)}
+        \subsubsection{Challenges and Future Steps}
 
-\section{{[Section Title]}}
-\label{sec:section5}
+\section{Improvement of pre-exascale modules of the deal.II library}
 
-\lipsum[14-15]
+Work package 1.2 focuses on enhancing the existing modules of the deal.II
+library to prepare them for the challenges of exascale computing. This includes
+several key activities: 
+\begin{itemize}
+    \item Improving the gmsh API to support large-scale;
+    \item Developing a generalized interface for coupling operators, which
+    is fundamental for multiphysics and multiscale simulations, including methods
+    for conforming and non-conforming grids and non-local coupling techniques;
+    \item Enhancing the reduced-order modeling (ROM) capabilities of deal.II,
+    implementing algorithms for data analysis and reduced-order geometric modeling;
+    \item Integrating low-rank approximation methods within deal.II, including
+    low-rank and hierarchical low-rank solvers and preconditioners to tackle
+    large-scale computational problems;
+    \item Developing block preconditioners for coupled problems, which are
+    essential for the stability and efficiency of simulations.
+\end{itemize}
+ 
+The overall objective is to improve the pre-exascale functionalities of deal.II,
+making it an even more robust and efficient library for a wide range of
+scientific and engineering applications aiming for the use of exascale
+computers.
 
-\subsection{{[Subsection Title]}}
-\lipsum[16]
+\subsection{Extension of current gmsh API for exascale simulations}
+    The key researcher in this task is a postdoc researcher, Dr. Devi Raksa, who
+    has been hired on the project, and will start her position in April 2025.
+    The task is to extend the gmsh API to support large-scale simulations, with
+    a focus on biomedical applications, and to improve the gmsh deal.II
+    interface to enable the generation and handling of large-scale meshes.
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
+    The task has not been started yet, and it is postponed to the second
+    semester of the project.
+
+\subsection{Generalized Interface for Coupling Operators in deal.II}
+    \subsubsection{Objectives and Planned Activities (Task WP1.2.2)}
+
+    The objective of this task is to develop a generalized interface for
+    coupling operators in deal.II, which is essential for multiphysics and
+    multiscale problems. The focus is on two different types of coupling:
+    \begin{itemize}
+        \item Coupling between different physical processes, such as fluid-structure interaction or heat transfer in porous media;
+        \item Coupling between different discretization schemes, including
+        non-matching and non-overlapping discretizations.
+    \end{itemize}
+
+    This subtask was supposed to start on the second semester of the project,
+    but an early version of the generalized interface has been developed and
+    merged into the deal.II repository in April 2024, before the official start
+    of the dealii-X project, making it more convenient to start the development
+    of the rest of this task in the first semester.
+
+    The developed approach encompasses two main aspects: a high-level interface
+    for defining coupling operators and a low-level interface for implementing
+    efficient evaluation of coupled bilinear forms (on possibly non-matching or
+    non-nested grids). The high-level interface enables the computation of
+    abstract bilinear forms for coupling between geometric entities, supporting
+    various kernels and use cases like BEM and bulk-surface coupling. The low
+    level interface needs to be flexible enough to allow the use of different
+    discretization schemes, including non-conforming discretizations, and
+    possibly different parallel distributions of the meshes.
+
+    \subsubsection{Implementation Details} 
+
+    The two pull requests, ``FECouplingValues''
+    (\url{https://github.com/dealii/dealii/pull/15773}) and
+    ``FEValuesViews::RenumberedView''
+    (\url{https://github.com/dealii/dealii/pull/15819}), directly address the
+    objective of developing a ``Generalized interface for coupling operators in
+    deal.II'', as outlined in Work Package 1.2.2 of the dealii-X project, by
+    providing the high level interface discussed in the introduction.
+
+    Pull request \#15773 introduces a new class called `FECouplingValues`, specifically designed for the computation of general coupling operators. The primary goal of this class is to enable the computation of abstract bilinear forms of the type:
+    $$ \int_{T_1} \int_{T_2} K(x_1, x_2) f(x_1) g(x_2) \, dT_1 \, dT_2, $$ where
+    $T_1$ and $T_2$ represent two arbitrary sets (cells, faces, edges, or their
+    combinations), and $K$ is a coupling kernel (potentially singular). The
+    class is designed to support various types of kernels $K$. The pull request
+    includes several tests demonstrating how the class can be used for different
+    types of coupling:
+    \begin{itemize}
+        \item Coupling for Boundary Element Methods (BEM);
+        \item As a replacement for `FEInterfaceValues`, integrating
+        discontinuous Galerkin flux terms;
+        \item For bulk-surface coupling computations.
+    \end{itemize}
+
+
+    Pull request \#15819 introduces the class `FEValuesViews::RenumberedView`.
+    This component was developed as part of the work for \#15773 and is intended
+    for use by `FECouplingValues`. `RenumberedView` allows the creation of a
+    reordered view of an `FEValuesBase` object, where both degrees of freedom
+    and quadrature points are renumbered according to provided renumbering
+    vectors.
+
+    In summary, these two pull requests jointly implement the "Generalized interface for coupling operators in deal.II" envisioned in WP1.2.2:
+    \begin{itemize}
+        \item `FECouplingValues` provides the framework for defining and
+        computing general coupling operators between different geometric
+        entities and discrete spaces. This addresses the need for a versatile
+        interface to manage various coupling techniques, including methods for
+        non-matching grids and non-local coupling.
+        \item `FEValuesViews::RenumberedView` provides a fundamental tool for managing the correspondence (or lack thereof) between the degrees of freedom and quadrature points of the different spaces being coupled via `FECouplingValues`.
+    \end{itemize}
+
+    The integration of these two functionalities into the deal.II library
+    provides users with powerful and flexible tools to tackle complex coupling
+    problems essential for the multiphysics and multiscale simulations at the
+    core of the dealii-X project.
+
+    The two pull requests were merged into the main deal.II repository on April
+    11, 2024, and included in the Release 9.6 milestone, before the official
+    start of the dealii-X project. As part of the WP1.2 tasks, a biologically
+    relevant application that uses the new functionality is being developed and
+    will be integrated in the deal.II repository as a new tutorial program. The
+    tutorial will demonstrate the use of the new `FECouplingValues` class for
+    the computation of a bulk-surface coupling operator.
+
+    A low level interface for coupling operators has been developed and merged
+    into the deal.II repository in pull request \#17919, which introduces a new
+    abstract base class `MGTwoLevelTransferBase` to enable non-nested multigrid
+    transfers. The primary goal of this class is to generalize the interface for
+    managing transfers between non-nested grids, which is a crucial step towards
+    addressing the challenges of coupling operators on non-matching grids. 
+
+    The `MGTwoLevelTransferBase` class provides a flexible framework for
+    implementing matrix-free transfer operators between different levels of a
+    multigrid hierarchy. This development aligns with the objectives of WP1.2.2,
+    as it contributes to the creation of a generalized interface for coupling
+    operators in deal.II. Additionally, the techniques developed for non-nested
+    multigrid transfers could offer valuable insights and algorithms for
+    tackling coupling problems on non-matching grids in more general contexts.
+
+    The implementation of this low-level interface is expected to enhance the
+    scalability and efficiency of multigrid methods in deal.II, particularly for
+    applications involving complex grid hierarchies or non-conforming
+    discretizations. This work also complements the high-level interface
+    provided by `FECouplingValues`, creating a comprehensive toolkit for
+    addressing a wide range of coupling and multigrid challenges in the dealii-X
+    project. The work has been submitted, and is currently under review. A
+    preprint is availabele at ~\cite{FederEtAl2024b}.
+
+   A tutorial program that illustrates the use of the non-nested multigrid
+   transfer has been proposed and is currently under review in the deal.II
+   library
+    \url{https://github.com/dealii/dealii/pull/17919}.
+
+
+\section{Polygonal Discretization Methods}
+
+Work Package 1.3 of the dealii-X project is dedicated to the introduction and
+development of an experimental module for polygonal discretization within the
+deal.II library. 
+
+\subsection{Objectives and Planned Activities (Task WP1.3.1)}
+
+The primary objective of this sub work package is the development of a polygonal
+discretization module within the deal.II library. The deal.II library currently
+supports a wide range of finite element methods, defined on standard simplicial
+and hexahedral meshes, but not support for polygonal and polyhedral meshes.
+
+A Preliminary version of the polygonal discretization module has been developed
+as part of this work package, and it is currently available in the repository
+\url{https://github.com/fdrmrc/Polydeal}. The module is designed to be
+integrated into the deal.II library, and its integration is expected to be
+completed by the end of the project.
+
+The results of this early stage of the project are presented the article ``R3MG:
+R-tree based agglomeration of polytopal grids with applications to multilevel
+methods''~\cite{FederEtAl2025}, that clearly shows the potential of such
+discretization methods. 
+
+This work introduces a novel approach for the agglomeration of standard deal.II
+grids into polygonal and polyhedral meshes, based on spatial indices,
+specifically the R-tree data structure. The ``R3MG'' article demonstrates how
+building an R-tree spatial database from an arbitrary fine mesh offers a natural
+and efficient agglomeration strategy with several key features: 
+
+\begin{itemize}
+    \item 
+    The process is fully automated, robust, and dimension-independent;
+    \item It automatically generates a
+balanced and nested hierarchy of agglomerates. This is a crucial property for
+the subsequent application of multigrid methods;
+\item The shape of the agglomerates
+is closely aligned with their axis-aligned bounding boxes. 
 \end{itemize}
 
-\newpage
+A fundamental aspect of this approach is the ability to automatically extract
+nested sequences of agglomerated meshes, which can be directly used within
+multigrid solvers. This is particularly relevant for WP1.3, as one of its
+objectives is the development of agglomeration-based multigrid methods for
+single-physics problems. The R-tree based approach, named R3MG (R-tree based
+MultiGrid), is proposed as a multigrid preconditioning technique with
+Discontinuous Galerkin methods. The experiments presented in the article, based
+on polygonal Discontinuous Galerkin methods, confirm the effectiveness of the
+approach in the context of complex three-dimensional geometries and in the
+design of geometric multigrid preconditioners, at least for model problems.
 
-\section{{[Section Title]}}
-\label{sec:section6}
+Furthermore, the ``R3MG'' article highlights how the R-tree-based method preserves
+mesh quality and significantly reduces the computational cost associated with
+the agglomeration process, favorably comparing it with graph partitioning tools
+like METIS. In particular, it is demonstrated that R-tree-based agglomeration
+preserves structured meshes, a property not shared by METIS. The ability to
+generate nested grid hierarchies through R-tree agglomeration simplifies the use
+of simpler and more economical intergrid transfer operators compared to the
+non-nested case. In summary, the ``R3MG'' article represents a significant
+contribution to the objective of WP1.3 to develop an experimental polygonal
+discretization module in deal.II, providing an efficient and automated
+methodology for generating R-tree based agglomerated polygonal grid hierarchies,
+specifically designed for application with Discontinuous Galerkin methods and
+multigrid techniques.
 
-\lipsum[18-19]
 
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
+%     \subsection{Integration of Polygonal Discretization Methods}
+%         \subsubsection{Objectives and Planned Activities (Task WP1.3.1)}
+%         \subsubsection{Implementation Status of Polygonal Discretization Capabilities in deal.II}
+%         \subsubsection{Data Structures for Meshes Defined Through Agglomeration (Hexahedral and Tetrahedral Elements)}
+%         \subsubsection{Extension of deal.II Discontinuous Galerkin Methods to Agglomeration-Based Polygonal Meshes}
+%     \subsection{Initial Performance Evaluation}
+%         \subsubsection{Test Cases and Benchmarking Setup}
+%         \subsubsection{Preliminary Performance Results and Analysis}
+%         \subsubsection{Comparison with Standard Discretization Methods (if applicable)}
+%         \subsubsection{Challenges and Future Directions}
 
-\newpage 
+% \section{Other Relevant deal.II Improvements (WP1.2)}
+%     \subsection{Extension of Gmsh API for Large-Scale Simulations (WP1.2.1)}
+%         \subsubsection{Progress in Extending Gmsh Interface Capabilities}
+%         \subsubsection{Relevance to Biomedical Applications (e.g., Human Lung)}
+%     \subsection{Development of a Generalized Interface for Coupling Operators (WP1.2.2)}
+%         \subsubsection{Progress in Creating a Unified Interface for Coupling Different Physical Processes}
+%         \subsubsection{Consistency with Graph Partitioning Tools and Assembly in deal.II}
 
-\section{{Conclusion}} \label{sec:conclusion}
+% \section{Conclusions and Outlook}
+%     \subsection{Summary of Achievements in the First Semester}
+%     \subsection{Challenges Encountered and Mitigation Strategies}
+%     \subsection{Plans for the Next Reporting Period}
 
-\lipsum[20]
-
+\bibliographystyle{abbrv}
+\bibliography{../common/bibliography.bib}
+    
 \label{MyLastPage}
+
 
 \end{document}
