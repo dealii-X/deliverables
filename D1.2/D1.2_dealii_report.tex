@@ -43,7 +43,7 @@
 
 \begin{documentControl}
     \addVersion{0.1}{March 17, 2025}{Luca Heltai}{Initial draft}
-    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.2}{March 24, 2025}{Luca Heltai}{Gathered information from all partners}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -398,15 +398,27 @@ multigrid techniques.
     \end{itemize}
 
     \subsection{Progress and Current Status}
-    A preliminary interface for MUMPS has been implemented and tested with simple multigrid setups. Initial experiments with low-rank approximations have shown potential for reducing memory usage without significant loss of accuracy. Mixed-precision techniques are under investigation, with early results indicating substantial performance gains.
-
+    A preliminary interface for MUMPS was present in the deal.II library until
+    version 9.2. Such interface had been removed, in favour of using MUMPS
+    through external linear algebra packages such as PETSc and Trilinos.
+    
+    A careful planning of the interface between deal.II and MUMPS is currently
+    ongoing, with the goal of ensuring that the interface is robust and efficient,
+    and that it seamlessly communicates with existing deal.II data structures, extending, integrating, and modernizing the former MUMPS interface in deal.II. An initial pull request
+    has been opened in the deal.II repository to support detection and linkage
+    with the MUMPS library, reverting the removal of the MUMPS interface in deal.II, and re-introducing the original MUMPS interface, including some simple tests to ensure that the interface is working correctly. The pull request is available at
+    \url{https://github.com/dealii/dealii/pull/18255}.
+    
     \subsection{Challenges and Future Plans}
-    Key challenges include ensuring robust integration with deal.II's multigrid framework and optimizing low-rank and mixed-precision methods for diverse problem types. Future plans involve:
-    \begin{itemize}
-        \item Extending the MUMPS interface to support advanced multigrid configurations;
-        \item Conducting comprehensive benchmarks to evaluate the impact of low-rank and mixed-precision techniques;
-        \item Collaborating with hardware vendors to optimize performance on next-generation systems.
-    \end{itemize}
+
+    The integration of MUMPS into deal.II is currently working only with the
+    serial version of the deal.II data structures, and it is still in its early
+    stages, requiring careful planning to ensure compatibility and performance.
+    Similarly to what has been discussed with the PSBLAS library, the primary
+    challenge lies in ensuring that the interface between MUMPS and deal.II is
+    robust, efficient, and seamlessly communicates with existing deal.II data
+    structures. Ensuring compatibility and avoiding redundant data structures is
+    crucial to streamline integration and reduce maintenance efforts.
 
 \bibliographystyle{abbrv}
 \bibliography{../common/bibliography.bib}
