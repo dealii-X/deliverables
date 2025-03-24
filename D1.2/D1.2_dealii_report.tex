@@ -173,7 +173,7 @@ scientific and engineering applications aiming for the use of exascale
 computers.
 
 \subsection{Extension of current gmsh API for exascale simulations}
-    The key researcher in this task is a postdoc researcher, Dr. Devi Raksa, who
+    The key researcher in this task is a postdoc researcher, Dr. Devi Raksha, who
     has been hired on the project, and will start her position in April 2025.
     The task is to extend the gmsh API to support large-scale simulations, with
     a focus on biomedical applications, and to improve the gmsh deal.II
@@ -360,30 +360,53 @@ methodology for generating R-tree based agglomerated polygonal grid hierarchies,
 specifically designed for application with Discontinuous Galerkin methods and
 multigrid techniques.
 
+\section{Integration of PSCToolkit into deal.II (WP1.4)}
+    \subsection{Objectives and Planned Activities}
+        The primary objective of WP1.4 is to integrate the PSCToolkit (Parallel Sparse Computing Toolkit) into the deal.II library. This integration aims to leverage GPU computing to enhance performance and develop efficient preconditioners for multiphysics problems. PSCToolkit provides advanced routines for sparse matrix operations optimized for GPU architectures, which are critical for large-scale simulations.
 
-%     \subsection{Integration of Polygonal Discretization Methods}
-%         \subsubsection{Objectives and Planned Activities (Task WP1.3.1)}
-%         \subsubsection{Implementation Status of Polygonal Discretization Capabilities in deal.II}
-%         \subsubsection{Data Structures for Meshes Defined Through Agglomeration (Hexahedral and Tetrahedral Elements)}
-%         \subsubsection{Extension of deal.II Discontinuous Galerkin Methods to Agglomeration-Based Polygonal Meshes}
-%     \subsection{Initial Performance Evaluation}
-%         \subsubsection{Test Cases and Benchmarking Setup}
-%         \subsubsection{Preliminary Performance Results and Analysis}
-%         \subsubsection{Comparison with Standard Discretization Methods (if applicable)}
-%         \subsubsection{Challenges and Future Directions}
+        Planned activities include:
+        \begin{itemize}
+            \item Developing a GPU-accelerated interface for PSCToolkit within deal.II;
+            \item Implementing efficient preconditioners tailored for multiphysics problems;
+            \item Benchmarking the performance of the integrated toolkit on exascale systems.
+        \end{itemize}
 
-% \section{Other Relevant deal.II Improvements (WP1.2)}
-%     \subsection{Extension of Gmsh API for Large-Scale Simulations (WP1.2.1)}
-%         \subsubsection{Progress in Extending Gmsh Interface Capabilities}
-%         \subsubsection{Relevance to Biomedical Applications (e.g., Human Lung)}
-%     \subsection{Development of a Generalized Interface for Coupling Operators (WP1.2.2)}
-%         \subsubsection{Progress in Creating a Unified Interface for Coupling Different Physical Processes}
-%         \subsubsection{Consistency with Graph Partitioning Tools and Assembly in deal.II}
+        \subsection{Progress and Current Status}
+        Initial efforts have focused on designing the interface between PSCToolkit and deal.II's existing data structures. A pull request has been opened in the deal.II repository to support detection and linkage with the PSBLAS library (one of the two core libraries identified for interfacing PSCToolkit with deal.II; the other is AMG4PSBLAS, whose integration will follow in a subsequent pull request). A prototype of the interface has been planned in collaboration with the MUMPS team to ensure seamless integration with deal.II's current data structures of both interfaces.
 
-% \section{Conclusions and Outlook}
-%     \subsection{Summary of Achievements in the First Semester}
-%     \subsection{Challenges Encountered and Mitigation Strategies}
-%     \subsection{Plans for the Next Reporting Period}
+        Several enhancements have been made to the PSCToolkit library itself to facilitate its integration with external libraries (such as deal.II), including:
+        \begin{itemize}
+            \item Fine control and tuning of compile definitions to simplify the detection of the library and its components, including support for external libraries, ensuring compatibility at linking time with deal.II and its dependencies;
+            \item Adding support for CMake to streamline integration with external libraries;
+            \item Exporting the library's macro definitions in a dedicated header file to simplify detection of the library and its components, regardless of the build system used;
+            \item Adding PSBLAS to the Spack package manager to simplify the installation of the library and its dependencies.
+        \end{itemize}
+
+        \subsection{Challenges and Future Plans}
+
+        The integration of PSCToolkit into deal.II is still in its early stages, requiring careful planning to ensure compatibility and performance. The primary challenge lies in ensuring that the interface between PSCToolkit and deal.II is robust, efficient, and seamlessly communicates with existing deal.II data structures without introducing additional ones. This challenge stems from the proliferation of slightly incompatible data structures in existing external linear algebra packages integrated with deal.II, which has led to significant maintenance efforts and user confusion. Addressing this issue is a key focus to ensure a streamlined and user-friendly integration.
+
+\section{Integration of MUMPS Solver into deal.II (WP1.5)}
+    \subsection{Objectives and Planned Activities}
+    WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
+
+    Planned activities include:
+    \begin{itemize}
+        \item Developing a direct interface between deal.II and MUMPS;
+        \item Implementing low-rank approximation techniques to reduce computational costs;
+        \item Exploring mixed-precision strategies to optimize performance on modern hardware.
+    \end{itemize}
+
+    \subsection{Progress and Current Status}
+    A preliminary interface for MUMPS has been implemented and tested with simple multigrid setups. Initial experiments with low-rank approximations have shown potential for reducing memory usage without significant loss of accuracy. Mixed-precision techniques are under investigation, with early results indicating substantial performance gains.
+
+    \subsection{Challenges and Future Plans}
+    Key challenges include ensuring robust integration with deal.II's multigrid framework and optimizing low-rank and mixed-precision methods for diverse problem types. Future plans involve:
+    \begin{itemize}
+        \item Extending the MUMPS interface to support advanced multigrid configurations;
+        \item Conducting comprehensive benchmarks to evaluate the impact of low-rank and mixed-precision techniques;
+        \item Collaborating with hardware vendors to optimize performance on next-generation systems.
+    \end{itemize}
 
 \bibliographystyle{abbrv}
 \bibliography{../common/bibliography.bib}
