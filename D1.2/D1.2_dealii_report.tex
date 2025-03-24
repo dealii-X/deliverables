@@ -306,7 +306,16 @@ deal.II library.
 The primary objective of this sub work package is the development of a polygonal
 discretization module within the deal.II library. The deal.II library currently
 supports a wide range of finite element methods, defined on standard simplicial
-and hexahedral meshes, but not support for polygonal and polyhedral meshes.
+and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes.
+
+Planned activities include:
+\begin{itemize}
+    \item Develop data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes;
+	\item Exploit  R-tree data structures for efficient generation of balanced and nested hierarchies of  polytopic meshes and test use of such hierarchies of  polytopic meshes to enhance multigrid solvers;
+	\item Develop extensive library of examples of polytopic finite element methods for complex multiscale problems.  
+\end{itemize}
+
+ \subsection{Progress and Current Status}
 
 A Preliminary version of the polygonal discretization module has been developed
 as part of this work package, and it is currently available in the repository
@@ -314,7 +323,7 @@ as part of this work package, and it is currently available in the repository
 integrated into the deal.II library, and its integration is expected to be
 completed by the end of the project.
 
-The results of this early stage of the project are presented the article ``R3MG:
+The results of this early stage of the project are presented in the article ``R3MG:
 R-tree based agglomeration of polytopal grids with applications to multilevel
 methods''~\cite{FederEtAl2025}, that clearly shows the potential of such
 discretization methods. 
@@ -331,8 +340,7 @@ and efficient agglomeration strategy with several key features:
     \item It automatically generates a
 balanced and nested hierarchy of agglomerates. This is a crucial property for
 the subsequent application of multigrid methods;
-\item The shape of the agglomerates
-is closely aligned with their axis-aligned bounding boxes. 
+\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes and thus are characterised by good and easy to assess  shape-regularity properties.
 \end{itemize}
 
 A fundamental aspect of this approach is the ability to automatically extract
@@ -343,7 +351,7 @@ single-physics problems. The R-tree based approach, named R3MG (R-tree based
 MultiGrid), is proposed as a multigrid preconditioning technique with
 Discontinuous Galerkin methods. The experiments presented in the article, based
 on polygonal Discontinuous Galerkin methods, confirm the effectiveness of the
-approach in the context of complex three-dimensional geometries and in the
+approach in the context of complex three-dimensional geometries relevant to biomedical applications and in the
 design of geometric multigrid preconditioners, at least for model problems.
 
 Furthermore, the ``R3MG'' article highlights how the R-tree-based method preserves
@@ -359,6 +367,12 @@ discretization module in deal.II, providing an efficient and automated
 methodology for generating R-tree based agglomerated polygonal grid hierarchies,
 specifically designed for application with Discontinuous Galerkin methods and
 multigrid techniques.
+
+
+
+ \subsection{Challenges and Future Plans}
+
+The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a range of examples for comprehensive benchmarking of both polytopic discretisation methods and multigrid solvers, before integration within the deal.II library. This include the implementation of polytopic discontinuous Galerkin methods for fluid flow problems and a multigrid solver for accelerating the solution of complex electrophysiological models.
 
 \section{Integration of PSCToolkit into deal.II (WP1.4)}
     \subsection{Objectives and Planned Activities}
