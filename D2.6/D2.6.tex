@@ -92,7 +92,6 @@ In view of these diverse use cases, we created a list of requirements that the d
     \item A modular design, to allow components to be easily added
     \item An interaction that allows deep customization without requiring specific coding skills
     \item A trasparent usage of computational resources, ranging from local machines to HPC clusters
-    \item A way to visualize the results of the simulation in an intuitive way  (NOT SURE WE WANT TO INCLUDE THIS)
 \end{itemize}
 
 Those requirements naturally bring into play the programming approach that goes under the name of "Low-code/No-code".
@@ -102,8 +101,15 @@ Those requirements naturally bring into play the programming approach that goes 
 In modern IT, the demand for rapid application development has driven the rise of the no-code/low-code approaches. These tools empower developers, both experts and domain specialists, to build complex software with minimal manual coding, reducing development time and lowering barriers to entry. Although such platforms are widely used in business and enterprise applications, their impact on scientific software development is particularly significant.
 
 Scientific research often requires custom software solutions for data analysis, simulation, and visualization. Traditionally, developing such tools has been time-consuming, requiring specialized programming expertise. However, low-code and block-based platforms offer a transformative approach, enabling researchers and engineers to build and modify scientific applications more efficiently. These platforms facilitate collaboration between scientists and software developers, enhance reproducibility, and accelerate innovation in fields such as computational physics, bioinformatics, and environmental modeling.
+At the heart of many no-code/low-code platforms is a graph-based architecture, which is particularly intuitive for scientific applications. In this model, software is constructed as a directed graph where:
 
-In practice, the interaction in a no-code/low-code approach typically consists in using a graph-based approach, in which every node of the graph is an operator that has inputs and outputs, with edges representing how the different operators are related to each other. 
+\begin{itemize}
+\item Nodes represent operators or functional units. Each node performs a specific task, such as reading data, applying a mathematical transformation, running a machine learning algorithm, or rendering a visualization. Nodes typically have defined inputs (data they receive) and outputs (results they produce).
+
+\item Edges represent the flow of data between nodes, dictating how the output of one operator feeds into the input of another. This creates a pipeline or workflow that mirrors the logical steps of a scientific process.
+\end{itemize}
+
+This graph-based approach is inherently modular and flexible and this enhances reproducibility, as the workflow can be shared, inspected, or modified by others with ease.
 In fig.\ref{nocode-data} we report an example of a data analytics workflow created using the proprietary KNIME IDE. The workflow should be read from left to right, with the beginning being the reading of an XLS file. The data are then passed to both a node that does, in this example, color extraction, and to other tasks like partitioning and model training, but there are also branches for statistics and different kinds of plotting. Each of the nodes can perform complex operations, and custom nodes can be added to the system to extend its capabilities. 
 \begin{figure}
 \label{nocode-data}
@@ -123,14 +129,14 @@ The approach we want pursue in the PoC platform for dealii-X should sport both s
 
 This will be achieved by allowing user to define their custom no-code nodes in term of low-code logic.
 
-The rest of the deliverable is organized as follows: in section 2 we sketch the low-code approach with a practical example using the dealii library. In section 3 we sketch instead the no-code approach to the simulation, using the nodes defined in section 2. In section 3 we outline the devolvement plan of PoC and the relative improvments we envision. 
+The rest of the deliverable is organized as follows: in section 2 we sketch the low-code approach with a practical example using the dealii library. In section 3 we sketch instead the no-code approach to the simulation, using the nodes defined in section 2. In section 3 we outline the devolvement plan of PoC and the relative improvements we envision. 
 
 
 \section{\textcolor{EUblue}{Low-code approach to dealii programming}}
 
 In the present section we go on the details of the design of a node-based low-code interface for an Object Oriented Library, using dealii as an operative example.
 
-A minimal set of entiies and control loop that allow the creation of an object-oriented, Turing-complete language is the following:
+A minimal set of entities and control loop that allow the creation of an object-oriented, Turing-complete language is the following:
 \begin{itemize}
 \item Variables and instances of objects
 \item Functions and member functions
@@ -148,7 +154,7 @@ For a example, a basic type like int can be represented, as shown in fig.\ref{su
     \caption{Node-based mockup of a sum operation}
 \end{figure}
 
-To specify order of the operation, special connectors one the node are used, and special edges are display, to distinguish instruction flow from arguments. For example, su subsequent sums would look like (fig.\ref{twosum}).
+To specify order of the operation, special connectors one the node are used, and special edges are display, to distinguish instruction flow from arguments. For example, subsequent sums would look like (fig.\ref{twosum}).
 
 \begin{figure}
     \label{twosum}
@@ -182,22 +188,21 @@ As noted in the previous section, given the hierarchical nature of node-based pr
 \end{figure}
 
 
-
-This high level view of the computational workflow will also allow the quick selection of the computational resource to be used, abstracting the details of different HPC or cloud systems. This system, which will be calling "metascheduler", will be developed in the context of the dealii-X project, and will be used to manage the computational resources of the PoC platform.
+This high level view of the computational workflow will also allow the quick selection of the computational resource to be used, abstracting the details of different HPC or cloud systems. This system, which will be called "metascheduler", will be developed in the context of the dealii-X project, and will be used to manage the computational resources of the PoC platform.
 
 The entire platform, from the low-code interface to the metascheduler, will be served by means of a webapp, that will allow the user to interact with the system from any device, and will be developed using the latest web technologies. 
 
 \section{\textcolor{EUblue}{PoC development plan and outlook}}
 
-The main development activities for the PoC platform are the following will be carried out in task 2.6.2 and 2.6.3. The development activities will start in M7, with main frontend and backend of the low-code/no-code PoC platform being developed concurrently. The low-code system will be agnostic of the underling simulation library used, in order to easily integrate the progess of the various dealii-X libraries for specific organs. The activities on the metascheduler will start in M7 as well. Both the low-code/no-code interface and the metascheduler will be developed in an iterative way, with the first version of the PoC platform being deployed in M17. Between M18 anb month M22 the PoC platform will be tested by the partners, and the feedback will be used to improve the platform in the following months. The final tranche of the development will be between M23 and M27, in which the final version of the PoC platform will be deployed.
+The main development activities for the PoC platform are the following will be carried out in task 2.6.2 and 2.6.3. The development activities will start in M7, with main frontend and backend of the low-code/no-code PoC platform being developed concurrently. The low-code system will be agnostic of the underling simulation library used, in order to easily integrate the progess of the various dealii-X libraries for specific organs. The activities on the metascheduler will start in M7 as well. Both the low-code/no-code interface and the metascheduler will be developed in an iterative way, with the first version of the PoC platform being deployed in M17. Between M18 and month M22 the PoC platform will be tested by the partners, and the feedback will be used to improve the platform in the following months. The final tranche of the development will be between M23 and M27, in which the final version of the PoC platform will be deployed.
 
-The Gantt chart of the activities is shown in fig.\ref{gannt}. The frontend of the PoC platform will be in charge of Dualistic, while the backend and the metascheduler will be developed by eXact lab. The activitis will be carried out in close collaboration with the other partners of the dealii-X project, UniPI in particular. 
+The Gantt chart of the activities is shown in fig.\ref{gannt}. The frontend of the PoC platform will be in charge of Dualistic, while the backend and the metascheduler will be developed by eXact lab. The activities will be carried out in close collaboration with the other partners of the dealii-X project, UniPI in particular. 
 \begin{figure}
     \label{gannt}
     \includegraphics[width=400pt]{gantt.png}
     \caption{Timeline of the activities of task 2.6, Creation of the PoC platform}
 \end{figure}
-The PoC platform is forseseen to be a valuable exploitable result of the dealii-X project, and will be used to showcase the capabilities of the libraries developed in the project.
+The PoC platform is foreseseen to be a valuable exploitable result of the dealii-X project, and will be used to showcase the capabilities of the libraries developed in the project.
 
 \label{MyLastPage}
 
