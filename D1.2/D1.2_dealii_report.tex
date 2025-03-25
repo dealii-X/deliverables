@@ -8,6 +8,9 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.2}
@@ -140,13 +143,241 @@ the form of a list of pull requests (PRs) and issues opened in the deal.II
 GitHub repository, along with a summary of the improvements made in satellite
 repositories.
 
-\section{Improvements for Exascale Readiness}    
-    \subsection{Matrix-free GPU Integration}
-        \subsubsection{Objectives and Planned Activities (Task WP1.1.1)}
-        \subsubsection{Progress Made in Algorithm Development for Fast Finite Element Integrals on GPUs}
-        \subsubsection{Development of User Interfaces for Simplified GPU Integration (e.g., for AMG Preconditioners)}
-        \subsubsection{Initial Results and Performance Metrics (if available)}
-        \subsubsection{Challenges and Future Steps}
+\section{Improvements for Exascale Readiness}
+
+Work package 1.1 focuses on enabling efficient finite element computations
+with the deal.II finite element library, where matrix-free evaluation
+techniques and multigrid methods are the core scientific components.
+
+The activities of the group at RUB can be summarized as follows:
+\begin{itemize}
+\item Benchmarks to assess the current performance of the core components.
+\item Exascale readiness of Raviart--Thomas finite element algorithms for
+  high-performance computing.
+\item Restart capabilities in application solver ExaDG.
+\item Initial setup of a domain decomposition infrastructure in the deal.II library to establish additional solver paradigms for the exascale era.
+\end{itemize}
+
+\subsection{Benchmarks for GPU systems}
+
+In order to assess the core matrix-free algorithms on GPU systems, we have
+worked towards a set of benchmarks.
+
+\pgfplotstableread{
+ 5   6          8        1331  3.79912e-05   4.2353e+07  3.14263e-05  2.54234e-05   4.2e6   96  1.84954e-05
+ 5   6         16        2541  4.29821e-05  7.07614e+07  3.59094e-05  2.88131e-05   8.3e6  100  2.24764e-05
+ 5   6         32        4851  4.43232e-05  1.27189e+08  3.81402e-05  3.10807e-05   1.3e7  100  2.42564e-05
+ 5   6         64        9261  4.99301e-05  2.16052e+08  4.28646e-05  3.67775e-05   2.2e7  100  2.80755e-05
+ 5   6        128       18081   5.1163e-05  4.13633e+08  4.37127e-05  3.80174e-05   4.1e7  100  2.86181e-05
+ 5   6        256       35301  5.32898e-05  7.85706e+08   4.4929e-05  3.95952e-05   8.2e7  100  3.15277e-05
+ 5   6        512       68921   5.6458e-05   1.4457e+09  4.76731e-05  4.35147e-05   1.4e8  100  3.26065e-05
+ 5   6       1024      136161  5.64253e-05  2.87537e+09  4.73542e-05  4.09125e-05   2.6e8  100  3.20385e-05
+ 5   6       2048      269001  7.93226e-05  3.90264e+09  6.89279e-05  6.07493e-05   2.7e8  100  5.07143e-05
+ 5   6       4096      531441  0.000129025  4.39204e+09  0.000121001  0.000103359   2.7e8  100  9.24265e-05
+ 5   6       8192     1056321  0.000222163  5.00917e+09  0.000210877  0.000176216   2.7e8  100  0.000166144
+ 5   6      16384     2099601  0.000443032  5.53296e+09  0.000379472  0.000332482   2.8e8  100  0.000314249
+ 5   6      32768     4173281  0.000864378  5.63024e+09  0.000741226  0.000662211   2.7e8  100  0.000615349
+ 5   6      65536     8320641   0.00170104  5.66888e+09   0.00146777   0.00128264   2.7e8  100   0.00122682
+ 5   6     131072    16589601   0.00572042  2.96308e+09   0.00559876   0.00316049   2.5e8  100   0.00241532
+ 5   6     262144    33076161     0.019618   2.1394e+09    0.0154605   0.00896981   2.5e8  100   0.00542828
+ 5   6     524288    66049281    0.0462221   2.1247e+09    0.0310864    0.0183618   2.6e8  100    0.0114346
+ 5   6    1048576   131892801    0.0926743  2.14576e+09    0.0614668    0.0364508   2.6e8  100    0.0238106
+ 5   6    2097152   263374721     0.182145  2.18134e+09      0.12074    0.0721931   2.6e8  100    0.0467826
+}\tableBPFiveAMD
+\pgfplotstableread{
+nele        ampere 
+256         0.85  
+512         1.65  
+1024        2.75  
+2048        3.38  
+4096        4.07  
+8192        4.62  
+16384       4.93  
+32768       5.18  
+65536       5.20  
+131072      5.22 
+262144      5.23 
+524288      5.24  
+1048576     nan   
+}\tableBP
+
+\pgfplotstableread{
+ 4   5        256       18785  0.000372951  5.03686e+07    99  0.000251866
+ 4   5        384       28033  0.000408611  6.86056e+07   100  0.000289283
+ 4   5        512       36465  0.000488475  7.46507e+07   100  0.000365702
+ 4   5        768       54417  0.000611396  8.90046e+07   100  0.000490703
+ 4   5       1024       70785  0.000735216  9.62778e+07   100  0.000605897
+ 4   5       1536      105633    0.0010361  1.01953e+08   100  0.000898252
+ 4   5       2048      140481   0.00128128  1.09641e+08   100   0.00114143
+ 4   5       3072      210177    0.0020391  1.03074e+08   100   0.00189293
+ 4   5       4096      276705   0.00254333  1.08796e+08   100   0.00238997
+ 4   5       6144      413985   0.00367827  1.12549e+08   100   0.00351821
+ 4   5       8192      545025   0.00477614  1.14114e+08   100   0.00461896
+ 4   5      12288      815425   0.00699715  1.16537e+08   100   0.00681141
+ 4   5      16384     1085825   0.00921008  1.17895e+08   100   0.00899371
+ 4   5      24576     1626625    0.0137157  1.18595e+08   100    0.0134318
+ 4   5      32768     2154945    0.0183288  1.17572e+08   100    0.0179785
+ 4   5      49152     3228225    0.0273663  1.17964e+08   100    0.0268812
+ 4   5      65536     4276737    0.0363368  1.17697e+08   100    0.0357235
+ 4   5      98304     6406785    0.0547228  1.17077e+08   100    0.0538665
+ 4   5     131072     8536833    0.0724943  1.17759e+08   100    0.0714299
+ 4   5     196608    12796929     0.109293  1.17088e+08   100     0.107686
+  }\tableMFKokkos
+
+\pgfplotstableread{
+ 128  0.06204099359     0.06122035118     0.9288824383     0.9893643334     0.6850488097     0.04748168987     0.08408660921     1.34873135     1.354440024     1.185448618     1.266223488
+ 256  0.1201602638     0.1235158795     1.756697409     1.912388693     1.250928423     0.09173891106     0.1659966282     2.626395272     2.534653465     2.312472901     2.411999699
+ 512  0.2421426599     0.2463262745     3.462079411     3.66028024     2.112211221     0.1840169756     0.3358874777     4.959318094     4.842615012     4.368600683     4.669147151
+ 1024  0.4796846074     0.4812030075     6.195247084     6.339772164     2.836879433     0.355389707     0.6525252216     7.599145096     7.74677722     7.532070142     7.880802857
+ 2048  0.9150766019     0.946119248     9.304015991     10.13018875     3.588852128     0.7014505779     1.292504986     11.9108547     11.61313736     10.93689922     12.17192849
+ 4096  1.848021859     1.848695803     13.6406021     14.23725043     4.247517442     1.383828665     2.567600096     15.72240135     15.63120134     14.63275221     16.29379754
+ 8192  3.602500642     3.753184159     16.65257269     17.67498058     4.526346964     2.764735582     5.107996209     17.45742196     18.29192047     16.59024999     19.70215877
+ 16384  2.806802109     4.818063976     19.18087906     20.10129167     4.568226734     2.156073168     9.049493838     19.50290449     19.9912148     18.52203562     21.74143825
+ 32768  2.820670501     6.145351977     20.67590419     21.60462896     4.627798881     2.521856914     9.146450391     20.6549474     21.20686531     19.65205876     23.18538687
+ 65536  2.461917958     9.090636711     21.5591429     22.51446318     4.658868143     2.419041685     12.35685238     21.31407296     21.81101733     20.26488821     24.04673144
+ 131072  2.030735197     9.311207093     22.02793019     22.97760861     4.68662755     1.884650075     12.40399284     21.64933469     22.14215632     20.59101129     24.49376219
+ 262144  1.82988666     9.352695193     22.265483     22.97002219     4.695679339     1.477229265     11.6228092     21.81543165     22.31424488     20.75276921     24.71834678
+ 524288  1.830664127     8.872589741     22.39760604     23.34501724     4.703506688     1.462271549     10.67090272     21.90104228     22.40858047     20.83938828     24.57966544
+ 1048576  1.806746246     9.19572938     22.4594457     23.41187244     4.704535319     1.449557117     10.92101941     21.94892494     22.45115915     20.87924376     24.9059036
+}\tableLowLevel
+
+As a benchmark, we consider a matrix-free operator using the CEED benchmark
+BP5\footnote{\url{https://ceed.exascaleproject.org/bps/}, see the benchmark
+  description at \url{https://doi.org/10.1177/1094342020915762}}, which uses a
+3D Poisson equation on a mesh of deformed elements and solving the linear
+system with a conjugate gradient iterative solver and diagonal
+preconditioner. We list the throughput in terms of degrees of freedom (DoFs)
+per second and CG iteration. Figure~\ref{fig:bp5} lists the measured
+performance in February 2025. The CPU code uses advanced data locality
+optimizations established in our previous
+research\footnote{\url{https://doi.org/10.1177/10943420221107880}}, and
+therefore the CPU codes reach a relatively high throughput despite a formally
+much slower memory subsystem compared to the A100, where the CUDA code reaches
+1.1 TB/s of memory bandwidth. The Kokkos code currently integrated in deal.II
+was found to be really slow in this experiment, reaching 0.12 GDoF/s with the
+code from February 2025 vs. 5.2 GDoF/s with CUDA (code established in
+2016--2022). Also for the CPU, the Kokkos abstractions give poor performance
+with 0.26 GDoF/s vs. 3.6 GDoF/s.
+
+\begin{figure}
+  \centering
+      \begin{tikzpicture}
+    \begin{semilogxaxis}[
+      title style={font=\scriptsize},
+      tick label style={font=\scriptsize},
+      title={Node-level GPU performance},
+      label style={font=\scriptsize},
+      legend style={font=\tiny},
+      width=0.5\columnwidth,
+      height=0.4\textwidth,
+      xlabel={DoFs},
+      ylabel={[billion DoFs $\times$ CG its] / [sec]},
+      legend columns = 2,
+      legend to name=legend:node,
+      legend cell align={left},
+      grid,
+      semithick,
+      ymin=0,ymax=7,ytick={0,1,2,3,4,5,6,7},
+      xmin=1e4,xmax=1.7e8
+      ]
+
+      \addplot [red, solid, mark=triangle] table[x expr={\thisrowno{3}}, y expr={\thisrowno{3}/\thisrowno{7}*1e-9}] {\tableBPFiveAMD};
+      \addlegendentry{CPU 2$\times$\,64C Zen 2};
+      \addplot [green!50!black, dashed, solid, mark=square*] table[x expr={\thisrowno{0}*125}, y expr={\thisrowno{1}}] {\tableBP};
+\addlegendentry{A100, CUDA};
+      \addplot [red!50!black, solid] table[x expr={\thisrowno{3}}, y expr={\thisrowno{8}*1e-9}] {\tableBPFiveAMD};
+\addlegendentry{CPU 2$\times$\,64C Zen 2, Kokkos};
+      \addplot [black, solid, mark=x] table[x expr={\thisrowno{3}}, y expr={\thisrowno{5}*1e-9}] {\tableMFKokkos};
+\addlegendentry{A100, Kokkos};
+
+\end{semilogxaxis}
+  \end{tikzpicture}
+  \\
+  \strut\hfill\pgfplotslegendfromname{legend:node}\hfill\strut
+  \caption{Throughput of CEED BP5 benchmark case with deal.II using Kokkos and native CUDA/CPU implementations.}
+  \label{fig:bp5}
+\end{figure}
+
+In order to better understand the performance gap and mitigate performance
+differences, we have worked on more low-level sum Factorization benchmarks to
+assess the performance of the Kokkos programming model in comparison. The
+algorithm successively applies matrix-vector products on finite elements in 3D
+with polynomial degree 5, with a focus on optimizing the use of shared memory
+and ensuring coalesced memory access patterns. The objective of the benchmark
+is to compare the throughput, measured in degrees of freedom per second, for
+each programming model, highlighting performance differences between the
+vendor-neutral Kokkos library and the native programming model
+CUDA. Fig.~\ref{fig:sum_fact} shows the results of this experiment.
+
+\begin{figure}
+  \centering
+      \begin{tikzpicture}
+    \begin{semilogxaxis}[
+      title style={font=\scriptsize},
+      tick label style={font=\scriptsize},
+      title={Node-level GPU performance},
+      label style={font=\scriptsize},
+      legend style={font=\tiny},
+      width=0.5\columnwidth,
+      height=0.4\textwidth,
+      xlabel={DoFs},
+      ylabel={[billion DoFs] / [sec]},
+      legend columns = 2,
+      legend to name=legend:new,
+      legend cell align={left},
+      grid,
+      semithick,
+      ymin=0,
+      xmin=1e4,xmax=1.7e8
+      ]
+
+      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{2}}] {\tableLowLevel};
+      \addlegendentry{Kokkos, across elem};
+      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{4}}] {\tableLowLevel};
+      \addlegendentry{Kokkos, per thread};
+      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{5}}] {\tableLowLevel};
+      \addlegendentry{cuBLAS};
+      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{7}}] {\tableLowLevel};
+      \addlegendentry{CUDA, across elem};
+      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{11}}] {\tableLowLevel};
+      \addlegendentry{CUDA, per thread};
+
+\end{semilogxaxis}
+  \end{tikzpicture}
+  \\
+  \strut\hfill\pgfplotslegendfromname{legend:new}\hfill\strut
+  \caption{Throughput evaluation of sum factorization kernels for forward evaluation (basis functions $\to$ values at quadrature points) with CUDA and Kokkos on an A100 GPU.}
+  \label{fig:sum_fact}
+\end{figure}
+
+\subsection{Raviart--Thomas finite elements}
+
+Another string of activities is centered around the application-readyness of Raviart--Thomas elements, where future requirements and potential improvement opportunities are investigated with the ExaDG application code pioneering the use of Raviart-Thomas elements for high-Reynolds incompressible flow problems in a matrix-free setting based on deal.II.
+
+This will also require some debugging in the deal.II implementation of the
+Raviart--Thomas elements, as these code paths are quite new and have not been
+extensively used by the community yet due to the fact that the use of
+Raviart--Thomas elements has significantly increased in the last
+years. Currently, the time integration and matrix-free solver capabilities in
+ExaDG have been extended, and further testing regarding the performance will
+be executed in the near future on the JUPITER system.
+\begin{itemize}
+\item Improvements of Raviart-Thomas incompressible flow solvers in ExaDG:\\
+  \href{https://github.com/kronbichler/exadg/tree/martin}{https://github.com/kronbichler/exadg/tree/martin}
+\end{itemize}
+
+\subsection{Restart capabilities}
+
+To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal reusability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the startup phase. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
+    \begin{itemize}
+        \item Grid-to-grid projection:\\
+        \href{https://github.com/exadg/exadg/pull/735}{https://github.com/exadg/exadg/pull/735}    
+        \item Restarting including grid-to-grid projection and rollout to all time integrators (implicit and explicit, various single step and multi step schemes) and physics (convection-diffusion, Navier-Stokes equations for compressible and incompressible flow, acoustic conservation equations) in ExaDG:\\
+        \href{https://github.com/exadg/exadg/pull/729}{https://github.com/exadg/exadg/pull/729}\\
+        \href{https://github.com/exadg/exadg/pull/731}{https://github.com/exadg/exadg/pull/731}\\
+        \href{https://github.com/exadg/exadg/pull/732}{https://github.com/exadg/exadg/pull/732}\\
+        \href{https://github.com/exadg/exadg/pull/734}{https://github.com/exadg/exadg/pull/734}     
+    \end{itemize}
 
 \section{Improvement of pre-exascale modules of the deal.II library}
 
