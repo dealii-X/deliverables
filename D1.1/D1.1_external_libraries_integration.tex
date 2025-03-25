@@ -35,17 +35,19 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{\lipsum[1][1-5]}
-    \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
+    \tableEntry{Abstract}{This report describes the API documentation
+      of the initial interface to external libraries such as MUMPS,
+      PSCToolkit and GMSH}
+    \tableEntry{Keywords}{API, linear algebra packages, linear solvers}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{[Date]}{[Author name]}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.1}{25/03/2025}{alfredo Buttari}{Initial draft}
+    % \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
+    % \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    % \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -72,36 +74,141 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-\lipsum[1-2]
+\subsection{Overview of the dealii-X Project and Objectives}
 
-\subsection{{Purpose of the Document}}
-\lipsum[3]
+The dealii-X project is a pioneering initiative dedicated to developing a
+high-performance and scalable computational platform based on the deal.II finite
+element library. The project directly addresses the
+HORIZON-EUROHPC-JU-2023-COE-03-01 topic, specifically focusing on the
+``Personalised Medicine / Digital twin of the human body'' as an Exascale
+Lighthouse application area. The overarching goal of dealii-X is to advance
+existing pre-exascale digital twin applications for human organs, such as some
+deal.II based applications dedicated to the simulation of the brain, heart,
+lungs, liver, and cellular interactions, to achieve exascale readiness. 
 
-\subsection{{Structure of the Document}}
+The project aims to enable real-time simulations of intricate biological
+processes, thereby contributing to personalized medicine and cutting-edge
+healthcare research. Ultimately, this enhanced simulation capability holds the
+potential to significantly improve medical diagnostics and treatment planning.
+
+\subsection{Objectives of Work Package 1 (WP1)}
+
+The main objective of Work Package 1 (WP1) is to serve as the foundation
+for the dealii-X Centre of Excellence by enhancing and expanding the
+capabilities of the deal.II library to address the challenges of exascale
+computing and facilitate the creation of advanced digital twins of human
+organs.
+
+The key steps of WP1 include:
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
+\item Extending and improving the exascale capabilities of deal.II;
+\item Improving pre-exascale modules of the deal.II library;
+\item Developing an experimental polygonal discretization module for
+  deal.II;
+\item Integrating PSCToolkit within deal.II;
+\item Integrating MUMPS within deal.II.
 \end{itemize}
 
+Specifically, the sub-work packages aim to:
+\begin{itemize}
+\item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational
+  methods optimized for GPU architectures and enhance the scalability
+  of solvers;
+    \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a
+      generalized interface for coupling operators, enhance reduced
+      order modelling capabilities, integrate low-rank approximation
+      methods, and develop block preconditioners;
+    \item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize
+      polygonal discretization methods within deal.II and develop
+      related multigrid techniques;
+    \item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into
+      deal.II, leveraging GPU computing and developing efficient
+      preconditioners for multiphysics problems;
+    \item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver
+      directly into deal.II for use in multigrid methods and explore
+      low-rank and mixed-precision techniques;
+\end{itemize}
+
+In summary, WP1 is dedicated to developing and integrating fundamental
+software components within the deal.II library and external libraries,
+with a strong emphasis on enabling exascale computation for the
+digital twin applications in WP2.
+
+\subsection{Purpose and Scope of this Report (Deliverable D1.1)}
+
+The purpose of this report is to make a comprehensive analysis of the
+development that are necessary to integrate external libraries,
+namely, MUMPS, PSCToolkit and GMSH, within the deal.II package. 
+
+
+% \subsection{{Structure of the Document}}
+% \begin{itemize}
+    % \item Section \ref{sec:section2}: [Section Title]
+    % \item Section \ref{sec:section3}: [Section Title]
+    % \item Section \ref{sec:section4}: [Section Title]
+    % \item Section \ref{sec:section5}: [Section Title]
+    % \item Section \ref{sec:section6}: [Section Title]
+% \end{itemize}
+
 \newpage
 
-\section{{[Section Title]}}
+\section{MUMPS}
 \label{sec:section2}
 
-\lipsum[4-5]
+\subsection{Existing interface}
 
-\subsection{{[Subsection Title]}}
-\lipsum[6]
+The deal.II package used to support a direct MUMPS integration in the
+past. This support was subsequently remove in favor of an indirect use
+of MUMPS through the PETSc library. As a first step towards the
+objectives of WP1 of the dealii-X project, this support was reverted,
+as documented in Pull Request \#18255
+(\url{https://github.com/dealii/dealii/pull/18255}) which is being
+merged in the main branch. This minimalistic interface include a
+number of basic tests.
 
-\subsection{{[Subsection Title]}}
-\lipsum[7]
+
+\subsection{Planned activities}
+
+The current MUMPS interface described in the previous version has
+numerous limitations that make the use of MUMPS within deal.II of
+little practical interest.
+
+First of all, only the real double-precision MUMPS interface is
+currently supported which prevents using MUMPS on complex problems
+and/or on problems where full double-precision accuracy is not
+needed. Furthermore, this will not allows experimenting with
+mixed-precision strategies as expected from the dealii-X
+project. Support for other arithmetics can be achieved in the same
+vein as it is done for the UMFPACK sparse direct solver.
+
+The current deal.II MUMPS interface does not support
+distributed-memory parallelism. Currently the system matrix and
+right-hand side(s) are entirely assembled on the master process where
+the subsequent phases (symbolic analysis, factorization and
+backward/forward substitution) take place; not
+only this might be infeasible due to memory limitations but it
+severely limits the performance of the sparse direct solver. This
+extension can be achieved through an adequate use of deal.II data type
+like \texttt{LinearAlgebra::distributed::Vector}.
+
+Setting-up MUMPS internal configuration parameters is not possible in
+the current deal.II MUMPS interface which, therefore, has to be
+extended to enable the use of the more advanced features of the MUMPS
+solver; these include the Block Low-Rank approximations, the GPU
+support and numerous other parameters that allow for fine-tuning both
+the performance and the numerical robustness of the solver. This
+extension can be achieved by adding a \texttt{AdditionalData} object
+to the constructor of the MUMPS solver class that takes the desired
+values for selected solver parameters.
+
+More generally, the current MUMPS interface must be modernized to make
+it compliant with deal.II coding style and modern C++ programming
+practice.
+
 
 \newpage
 
-\section{{[Section Title]}}
+\section{PSCToolkit}
 \label{sec:section3}
 
 \lipsum[8-9]
@@ -118,68 +225,10 @@ Approval Date: [Date]
 
 \newpage
 
-\section{{[Section Title]}}
+\section{GMSH}
 \label{sec:section4}
 
 \lipsum[12-13]
-
-\begin{center}
-    \begin{table}[h!]
-    \small
-    \caption{[Table Caption]}
-    \renewcommand{\arraystretch}{1.25}
-    \label{tab:example_table}
-    \begin{tabular}{|l|l|l|c|}
-    \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
-    \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
-    \hline
-    \end{tabular}
-    \end{table}
-\end{center}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section5}
-
-\lipsum[14-15]
-
-\subsection{{[Subsection Title]}}
-\lipsum[16]
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
-\end{itemize}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section6}
-
-\lipsum[18-19]
-
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
 
 \newpage 
 
@@ -190,3 +239,8 @@ Item 3 & Description & Value \\
 \label{MyLastPage}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
