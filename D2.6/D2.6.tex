@@ -35,16 +35,34 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{\lipsum[1][1-5]}
-    \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
+    \tableEntry{Abstract}{ dealii-X D2.6 outlines the design of the Proof of
+        Concept (PoC) platform for the dealii-X project. This deliverable
+        focuses on the strategies for creating intuitive interfaces for a broad
+        range of users in the field of personalized medicine. It envisions both
+        a no-code interface for high-level control and a low-code interface for
+        deep customization, allowing biomedical engineers and surgeons with
+        varying technical expertise to interact with the system. The platform
+        aims to enable users to define custom no-code nodes based on low-code
+        logic. This deliverable will detail the node-based low-code interface
+        using dealii as an example and sketch the no-code approach to simulation
+        management using the defined nodes. Finally, it will outline the
+        development plan and future outlook for the PoC. }
+        \tableEntry{Keywords}{
+            PoC platform;
+            no-code interface;
+            low-code interface;
+            frontend;
+            backend;
+            metascheduler
+        }
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
     \addVersion{0.1}{03/03/2025}{G.P. Brandino}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.2}{26/03/2025}{L. Heltai}{Abstract, keywords, and
+        editing}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
@@ -75,16 +93,16 @@ Approval Date: 31/03/2025
 
 One of the long-term goals of the dealii-X project is to develop key components for diagnostic and training tools in the fields of personalized medicine. In order for such tools to be used by a large number of professionals, some intuitive yet complete interfaces should be created. Moreover, different levels of interaction should be envisioned: a biomedical engineer should be able to access the mechanical properties of the organs or tissues, while a surgeon could be interested in intuitive ways to drag an MRI scan into the system and have an interactive simulation without having to deal with the technical details of the simulation.
 
-Currently, the typical workflow for a user of the libraries in development in the context of dealii-X that wants to run a simulation starting from medical data is:
+Currently, the typical workflow for a user of the dealii-X libraries to run a simulation starting from medical data involves the following steps:
 \begin{itemize}
-    \item Convert the medical scan (e.g. MRI) into a mesh using an appropriate software  
-    \item Write a C++ program that handles the simulation
+    \item Convert a medical input data (e.g. MRI, X-ray scan, etc.) into a mesh using an appropriate software  
+    \item Write a C++ program that models the physical process (the digital twin)
     \item Run the simulation on an HPC cluster
-    \item Fetch the data to a local machine
+    \item Fetch the resulting data to a local machine
     \item Write/Use post-processing code to prepare the results for visualization
     \item Use an application to visualize the data
 \end{itemize} 
-The flow described above is rather complex, and it is not suitable for a non-expert user. The goal of the PoC platform is to allow a user to perform all these steps in a single environment, while retaing the possibility of deep customization.
+The flow described above is rather complex, and generally not suitable for a non-expert user. The goal of the PoC platform is to allow a user to perform all these steps in a single environment, while retaing the possibility of deep customization.
 
 In view of these diverse use cases, we created a list of requirements that the dealii-X PoC platform should sport.
 \begin{itemize}
@@ -117,7 +135,7 @@ In fig.\ref{nocode-data} we report an example of a data analytics workflow creat
 \caption{An examples of a data analysis workflow created using the KNIME IDE}
 \end{figure}
 
-The approach depicted so far goes under the name of no-code programming since there is coding logic involved, only relations between entities. Although this approach works for workflow definition, there could be more complex manipulation that require a coding approach. For these cases, it is still possible to rely on a visual approach that goes under the name of low-code. 
+The approach depicted so far goes under the name of no-code programming since there is no coding logic involved, only relations between entities. Although this approach works for workflow definition, there could be more complex manipulation that require a coding approach. For these cases, it is still possible to rely on a visual approach that goes under the name of low-code. 
 \begin{figure}
 \label{lowcode}
 \includegraphics[width=400pt]{lowcode.png}
@@ -194,7 +212,7 @@ The entire platform, from the low-code interface to the metascheduler, will be s
 
 \section{\textcolor{EUblue}{PoC development plan and outlook}}
 
-The main development activities for the PoC platform are the following will be carried out in task 2.6.2 and 2.6.3. The development activities will start in M7, with main frontend and backend of the low-code/no-code PoC platform being developed concurrently. The low-code system will be agnostic of the underling simulation library used, in order to easily integrate the progess of the various dealii-X libraries for specific organs. The activities on the metascheduler will start in M7 as well. Both the low-code/no-code interface and the metascheduler will be developed in an iterative way, with the first version of the PoC platform being deployed in M17. Between M18 and month M22 the PoC platform will be tested by the partners, and the feedback will be used to improve the platform in the following months. The final tranche of the development will be between M23 and M27, in which the final version of the PoC platform will be deployed.
+The main development activities for the PoC platform will be carried out in task 2.6.2 and 2.6.3. The development activities will start in M7, with main frontend and backend of the low-code/no-code PoC platform being developed concurrently. The low-code system will be agnostic of the underling simulation library used, in order to easily integrate the progess of the various dealii-X libraries and applications for specific organs. The activities on the metascheduler will start in M7 as well. Both the low-code/no-code interface and the metascheduler will be developed in an iterative way, with the first version of the PoC platform being deployed in M17. Between M18 and month M22 the PoC platform will be tested by the partners, and the feedback will be used to improve the platform in the following months. The final tranche of the development will be between M23 and M27, in which the final version of the PoC platform will be deployed.
 
 The Gantt chart of the activities is shown in fig.\ref{gannt}. The frontend of the PoC platform will be in charge of Dualistic, while the backend and the metascheduler will be developed by eXact lab. The activities will be carried out in close collaboration with the other partners of the dealii-X project, UniPI in particular. 
 \begin{figure}
