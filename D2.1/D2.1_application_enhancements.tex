@@ -99,7 +99,7 @@ To bridge these scales, the trachea, with a diameter of roughly 2.5 cm, bifurcat
 The terminal bronchioles, the smallest conducting airways found in the 16th generation of this bronchial tree, are already tens of thousands in number, each being responsible for the supply of air to tens of thousands of alveoli.
 It is clear from these numbers that a fully resolved simulation of a lung incorporating the important effects on all length scales is not possible.
 Although simplified, generally reduced order or homogenized models of lungs exist in the literature, these models fail to incorporate some of the critical aspects of respiratory mechanics.
-With our decade-long expertise in lung modeling, we have identified surfactant dysfunction as such an aspect.
+With our decade-long expertise in lung modeling, we have identified surfactant dysfunction as one such aspect.
 Despite the evident clinical relevance — manifesting itself, for example, as the infant respiratory distress syndrome in newborns — large-scale simulations of the human lungs incorporating dynamic surfactant (and surfactant deficiency) effects have not been possible due to the high interfacial resolution that would be necessary to capture the surfactant effects on the alveolar walls.
 
 Together with our project partners, we have concluded that exascale-enabled simulation software is the key to illuminating these open problems via solving the nonlinear dynamics of fine alveolar structures in the presence of surfactants in a large enough domain.
@@ -132,7 +132,7 @@ Viscoelastic models with two relaxation times have been successful in capturing 
 However, free-flowing interstitial fluid occupies a large fraction of the brain volume and contributes to the biomechanical response of human brain tissue through poroelastic effects.
 For some applications, e.g., drug delivery in the brain during cancer treatment, it is thus essential to model the porous properties of brain tissue explicitly.
 
-Our versatile poro-viscoelastic model is already implemented in deal.ii and provides the possibility to describe and explore the underlying physical mechanisms within a biphasic material during mechanical loading.
+Our versatile poro-viscoelastic model is already implemented in deal.II and provides the possibility to describe and explore the underlying physical mechanisms within a biphasic material during mechanical loading.
 However, identifying the associated model parameters becomes increasingly difficult with increasing model complexity.
 As the various brain regions show distinct mechanical properties and as it is virtually impossible to achieve homogeneous deformation states during testing due to the ultrasoft nature of brain tissue, an inverse parameter identification algorithm that captures the exact boundary conditions of the test must be run separately for every single brain region based on meaningful experimental data.
 In this context, the underlying, computationally demanding multiphysics problem needs to be solved hundreds to thousands of times to identify a reliable set of material model parameters for the entire human brain.
@@ -141,12 +141,12 @@ Once successful, we will proceed with the parameter identification whilst also s
 As simulations of the full human brain require very fine resolution due to its complex geometry, exascale-enabled software will be the key to improve our understanding on mechanical mechanisms within the brain and to take advantage of the modeling capabilities, e.g., in clinical applications.
 \subsection{Liver (FVB-WIAS)}
 [ONGOING]
-Mechanics of the liver tissues encompasses several scales and results as interplay of both fluid and solid phases.
+Mechanics of the liver tissues encompasses several scales and results as the interplay of both fluid and solid phases.
 From the modeling and simulation perspective, this is challenging both for the complexity of the physical problem, and for the wide range of scales.
 
 Understanding this tight coupling has also relevant applications in the field of medical imaging and diagnosis.
 Techniques such as Magnetic Resonance Elastography (MRE) are able to characterize tissue mechanical properties from phase-contrast MRI imaging and, in connection with suitable physical models of tissue, can provide insights in pathologically relevant biomarkers.
-The multiscale aspects are not only relevant for the simulation of the "forward" liver biomechanics, but have important implications also for the "inverse" problem of reconstructing properties from available data (i.e., images).
+The multiscale aspects are not only relevant for the simulation of the ``forward'' liver biomechanics, but have important implications also for the ``inverse'' problem of reconstructing properties from available data (i.e., images).
 
 \subsection{Mechanobiology (UNIBS)}
 Cell motility plays a crucial role in processes such as tumor metastasis and embryogenesis.
@@ -158,7 +158,7 @@ To address this, our approach introduces and implements new partial differential
 
 We have determined that pre-exascale-enabled simulation software is essential for addressing these challenges by modeling the dynamics of cytoskeletal structures in the presence of extracellular ligands across various environments.
 The new software will enhance the pre-exascale deal.II codes, currently available at The Mechanobiology Research Center (TMRC) at UNIBS, with the overarching goal of advancing mechanobiological research.
-As an initial step, we are developing a prototype implementation for single-cell motility using the deal.ii codes generated at TMRC.
+As an initial step, we are developing a prototype implementation for single-cell motility using the deal.II codes generated at TMRC.
 The class hierarchy and the code for separated physics (mechanics, chemistry, and transport) has been completed.
 Soon, coupling strategies of monolithic and staggered nature will be developed for the class of Larché-Cahn and non-Larché-Cahn governing equations.
 
