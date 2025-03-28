@@ -1,0 +1,304 @@
+
+\documentclass[a4paper,12pt]{article}
+
+% Import the deliverable package from common directory
+\usepackage{../common/deliverable}
+
+% Tell LaTeX where to find graphics files
+\graphicspath{{../common/logos/}{./figures/}{../}}
+
+\usepackage{xspace}
+\usepackage{lipsum}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{3.1}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Connection to other CoEs}
+
+\newpage
+
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{Connection to other CoEs}
+    \tableEntry{Deliverable number}{D3.1}
+    \tableEntry{Deliverable version}{4.0}
+    \tableEntry{Date of delivery}{31 March 2025}
+    \tableEntry{Actual date of delivery}{31 March 2025}
+    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP3}
+    \tableEntry{Partner responsible}{BADW-LRZ}
+  \end{deliverableTable}
+
+
+
+% Abstract and Keywords Table
+\begin{deliverableTable}
+  \tableEntry{Abstract}{D3.1 presents the integration of deal.II into EuroHPC's overarching infrastructure CASTIEL 2}
+  \tableEntry{Keywords}{supercomputer access in EU; continuous integration; continuous deployment}
+\end{deliverableTable}
+
+
+\begin{documentControl}
+    \addVersion{1.0}{20.03.2025}{M. Kronbichler}{Initial Draft}
+    \addVersion{2.0}{27.03.2025}{I. Pribec, G. Mathias, M. Allalen}{Augment Document}
+    \addVersion{3.0}{27.03.2025}{M. Kronbichler}{Minor Additions}
+    \addVersion{4.0}{27.03.2025}{I. Pribec}{Final Version}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: Martin Kronbichler \\
+Approval Date: 31.03.2025
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+
+\newpage
+\section{dealii-X within CASTIEL 2}
+
+The dealii-X project is a Centre of Excellence (CoE) funded in as a project in
+the European High-Performance Computing Joint Undertaking under the powers
+delegated by the European Commission.
+
+The use of supercomputers is at the heart of the dealii-X project. In the
+European Union, 10 CoEs were started in 2023, and 4 additional CoEs started in
+the two subsequent years. These projects share the goal to create codes that
+efficiently utilize modern high-end supercomputers up to emerging exascale
+systems (including EuroHPC systems) and to make these codes available to the
+relevant user groups. The dealii-X project share these goals, and shares the
+challenges of many other projects in terms of porting effort for our codes to
+ensure scalability on each target system. Given the similar tasks faced by
+several projects, the EuroHPC centres of excellence are coordinated through
+the project CASTIEL 2, the Coordination \& Support for National Competence
+Centres on a European Level Phase 2, project number 101102047, who state
+their mission
+as\footnote{\url{https://eurohpc-ju.europa.eu/research-innovation/our-projects/castiel-2_en}}\footnote{\url{https://www.eurocc-access.eu}}
+\begin{center}
+  \begin{minipage}{0.8\textwidth}
+    The project encourages collaboration, exchange of knowledge between HPC
+    practitioners, expertise and best practices between Participating States
+    and the mapping of skills and competences across Europe to support
+    cohesion and a more consistent level of expertise across Europe. In this
+    next phase of the project, the CASTIEL 2 project also takes on an
+    additional role of providing similar coordination support to the EuroHPC
+    Centres of Excellence (CoEs).
+
+    The CoEs gather HPC expertise in the development of HPC applications by
+    scientific domain at a European level, CASTIEL 2 will build a stronger HPC
+    community which will foster strategic collaboration in HPC research and
+    deployment of skills and in expertise in HPC technologies and applications
+    between CoEs and NCCs.
+  \end{minipage}
+
+  \begin{minipage}{0.8\textwidth}
+    The objective of CASTIEL 2 and EuroCC 2 is to strengthen the European
+    Union (EU)’s technological autonomy and competitiveness by ensuring a
+    coordinated and consistent high level of knowledge sharing across Europe
+    in HPC and related disciplines such as high-performance data analytics
+    (HPDA) and HPC-based artificial intelligence.
+  \end{minipage}
+\end{center}
+
+CASTIEL 2 has the role of coordinating the work of the various CoEs. Among the
+CoEs, around 50 codes for scientific computations are developed and
+maintained, which differ vastly in size, maturity, scalability and age. As a
+CoE, dealii-X has picked up on various levels of integration with the CASTIEL
+2 project as a coordinating agency, as well as with other CoEs in terms of
+similar scientific strategies. The actions of these steps are described on the
+following pages.
+
+\section{Online presentation of CASTIEL 2}
+
+In exchange with the partners at CASTIEL 2, the dealii-X project has delivered
+their input to various web pages. On \url{https://www.hpccoe.eu/}, we are now
+listed as a
+project\footnote{\url{https://www.hpccoe.eu/eu-hpc-centres-of-excellence2/dealii-x/}}
+with the main project description
+
+\begin{center}
+  \begin{minipage}{0.8\textwidth}
+    \textcolor{EUblue}{dealii-X} aims at developing a scalable,
+    high-performance computational platform to create accurate digital twins
+    of human organs using the deal.II finite element library. The framework
+    will combine sophisticated numerical methods with exascale computing
+    capabilities to create cutting-edge multiphysics and multidisciplinary
+    simulation models. Lighthouse applications representing crucial processes
+    in the human brain, the cardiovascular and respiratory systems as well as
+    the liver will be tackled to gain new insights into biological processes
+    of the human body and aiding in personalized medicine. A primary focus is
+    on a new generation of solvers, including novel methods for large linear,
+    nonlinear and coupled systems, matrix-free finite element algorithms for
+    GPUs and discretization schemes.
+  \end{minipage}
+\end{center}
+
+We have integrated the dealii-X web page at \url{https://www.dealii-X.eu},
+where we report on the recent developments of the dealii-X project in terms of
+codes, scientific achievements, and prizes, to just name a few. We have
+clarified this involvement with CASTIEL 2 and are committed to provide future
+updates as requested by our partners. One point of contact is the interaction
+of dealii-X with partners from Ginkgo, who are active in the MICROCARD-2
+project.
+
+As part of these effort, we have contributed to Work Package 2 of CASTIEL 2
+concerning the summary of the consortium, objectives, area of activity, codes
+and use cases.
+
+\section{Integration of dealii-X codes into WP2 of CASTIEL~2}
+
+In December 2024 to February 2025, we have intensively collaborated with Work
+Package 2 of CASTIEL 2 concerning the codes and use cases. We have presented
+our three main mathematical codes, \href{https://github.com/dealii/dealii}{\texttt{deal.II}}, \href{https://psctoolkit.github.io/libraries/}{\texttt{PSCToolkit}} and
+\href{https://mumps-solver.org/index.php}{\texttt{MUMPS}} for the CoE codes whitebook version 1.3, using the following
+descriptions:
+
+
+{\small
+  \noindent
+  \renewcommand{\arraystretch}{2.5}
+\begin{tabular}{llll}
+  \hline
+  \textbf{Code} & \textbf{Category} & \textbf{Description} & \textbf{Main uses} \\
+  \hline
+  \href{https://github.com/dealii/dealii}{deal.II} & \begin{minipage}{0.1\textwidth}Multi-physics\end{minipage} & \begin{minipage}{0.4\textwidth}
+    Wide range of finite element algorithms, multigrid methods, matrix-free and matrix-based algorithms
+  \end{minipage}
+                                & \begin{minipage}{0.26\textwidth}Discretization of partial differential equations\end{minipage}
+  \\
+  \href{https://psctoolkit.github.io/libraries/}{PSCToolkit} & \begin{minipage}{0.1\textwidth}Linear solver\end{minipage} &\begin{minipage}{0.4\textwidth}
+  Framework for solving large and sparse linear systems
+  \end{minipage}
+                                & \begin{minipage}{0.26\textwidth}Linear algebra applications\end{minipage}
+  \\
+  \href{https://mumps-solver.org/index.php}{MUMPS} & \begin{minipage}{0.1\textwidth}Linear solver\end{minipage} &\begin{minipage}{0.4\textwidth}
+  A numerical software package for solving sparse systems of linear equations
+  \end{minipage}
+                                                           & \begin{minipage}{0.26\textwidth}Linear algebra applications\end{minipage}
+  \\
+  \hline
+\end{tabular}
+}
+
+The provided information also contains URLs to the code repositories, owners
+of the code, the open-source status of the software packages, the size of user
+communities and related information. Similar descriptions have been provided
+for the application codes involved in the dealii-X CoE, including the
+\href{https://lifex.gitlab.io/}{lifex},
+\href{https://github.com/4C-multiphysics/4C}{4C},
+\href{https://github.com/exadg/exadg}{ExaDG},
+\href{https://github.com/fdrmrc/Polydeal}{polyDEAL}, LiverX and
+\href{https://github.com/BRAINIACS-Group/ExaBrain}{ExaBrain} projects.
+
+Furthermore, we have delivered details on the technical aspects of the codes
+(size of project, dependencies, workflows, parallelization, supported
+hardware, scalability, development plans), the porting status to various JU
+systems in the European union, highlighting the focus of dealii-X on the
+systems Lumi (porting to general GPU architecture), Leonardo (high priority),
+and JUPITER (high priority). We also engage in exchange of ideas concerning
+these systems. Furthermore, we have been open in checking for synergies in
+various developments, and will actively interact with partners at various
+scientific conferences. As a concrete step, the activities in WP2.6, with the
+details listed in deliverable D2.6, the dealii-X project aims to work towards
+a metascheduler for the simpler use of software across supercomputers. We will
+seek active collaboration with other CoEs concerning the use of distributed
+infrastructure and include available scheduling protocols developed within the
+EU in the past as much as possible.
+
+To foster this exchange, the dealii-X project will be represented in the
+NCC-CoE-all-hands meeting in Tallinn, Estonia, in September 23--25, 2025.
+
+The dealii-X consortium has been joining the \textbf{PMT-CoE leader meetings}
+of CASTIEL 2, organized by the partners at HLRS (Stuttgart, Germany) since
+November 2024, as collaborated on a joint Kokkos workshop on February 27, and
+various other meetings.
+
+Finally, we have provided \textbf{champions} and \textbf{deputy champions} for
+the main areas of CASTIEL 2, namely the competences (WP2), the training (WP3),
+the industry contacts (WP4) and communication (WP5).
+
+\section{Collaboration on CI/CD}
+
+An additional area of tight interaction is on continuous integration and
+continuous deployment, where we have started interaction with the CI/CD team
+of CASTIEL 2. We have been introduced into the existing infrastructure
+established at EuroHPC. We are eager to use the upcoming months to interact
+with the European Environment for Scientific Software Installations
+(EESSI)\footnote{\url{https://www.eessi.io/}}, where we want to get our main
+codes, starting from the core code \texttt{deal.II}, to be deployed at various
+HPC systems. This collaboration with enable us to get continuous feedback on
+the state of our software, which will add a crucial facet to the testing
+infrastructure of deal.II. In addition, this is also of great benefit to our
+users, as EESSI is subscribed to build a common stack of scientific software
+installations for HPC systems as well as a variety of other systems.
+
+The goal at this point is to interact with EESSI, to join the monthly meetings
+as well as bi-weekly status updates, in order to get our main codes deployed
+until October 2025. Initial, the coordination with CI/CD is done by dealii-X's
+PI Martin Kronbichler. From April 2025, Ivan Pribec from the BADW-LRZ partner
+will join the activities and coordinate with other CoEs. Overall, the
+consortium is committed to increase the redundancies of duties on this topic
+work to several partners, with primary focus on the partners from WP1 and WP2,
+to ensure a high responsiveness and good progress.
+
+\section{dealii-X Seminar Series}
+
+To enhance collaboration and knowledge exchange among project partners, we have
+initiated the development of an online seminar series showcasing cutting-edge
+research by dealii-X collaborators and guest speakers. Launching in June 2025,
+the seminars will follow a standard format of a 45-minute lecture followed by a
+15-minute Q\&A session. Recordings of the sessions will be made available on the
+project webpage and shared via social media channels. This initiative will be
+carried out in close collaboration with the VPH Institute, which will assist in
+editing and publishing the multimedia content (WP4).
+
+Through the seminar initiative, we will also establish contacts to other
+EuroHPC CoEs. It is planned that several talks will be given by researchers in
+adjacent projects, giving the dealii-X members insights cutting-edge progress
+of related topics. This setup will foster the collaboration between the
+projects. As a platform to learn from other researchers and other projects,
+the activities in the seminar series will boost the qualifications of our team
+members and create opportunities for research results beyond the present state
+of the art.
+
+\section{Training and Workshops}
+
+One of the consortium’s key goals is to enhance the training of clinical
+researchers and practitioners through specialized workshops and interactive,
+hands-on sessions. LRZ has a well-established mission to provide education on
+programming and HPC-related topics. In response to growing demand, its course
+offerings have expanded significantly in recent years to include GPU
+programming, deep learning, and AI. These training sessions are promoted
+through LRZ’s existing HPC network as well as EuroCC dissemination channels.
+
+LRZ has actively contributed to several European projects, including
+CompBioMed and LEXIS, where it played a key role in organizing meetings,
+application-focused workshops, and hackathons (e.g., the preCICE workshop and
+the CompBioMed-SEAVEA hackathon).
+
+As part of the dealii-X consortium, the first workshop is scheduled for
+December 2025, in Trieste, Italy, hosted by the partner SISSA. The event will
+feature an open users and developers workshop, followed by project-specific
+sessions addressing critical topics such as co-design, exascale computing, and
+machine learning/deep learning. These sessions aim to strengthen partner
+collaboration and foster multidisciplinary research.
+
+\label{MyLastPage}
+
+
+\end{document}
