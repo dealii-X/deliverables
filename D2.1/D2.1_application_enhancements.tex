@@ -110,6 +110,7 @@ As a first step, we have identified multiple appropriate geometries for our prob
 We have set up a prototype implementation based on deal.II.
 Specifically, we began implementing the complex mechanics of biological tissue, including a surfactant-based surface energy formulation.
 Once this initial implementation has been verified, we will integrate it into our established open-source HPC framework ExaDG.
+
 \subsection{Heart (POLIMI)}
 Computational models are increasingly used in cardiology to understand the heart's pathophysiology and assess the effectiveness of treatment strategies of therapeutical devices.
 Notably, numerical simulations have great potential in enabling in-silico clinical trials, complementing and augmenting more traditional population-based studies.
@@ -122,6 +123,7 @@ For this reason, pre-exascale and exascale simulation software will be key in al
 In this respect, previous studies on cardiac simulations with the lifex software have highlighted how the performance bottleneck is currently associated to the efficiency and parallel scalability of linear solvers and preconditioners.
 Therefore, the initial phase of the project will be devoted to migrating from traditional, matrix-based implementations to matrix-free methods, and carefully evaluating the performance in biophysically detailed test cases, comparing with the current state of the simulation software.
 If successful, this will provide support for exploring high-order discretizations, which particularly benefit from matrix-free implementations, as well as GPU-based computing strategies.
+
 \subsection{Brain (FAU)}
 Despite decades of research, the human brain still poses exciting challenges for researchers from various fields.
 More recently, there is increasing interest in the role of mechanical signals for brain development, injury, and disease.
@@ -139,14 +141,21 @@ In this context, the underlying, computationally demanding multiphysics problem 
 Therefore, ongoing work focuses on the transfer of our existing code to an HPC environment.
 Once successful, we will proceed with the parameter identification whilst also setting a first benchmark to identify potential for computational improvements with our project partners within dealii-X.
 As simulations of the full human brain require very fine resolution due to its complex geometry, exascale-enabled software will be the key to improve our understanding on mechanical mechanisms within the brain and to take advantage of the modeling capabilities, e.g., in clinical applications.
-\subsection{Liver (FVB-WIAS)}
-[ONGOING]
-Mechanics of the liver tissues encompasses several scales and results as the interplay of both fluid and solid phases.
-From the modeling and simulation perspective, this is challenging both for the complexity of the physical problem, and for the wide range of scales.
 
-Understanding this tight coupling has also relevant applications in the field of medical imaging and diagnosis.
-Techniques such as Magnetic Resonance Elastography (MRE) are able to characterize tissue mechanical properties from phase-contrast MRI imaging and, in connection with suitable physical models of tissue, can provide insights in pathologically relevant biomarkers.
-The multiscale aspects are not only relevant for the simulation of the ``forward'' liver biomechanics, but have important implications also for the ``inverse'' problem of reconstructing properties from available data (i.e., images).
+\subsection{Liver (FVB-WIAS)}
+Computational modeling of liver tissues requires handling several spatial scales, as well as the interplay of both fluid and solid phases at various levels.
+However, numerical handling at the smallest scales is unfeasible due to the extreme computational costs associated with discretizations.
+
+Effective (homogenized) tissue models can be successfully used to describe macroscale properties of the liver.
+However, in selected applications, understanding the tight coupling between fluid and solid components of a vascular tissue has relevant implications in the field of medical imaging and diagnosis.
+In fact, tissue imaging techniques such as Magnetic Resonance Elastography (MRE) are able to characterize mechanical properties from phase-contrast MRI imaging and, in connection with suitable physical models of tissue, can provide insights in pathologically relevant biomarkers.
+An efficient and robust numerical handling of the scales will therefore also provide insights into how effective tissue properties (such as compressibility or elastic modulus) can be related to interstitial pressure and fluid properties of the microscale vasculature.
+
+We have recently proposed, together with project partners, a new mathematical model that accounts, in a multiscale fashion, for the effect of a thin (one-dimensional) fluid vessel in a three-dimensional elastic matrix.
+This model can be efficiently used to represent different realizations of vascular structures, as well as the coupling with corresponding flow models.
+Pre-exascale-enabled simulations will allow to extend the capabilities of the multiscale model and handle liver scale simulations of effective tissues, both for forward mechanics and inverse problems related, e.g., to the identification of effective parameters from MRE measurements.
+The current multiscale model has been implemented in deal.II and it will be extended with automatic generation of physiological microvasculature, considering different physical models for the solid matrix.
+The resulting model will be integrated into the open-source HPC dealii-X framework.
 
 \subsection{Mechanobiology (UNIBS)}
 Cell motility plays a crucial role in processes such as tumor metastasis and embryogenesis.
@@ -164,6 +173,7 @@ Soon, coupling strategies of monolithic and staggered nature will be developed f
 
 Applications of this novel code will include the relocation of receptors on advecting lipid membranes.
 Afterwards, we will integrate it into our existing, general multiphysics open-source HPC framework.
+
 \newpage
 
 \section{{Conclusion}} \label{sec:conclusion}
