@@ -28,8 +28,8 @@
     \tableEntry{Deliverable title}{Report on deal.II improvements}
     \tableEntry{Deliverable number}{D1.2}
     \tableEntry{Deliverable version}{v1}
-    \tableEntry{Date of delivery}{March, 31st 2025}
-    \tableEntry{Actual date of delivery}{March, 31st 2025}
+    \tableEntry{Date of delivery}{March 31, 2025}
+    \tableEntry{Actual date of delivery}{March 31, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -38,7 +38,7 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This report details the progress made during the first semester (Months 1-6) of the dealii-X project in enhancing the deal.II finite element library. The focus is on improvements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as the initial performance evaluation of the polygonal discretization module (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
+    \tableEntry{Abstract}{This report details the progress made during the first semester (Months 1--6) of the dealii-X project in enhancing the deal.II finite element library. The focus is on improvements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as the initial performance evaluation of the polygonal discretization module (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
     \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
 \end{deliverableTable}
 
@@ -47,11 +47,12 @@
 \begin{documentControl}
     \addVersion{0.1}{March 17, 2025}{Luca Heltai}{Initial draft}
     \addVersion{0.2}{March 24, 2025}{Luca Heltai}{Gathered information from all partners}
+    \addVersion{1.0}{March 27, 2025}{Luca Heltai}{Final adjustments between partners}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
 Approved by: M. Kronbichler \\
-Approval Date: [Date]
+Approval Date: March 28, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -109,7 +110,7 @@ The key steps of WP1 include:
 Specifically, the sub-work packages aim to:
 \begin{itemize}
     \item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational methods optimized for GPU architectures and enhance the scalability of solvers;
-    \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators, enhance reduced order modelling capabilities, integrate low-rank approximation methods, and develop block preconditioners;
+    \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators, enhance reduced order modeling capabilities, integrate low-rank approximation methods, and develop block preconditioners;
     \item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize polygonal discretization methods within deal.II and develop related multigrid techniques;
     \item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into deal.II, leveraging GPU computing and developing efficient preconditioners for multiphysics problems;
     \item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver directly into deal.II for use in multigrid methods and explore low-rank and mixed-precision techniques;
@@ -352,7 +353,7 @@ CUDA. Fig.~\ref{fig:sum_fact} shows the results of this experiment.
 
 \subsection{Raviart--Thomas finite elements}
 
-Another string of activities is centered around the application-readyness of Raviart--Thomas elements, where future requirements and potential improvement opportunities are investigated with the ExaDG application code pioneering the use of Raviart-Thomas elements for high-Reynolds incompressible flow problems in a matrix-free setting based on deal.II.
+Another string of activities is centered around the application-readiness of Raviart--Thomas elements, where future requirements and potential improvement opportunities are investigated with the ExaDG application code pioneering the use of Raviart-Thomas elements for high-Reynolds incompressible flow problems in a matrix-free setting based on deal.II.
 
 This will also require some debugging in the deal.II implementation of the
 Raviart--Thomas elements, as these code paths are quite new and have not been
@@ -368,7 +369,7 @@ be executed in the near future on the JUPITER system.
 
 \subsection{Restart capabilities}
 
-To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal reusability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the startup phase. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
+To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal re-usability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the startup phase. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
     \begin{itemize}
         \item Grid-to-grid projection:\\
         \href{https://github.com/exadg/exadg/pull/735}{https://github.com/exadg/exadg/pull/735}    
@@ -518,7 +519,7 @@ computers.
     provided by `FECouplingValues`, creating a comprehensive toolkit for
     addressing a wide range of coupling and multigrid challenges in the dealii-X
     project. The work has been submitted, and is currently under review. A
-    preprint is availabele at ~\cite{FederEtAl2024b}.
+    preprint is available at ~\cite{FederEtAl2024b}.
 
    A tutorial program that illustrates the use of the non-nested multigrid
    transfer has been proposed and is currently under review in the deal.II
@@ -571,7 +572,7 @@ and efficient agglomeration strategy with several key features:
     \item It automatically generates a
 balanced and nested hierarchy of agglomerates. This is a crucial property for
 the subsequent application of multigrid methods;
-\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes and thus are characterised by good and easy to assess  shape-regularity properties.
+\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes and thus are characterized by good and easy to assess  shape-regularity properties.
 \end{itemize}
 
 A fundamental aspect of this approach is the ability to automatically extract
@@ -603,7 +604,7 @@ multigrid techniques.
 
  \subsection{Challenges and Future Plans}
 
-The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a range of examples for comprehensive benchmarking of both polytopic discretisation methods and multigrid solvers, before integration within the deal.II library. This include the implementation of polytopic discontinuous Galerkin methods for fluid flow problems and a multigrid solver for accelerating the solution of complex electrophysiological models.
+The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a range of examples for comprehensive benchmarking of both polytopic discretization methods and multigrid solvers, before integration within the deal.II library. This include the implementation of polytopic discontinuous Galerkin methods for fluid flow problems and a multigrid solver for accelerating the solution of complex electrophysiological models.
 
 \section{Integration of PSCToolkit into deal.II (WP1.4)}
     \subsection{Objectives and Planned Activities}
@@ -644,7 +645,7 @@ The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a
 
     \subsection{Progress and Current Status}
     A preliminary interface for MUMPS was present in the deal.II library until
-    version 9.2. Such interface had been removed, in favour of using MUMPS
+    version 9.2. Such interface had been removed, in favor of using MUMPS
     through external linear algebra packages such as PETSc and Trilinos.
     
     A careful planning of the interface between deal.II and MUMPS is currently
