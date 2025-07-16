@@ -24,10 +24,10 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{External libraries integration}
     \tableEntry{Deliverable number}{D1.1}
-    \tableEntry{Deliverable version}{v1}
-    \tableEntry{Date of delivery}{March, 31st 2025}
-    \tableEntry{Actual date of delivery}{March, 31st 2025}
-    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Deliverable version}{0.1}
+    \tableEntry{Date of delivery}{31/07/2025}
+    \tableEntry{Actual date of delivery}{\today}
+    \tableEntry{Nature of deliverable}{Other}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
     \tableEntry{Partner responsible}{INPT}
@@ -35,19 +35,20 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This report describes the API documentation
-      of the initial interface to external libraries such as MUMPS,
-      PSCToolkit and GMSH}
-    \tableEntry{Keywords}{API, linear algebra packages, linear solvers}
+  \tableEntry{Abstract}{This document describes the integration of
+    external libraries in the deal.II finite element library, namely
+    the MUMPS sparse direct solver, the PSCToolkit iterative solver
+    and the GMSH three-dimensional finite element mesh generator.}
+  \tableEntry{Keywords}{API; solvers; mesh; parallelism; interfaces}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{25/03/2025}{alfredo Buttari}{Initial draft}
-    % \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    % \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-    % \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.1}{15/07/2025}{Alfredo Buttari}{Initial draft}
+    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -74,71 +75,80 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-\subsection{Overview of the dealii-X Project and Objectives}
+The objective of the dealii-X Work Package 1 is to enhance the
+capabilities of the deal.ii finite element library through the use of
+some external libraries, namely, the MUMPS and PSCToolkit solvers and
+the GMSH three-dimensional finite element mesh generator. MUMPS is a
+parallel direct solver for sparse linear systems, i.e., it achieves
+the solution by computing the factorization (LU, $LDL^T$ or Cholesky,
+depending of the problem type) of the system matrix and using the
+resulting factors in forward/backward substitution operations. One of
+the objectives of WP1 is to assess the effectiveness of some of the
+recent advanced features of MUMPS such as the block low-rank
+approximations or the mixed-precision computations on problems issued
+from the simulation of human body organs. PSCToolkit implements
+multiple parallel iterative solvers of the Krylov family for the
+solution of large scale sparse linear systems. These methods are, by
+nature, scalable; furthermore, PSCToolkit provides efficient algebraic
+multigrid preconditioners to improve the convergence. Finally, WP1
+deals with the integration of the GMSH three-dimensional finite
+element meshing package in order to optimize the mesh generation at
+large scale. 
 
-The dealii-X project is a pioneering initiative dedicated to developing a
-high-performance and scalable computational platform based on the deal.II finite
-element library. The project directly addresses the
-HORIZON-EUROHPC-JU-2023-COE-03-01 topic, specifically focusing on the
-``Personalised Medicine / Digital twin of the human body'' as an Exascale
-Lighthouse application area. The overarching goal of dealii-X is to advance
-existing pre-exascale digital twin applications for human organs, such as some
-deal.II based applications dedicated to the simulation of the brain, heart,
-lungs, liver, and cellular interactions, to achieve exascale readiness. 
+\subsection{{Purpose of the Document}}
+This document describes the integration of the above-mentioned
+external packages, the corresponding API within the deal.ii framework
+and the features that are exposed to enable experimenting with
+advanced features in the context of the dealii-X project. 
 
-The project aims to enable real-time simulations of intricate biological
-processes, thereby contributing to personalized medicine and cutting-edge
-healthcare research. Ultimately, this enhanced simulation capability holds the
-potential to significantly improve medical diagnostics and treatment planning.
+% \subsection{Objectives of Work Package 1 (WP1)}
 
-\subsection{Objectives of Work Package 1 (WP1)}
+% The main objective of Work Package 1 (WP1) is to serve as the foundation
+% for the dealii-X Centre of Excellence by enhancing and expanding the
+% capabilities of the deal.II library to address the challenges of exascale
+% computing and facilitate the creation of advanced digital twins of human
+% organs.
 
-The main objective of Work Package 1 (WP1) is to serve as the foundation
-for the dealii-X Centre of Excellence by enhancing and expanding the
-capabilities of the deal.II library to address the challenges of exascale
-computing and facilitate the creation of advanced digital twins of human
-organs.
+% The key steps of WP1 include:
+% \begin{itemize}
+% \item Extending and improving the exascale capabilities of deal.II;
+% \item Improving pre-exascale modules of the deal.II library;
+% \item Developing an experimental polygonal discretization module for
+%   deal.II;
+% \item Integrating PSCToolkit within deal.II;
+% \item Integrating MUMPS within deal.II.
+% \end{itemize}
 
-The key steps of WP1 include:
-\begin{itemize}
-\item Extending and improving the exascale capabilities of deal.II;
-\item Improving pre-exascale modules of the deal.II library;
-\item Developing an experimental polygonal discretization module for
-  deal.II;
-\item Integrating PSCToolkit within deal.II;
-\item Integrating MUMPS within deal.II.
-\end{itemize}
+% Specifically, the sub-work packages aim to:
+% \begin{itemize}
+% \item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational
+%   methods optimized for GPU architectures and enhance the scalability
+%   of solvers;
+%     \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a
+%       generalized interface for coupling operators, enhance reduced
+%       order modelling capabilities, integrate low-rank approximation
+%       methods, and develop block preconditioners;
+%     \item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize
+%       polygonal discretization methods within deal.II and develop
+%       related multigrid techniques;
+%     \item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into
+%       deal.II, leveraging GPU computing and developing efficient
+%       preconditioners for multiphysics problems;
+%     \item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver
+%       directly into deal.II for use in multigrid methods and explore
+%       low-rank and mixed-precision techniques;
+% \end{itemize}
 
-Specifically, the sub-work packages aim to:
-\begin{itemize}
-\item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational
-  methods optimized for GPU architectures and enhance the scalability
-  of solvers;
-    \item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a
-      generalized interface for coupling operators, enhance reduced
-      order modelling capabilities, integrate low-rank approximation
-      methods, and develop block preconditioners;
-    \item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize
-      polygonal discretization methods within deal.II and develop
-      related multigrid techniques;
-    \item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into
-      deal.II, leveraging GPU computing and developing efficient
-      preconditioners for multiphysics problems;
-    \item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver
-      directly into deal.II for use in multigrid methods and explore
-      low-rank and mixed-precision techniques;
-\end{itemize}
+% In summary, WP1 is dedicated to developing and integrating fundamental
+% software components within the deal.II library and external libraries,
+% with a strong emphasis on enabling exascale computation for the
+% digital twin applications in WP2.
 
-In summary, WP1 is dedicated to developing and integrating fundamental
-software components within the deal.II library and external libraries,
-with a strong emphasis on enabling exascale computation for the
-digital twin applications in WP2.
+% \subsection{Purpose and Scope of this Report (Deliverable D1.1)}
 
-\subsection{Purpose and Scope of this Report (Deliverable D1.1)}
-
-The purpose of this report is to make a comprehensive analysis of the
-development that are necessary to integrate external libraries,
-namely, MUMPS, PSCToolkit and GMSH, within the deal.II package. 
+% The purpose of this report is to make a comprehensive analysis of the
+% development that are necessary to integrate external libraries,
+% namely, MUMPS, PSCToolkit and GMSH, within the deal.II package. 
 
 
 % \subsection{{Structure of the Document}}
@@ -162,48 +172,40 @@ past. This support was subsequently remove in favor of an indirect use
 of MUMPS through the PETSc library. As a first step towards the
 objectives of WP1 of the dealii-X project, this support was reverted,
 as documented in Pull Request \#18255
-(\url{https://github.com/dealii/dealii/pull/18255}) which is being
-merged in the main branch. This minimalistic interface include a
-number of basic tests.
+(\url{https://github.com/dealii/dealii/pull/18255}) which has been
+subsequently merged in the main branch. This minimalistic interface
+includes a number of basic tests.
 
 
-\subsection{Planned activities}
+\subsection{Implemented improvements in the MUMPS support}
 
-The current MUMPS interface described in the previous version has
-numerous limitations that make the use of MUMPS within deal.II of
-little practical interest.
-
-First of all, only the real double-precision MUMPS interface is
-currently supported which prevents using MUMPS on complex problems
-and/or on problems where full double-precision accuracy is not
-needed. Furthermore, this will not allows experimenting with
-mixed-precision strategies as expected from the dealii-X
-project. Support for other arithmetics can be achieved in the same
-vein as it is done for the UMFPACK sparse direct solver.
-
-The current deal.II MUMPS interface does not support
-distributed-memory parallelism. Currently the system matrix and
-right-hand side(s) are entirely assembled on the master process where
+The basic deal.II MUMPS interface did not include support for
+distributed-memory parallelism, which means that the system matrix and
+right-hand side(s) were entirely assembled on the master process where
 the subsequent phases (symbolic analysis, factorization and
-backward/forward substitution) take place; not
-only this might be infeasible due to memory limitations but it
-severely limits the performance of the sparse direct solver. This
-extension can be achieved through an adequate use of deal.II data type
-like \texttt{LinearAlgebra::distributed::Vector}.
+backward/forward substitution) take place; not only this might be
+infeasible due to memory limitations but it severely limits the
+performance of the sparse direct solver. The MUMPS integration in
+deal.ii was extended to support distributed memory parallelism through
+the use of distributes matrix and vector datatypes as defines in the
+deal.ii PETSc and Trilinos wrappers. This allows for a completely
+parallel initialization of the MUMPS data structure (that includes the
+system matrix and the right-hand sides) prior to the symbolic
+analysis, numerical factorization and forward/backward substitution.
 
-Setting-up MUMPS internal configuration parameters is not possible in
-the current deal.II MUMPS interface which, therefore, has to be
+Setting-up MUMPS internal configuration parameters was not possible in
+original deal.II MUMPS interface which, therefore, had to be
 extended to enable the use of the more advanced features of the MUMPS
 solver; these include the Block Low-Rank approximations, the GPU
 support and numerous other parameters that allow for fine-tuning both
 the performance and the numerical robustness of the solver. This
-extension can be achieved by adding a \texttt{AdditionalData} object
+extension was achieved by adding a \texttt{AdditionalData} object
 to the constructor of the MUMPS solver class that takes the desired
 values for selected solver parameters.
 
-More generally, the current MUMPS interface must be modernized to make
-it compliant with deal.II coding style and modern C++ programming
-practice.
+The work related to above-mentioned extension is documented in pull
+request \#18497 (\url{https://github.com/dealii/dealii/pull/18497})
+which was eventually merged in the master deal/ii branch.
 
 
 \newpage
