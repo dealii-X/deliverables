@@ -1,0 +1,187 @@
+\documentclass[a4paper,12pt]{article}
+
+% Import the deliverable package from common directory
+\usepackage{../common/deliverable}
+
+% Tell LaTeX where to find graphics files
+\graphicspath{{../common/logos/}{./figures/}{../}}
+
+\usepackage{xspace}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{2.1}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Report on enhancements of the digital twin applications}
+
+\newpage
+
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{Enhancements made to the digital twin applications}
+    \tableEntry{Deliverable number}{D2.1}
+    \tableEntry{Deliverable version}{1.0}
+    \tableEntry{Date of delivery}{31.03.2025}
+    \tableEntry{Actual date of delivery}{28.03.2025}
+    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP2}
+    \tableEntry{Partner responsible}{TUM}
+\end{deliverableTable}
+
+% Abstract and Keywords Section
+\begin{deliverableTable}
+    \tableEntry{Abstract}{We report on recent improvements made to key biomedical simulation projects leveraging high-performance and exascale computing within the dealii-X project. Research spans modeling and simulation of lung mechanics (TUM), cell mechanobiology (UniBs), liver mechanics (WIAS), brain mechanics (FAU), and cardiac mechanics (POLIMI).}
+    \tableEntry{Keywords}{Applications; Exascale; Lung; Heart; Brain; Liver; Cell}
+\end{deliverableTable}
+
+\newpage
+
+\begin{documentControl}
+    \addVersion{0.1}{26.03.2025}{Buğrahan Zeynel Temür (TUM)}{Initial draft with info of all partners}
+    \addVersion{0.2}{27.03.2025}{Buğrahan Zeynel Temür (TUM)}{Adjustments after review}
+    \addVersion{1.0}{28.03.2025}{Buğrahan Zeynel Temür (TUM)}{Final adjustments}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: M. Kronbichler \\
+Approval Date: 28.03.2025
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{{Introduction}}
+In this document, we are reporting on the status of the five different exascale human applications that are part of the dealii-X project.
+These applications are:
+\begin{itemize}
+    \item Lungs (TUM)
+    \item Heart (POLIMI)
+    \item Brain (FAU)
+    \item Liver (FVB-WIAS)
+    \item Mechanobiology (UNIBS)
+\end{itemize}
+
+\subsection{{Purpose of the Document}}
+This report compiles the respective reports of the five project partners (TUM, POLIMI, FAU, FVB-WIAS, UNIBS) into a single document.
+Each contribution aims to briefly explain the relevance of exascale simulations to the application, report the enhancements made to date, and also provide a vision on the next steps that could be identified at this stage of the project.
+\subsection{{Structure of the Document}}
+\begin{itemize}
+    \item Section \ref{sec:section2}: Reports on Applications
+\end{itemize}
+
+\newpage
+
+\section{Reports on Applications}
+\label{sec:section2}
+
+\subsection{Lungs (TUM)}
+Insights into lung mechanics during breathing, but especially during mechanical ventilation, are crucial for many vital medical questions.
+One challenge is that those mechanical aspects are relevant on a wide range of length scales.
+For illustration, hundreds of millions of alveoli have a size in the two to three-digit micrometer range and a wall thickness that is small enough to allow for the necessary gas exchange between air space and blood.
+The overall lung, on the other hand, has a size of four to six liters.
+To bridge these scales, the trachea, with a diameter of roughly 2.5 cm, bifurcates for up to 24 generations into the parenchyma.
+The terminal bronchioles, the smallest conducting airways found in the 16th generation of this bronchial tree, are already tens of thousands in number, each being responsible for the supply of air to tens of thousands of alveoli.
+It is clear from these numbers that a fully resolved simulation of a lung incorporating the important effects on all length scales is not possible.
+Although simplified, generally reduced order or homogenized models of lungs exist in the literature, these models fail to incorporate some of the critical aspects of respiratory mechanics.
+With our decade-long expertise in lung modeling, we have identified surfactant dysfunction as one such aspect.
+Despite the evident clinical relevance — manifesting itself, for example, as the infant respiratory distress syndrome in newborns — large-scale simulations of the human lungs incorporating dynamic surfactant (and surfactant deficiency) effects have not been possible due to the high interfacial resolution that would be necessary to capture the surfactant effects on the alveolar walls.
+
+Together with our project partners, we have concluded that exascale-enabled simulation software is the key to illuminating these open problems via solving the nonlinear dynamics of fine alveolar structures in the presence of surfactants in a large enough domain.
+Insights gained via many such resolved simulations in various settings will unravel critical insights into surfactant effects.
+They will also enable the inclusion of such phenomena in more traditional reduced-order models of respiratory mechanics that are applicable at the bedside.
+We have already substantiated the necessary first steps with our partners in working towards this goal.
+As a first step, we have identified multiple appropriate geometries for our problem and obtained meshes at different sizes and refinement levels.
+We have set up a prototype implementation based on deal.II.
+Specifically, we began implementing the complex mechanics of biological tissue, including a surfactant-based surface energy formulation.
+Once this initial implementation has been verified, we will integrate it into our established open-source HPC framework ExaDG.
+
+\subsection{Heart (POLIMI)}
+Computational models are increasingly used in cardiology to understand the heart's pathophysiology and assess the effectiveness of treatment strategies of therapeutical devices.
+Notably, numerical simulations have great potential in enabling in-silico clinical trials, complementing and augmenting more traditional population-based studies.
+To this end, cardiac models must account for the different physical processes underlying the heartbeat.
+These include electrophysiology, muscular force generation and mechanics, fluid dynamics of the blood, valvular dynamics, myocardial perfusion, as well as the numerous interactions and feedback effects between them.
+Depending on the specific application, some of these may be neglected or reduced in complexity.
+Nonetheless, a comprehensive framework for cardiac simulation will inevitably lead to a multiphysics coupled model, entailing particularly challenging numerical problems and calling for high-performance computing techniques tailored at large scale computations.
+
+For this reason, pre-exascale and exascale simulation software will be key in allowing large simulations in sufficiently large number to support in-silico clinical trials.
+In this respect, previous studies on cardiac simulations with the lifex software have highlighted how the performance bottleneck is currently associated to the efficiency and parallel scalability of linear solvers and preconditioners.
+Therefore, the initial phase of the project will be devoted to migrating from traditional, matrix-based implementations to matrix-free methods, and carefully evaluating the performance in biophysically detailed test cases, comparing with the current state of the simulation software.
+If successful, this will provide support for exploring high-order discretizations, which particularly benefit from matrix-free implementations, as well as GPU-based computing strategies.
+
+\subsection{Brain (FAU)}
+Despite decades of research, the human brain still poses exciting challenges for researchers from various fields.
+More recently, there is increasing interest in the role of mechanical signals for brain development, injury, and disease.
+Modeling based on the theory of nonlinear continuum mechanics proves a valuable tool to computationally test hypotheses that complement experimental findings, to understand processes in the brain under physiological and pathological conditions, and to assist diagnosis and treatment of neurological disorders through personalized predictions.
+Depending on the application, mechanical models for human brain tissue need to cover a wide range of time and length scales.
+Its highly heterogeneous, region-dependent microstructure relates to viscoelastic and poroelastic effects that cannot be neglected for predictions on the organ scale.
+Viscoelastic models with two relaxation times have been successful in capturing the time-dependent mechanical response of brain tissue under various loading conditions.
+However, free-flowing interstitial fluid occupies a large fraction of the brain volume and contributes to the biomechanical response of human brain tissue through poroelastic effects.
+For some applications, e.g., drug delivery in the brain during cancer treatment, it is thus essential to model the porous properties of brain tissue explicitly.
+
+Our versatile poro-viscoelastic model is already implemented in deal.II and provides the possibility to describe and explore the underlying physical mechanisms within a biphasic material during mechanical loading.
+However, identifying the associated model parameters becomes increasingly difficult with increasing model complexity.
+As the various brain regions show distinct mechanical properties and as it is virtually impossible to achieve homogeneous deformation states during testing due to the ultrasoft nature of brain tissue, an inverse parameter identification algorithm that captures the exact boundary conditions of the test must be run separately for every single brain region based on meaningful experimental data.
+In this context, the underlying, computationally demanding multiphysics problem needs to be solved hundreds to thousands of times to identify a reliable set of material model parameters for the entire human brain.
+Therefore, ongoing work focuses on the transfer of our existing code to an HPC environment.
+Once successful, we will proceed with the parameter identification whilst also setting a first benchmark to identify potential for computational improvements with our project partners within dealii-X.
+As simulations of the full human brain require very fine resolution due to its complex geometry, exascale-enabled software will be the key to improve our understanding on mechanical mechanisms within the brain and to take advantage of the modeling capabilities, e.g., in clinical applications.
+
+\subsection{Liver (FVB-WIAS)}
+Computational modeling of liver tissues requires handling several spatial scales, as well as the interplay of both fluid and solid phases at various levels.
+However, numerical handling at the smallest scales is unfeasible due to the extreme computational costs associated with discretizations.
+
+Effective (homogenized) tissue models can be successfully used to describe macroscale properties of the liver.
+However, in selected applications, understanding the tight coupling between fluid and solid components of a vascular tissue has relevant implications in the field of medical imaging and diagnosis.
+In fact, tissue imaging techniques such as Magnetic Resonance Elastography (MRE) are able to characterize mechanical properties from phase-contrast MRI imaging and, in connection with suitable physical models of tissue, can provide insights in pathologically relevant biomarkers.
+An efficient and robust numerical handling of the scales will therefore also provide insights into how effective tissue properties (such as compressibility or elastic modulus) can be related to interstitial pressure and fluid properties of the microscale vasculature.
+
+We have recently proposed, together with project partners, a new mathematical model that accounts, in a multiscale fashion, for the effect of a thin (one-dimensional) fluid vessel in a three-dimensional elastic matrix.
+This model can be efficiently used to represent different realizations of vascular structures, as well as the coupling with corresponding flow models.
+Pre-exascale-enabled simulations will allow to extend the capabilities of the multiscale model and handle liver scale simulations of effective tissues, both for forward mechanics and inverse problems related, e.g., to the identification of effective parameters from MRE measurements.
+The current multiscale model has been implemented in deal.II and it will be extended with automatic generation of physiological microvasculature, considering different physical models for the solid matrix.
+The resulting model will be integrated into the open-source HPC dealii-X framework.
+
+\subsection{Mechanobiology (UNIBS)}
+Cell motility plays a crucial role in processes such as tumor metastasis and embryogenesis.
+It results from a complex and continuous cycle of actin polymerization and depolymerization.
+The interactions between cell surface receptors and ligands in the extracellular matrix trigger these processes, and are vital for various physiological and pathological events.
+These interactions ultimately lead to the reorganization of the cytoskeleton, including the formation of a new protrusive network at the cell's leading edge and the contraction of the rear through myosin action in stress fibers.
+Traditional continuum chemo-mechanical theories, such as those developed by Larché and Cahn, fail to fully capture the dynamic interplay between mechanics, chemistry, and species transport that governs this cytoskeletal reorganization.
+To address this, our approach introduces and implements new partial differential equations (PDEs) that describe cellular motility, extending beyond Larché-Cahn theories.
+
+We have determined that pre-exascale-enabled simulation software is essential for addressing these challenges by modeling the dynamics of cytoskeletal structures in the presence of extracellular ligands across various environments.
+The new software will enhance the pre-exascale deal.II codes, currently available at The Mechanobiology Research Center (TMRC) at UNIBS, with the overarching goal of advancing mechanobiological research.
+As an initial step, we are developing a prototype implementation for single-cell motility using the deal.II codes generated at TMRC.
+The class hierarchy and the code for separated physics (mechanics, chemistry, and transport) has been completed.
+Soon, coupling strategies of monolithic and staggered nature will be developed for the class of Larché-Cahn and non-Larché-Cahn governing equations.
+
+Applications of this novel code will include the relocation of receptors on advecting lipid membranes.
+Afterwards, we will integrate it into our existing, general multiphysics open-source HPC framework.
+
+\newpage
+
+\section{{Conclusion}} \label{sec:conclusion}
+
+With this document, we have reported on the enhancements made to the pre-exascale digital twin applications.
+
+\label{MyLastPage}
+
+\end{document}
