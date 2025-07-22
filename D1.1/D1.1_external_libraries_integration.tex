@@ -35,18 +35,18 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-  \tableEntry{Abstract}{This document describes the integration of
-    external libraries in the deal.II finite element library, namely
-    the MUMPS sparse direct solver, the PSCToolkit iterative solver
-    and the GMSH three-dimensional finite element mesh generator.}
-  \tableEntry{Keywords}{API; solvers; mesh; parallelism; interfaces}
+    \tableEntry{Abstract}{This document describes the integration of
+        external libraries in the deal.II finite element library, namely
+        the MUMPS sparse direct solver, the PSCToolkit iterative solver
+        and the GMSH three-dimensional finite element mesh generator.}
+    \tableEntry{Keywords}{API; solvers; mesh; parallelism; interfaces}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
     \addVersion{0.1}{15/07/2025}{Alfredo Buttari}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.2}{22/07/2025}{Marco Feder}{Preliminary experimental results}
     \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
@@ -93,13 +93,13 @@ nature, scalable; furthermore, PSCToolkit provides efficient algebraic
 multigrid preconditioners to improve the convergence. Finally, WP1
 deals with the integration of the GMSH three-dimensional finite
 element meshing package in order to optimize the mesh generation at
-large scale. 
+large scale.
 
 \subsection{{Purpose of the Document}}
 This document describes the integration of the above-mentioned
 external packages, the corresponding API within the deal.ii framework
 and the features that are exposed to enable experimenting with
-advanced features in the context of the dealii-X project. 
+advanced features in the context of the dealii-X project.
 
 % \subsection{Objectives of Work Package 1 (WP1)}
 
@@ -153,11 +153,11 @@ advanced features in the context of the dealii-X project.
 
 % \subsection{{Structure of the Document}}
 % \begin{itemize}
-    % \item Section \ref{sec:section2}: [Section Title]
-    % \item Section \ref{sec:section3}: [Section Title]
-    % \item Section \ref{sec:section4}: [Section Title]
-    % \item Section \ref{sec:section5}: [Section Title]
-    % \item Section \ref{sec:section6}: [Section Title]
+% \item Section \ref{sec:section2}: [Section Title]
+% \item Section \ref{sec:section3}: [Section Title]
+% \item Section \ref{sec:section4}: [Section Title]
+% \item Section \ref{sec:section5}: [Section Title]
+% \item Section \ref{sec:section6}: [Section Title]
 % \end{itemize}
 
 \newpage
@@ -212,7 +212,27 @@ of the MUMPS API within deal.ii:
 
 \url{https://dealii.org/developer/doxygen/deal.II/classSparseDirectMUMPS.html}
 
+\subsection{Preliminary experimental results}
+The new MUMPS interface has been validated through a series of tests
+to verify its correctness, using both serial and distributed sparse matrices. Such tests
+have been added to the deal.ii test-suite and are run automatically at
+each commit. In particular, the following additional steps have
+been carried out to validate the robustness of the current interface:
+\begin{itemize}
+    \item Usage of Block-Low Rank approximations as a preconditioner
+          for a diffusion problem in 2D and 3D, on a sequence of parallel and
+          adaptively refined meshes, both for PETSc and Trilinos distributed matrices, thereby
+          confirming the correctness of the distributed memory parallelism
+          support and the capabilities of BLR as a preconditioner.
+    \item Integration into the \emph{Brain application}, as added
+          in pull request \url{https://github.com/BRAINIACS-Group/ExaBrain/pull/1}, serving as a
+          drop-in replacement for the previous solver based on \texttt{Amesos\_Superludist}
+          from Trilinos. Preliminary results across several
+          parameter configurations show that the new MUMPS solver
+          reduces the total solver time by a factor
+          ranging from 2 up to approximately 3.
 
+\end{itemize}
 \newpage
 
 \section{PSCToolkit}
@@ -221,7 +241,7 @@ of the MUMPS API within deal.ii:
 \lipsum[8-9]
 
 \subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
     \item \lipsum[10][1-2]
     \item \lipsum[10][3-4]
     \item \lipsum[10][5-6]
@@ -237,7 +257,7 @@ of the MUMPS API within deal.ii:
 
 \lipsum[12-13]
 
-\newpage 
+\newpage
 
 \section{{Conclusion}} \label{sec:conclusion}
 
