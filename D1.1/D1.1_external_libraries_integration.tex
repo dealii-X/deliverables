@@ -187,7 +187,7 @@ backward/forward substitution) take place; not only this might be
 infeasible due to memory limitations but it severely limits the
 performance of the sparse direct solver. The MUMPS integration in
 deal.ii was extended to support distributed memory parallelism through
-the use of distributes matrix and vector datatypes as defines in the
+the use of distributed matrix and vector datatypes as defined in the
 deal.ii PETSc and Trilinos wrappers. This allows for a completely
 parallel initialization of the MUMPS data structure (that includes the
 system matrix and the right-hand sides) prior to the symbolic
@@ -205,7 +205,12 @@ values for selected solver parameters.
 
 The work related to above-mentioned extension is documented in pull
 request \#18497 (\url{https://github.com/dealii/dealii/pull/18497})
-which was eventually merged in the master deal/ii branch.
+which was eventually merged in the master deal.ii branch.
+
+Furthermore, the deal.ii documentation was updated with a detailed description
+of the MUMPS API within deal.ii:
+
+\url{https://dealii.org/developer/doxygen/deal.II/classSparseDirectMUMPS.html}
 
 
 \newpage
