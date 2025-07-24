@@ -8,6 +8,19 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
+\usepackage{listings}
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    showstringspaces=false
+}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.1}
@@ -47,7 +60,7 @@
 \begin{documentControl}
     \addVersion{0.1}{15/07/2025}{Alfredo Buttari}{Initial draft}
     \addVersion{0.2}{22/07/2025}{Marco Feder}{Preliminary experimental results}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.3}{23/07/2025}{Fabio Durastante}{Integration of PSCToolkit}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
@@ -238,17 +251,263 @@ been carried out to validate the robustness of the current interface:
 \section{PSCToolkit}
 \label{sec:section3}
 
-\lipsum[8-9]
+PSCToolkit is a high-performance parallel software package designed for solving large-scale sparse linear 
+systems that commonly arise in scientific computing applications. It provides a comprehensive collection 
+of Krylov subspace iterative methods, including Conjugate Gradient (CG), Generalized Minimal Residual (GMRES), 
+and BiConjugate Gradient Stabilized (BiCGSTAB), among others. One of the key strengths of PSCToolkit lies 
+in its efficient implementation of algebraic multigrid (AMG) preconditioners, which are used to significantly 
+improve the convergence rate of iterative solvers for challenging problems such as those arising from 
+discretized partial differential equations. The library is specifically designed to leverage modern 
+parallel computing architectures, including both CPU and GPU systems, making it well-suited for exascale 
+computing environments. PSCToolkit's modular design allows for easy integration with existing finite element 
+frameworks while providing fine-grained control over solver parameters and preconditioning strategies.
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-    \item \lipsum[10][1-2]
-    \item \lipsum[10][3-4]
-    \item \lipsum[10][5-6]
+PSCToolkit~\cite{PSCToolkit} is made of two main components:
+\begin{description}
+    \item[PSBLAS] A parallel sparse linear algebra library that provides basic operations for sparse matrices and vectors~\cite{PSBLAS};
+    \item[AMG4PSBLAS] A suite of advanced algebraic multigrid and domain decomposition preconditioners specifically 
+    designed for use with PSBLAS~\cite{AMG4PSBLAS}.
+\end{description}
+The two libraries are designed to work together, with PSBLAS providing the foundational linear algebra operations 
+and AMG4PSBLAS building on top of that to provide efficient preconditioning techniques.
+They are implemented in modern Fortran for the bulk of the code, with few routines of AMG4PSBLAS written in C,
+and a module of C/C++ CUDA code for GPU acceleration. To perform the integration with the Deal.II library we 
+exploit the already available C interfaces. 
+
+\subsection{Improvement in the new RC for PSBLAS and AMG4PSBLAS}
+
+To prepare for the integration with Deal.II, we have developed a new release candidate of PSBLAS and AMG4PSBLAS 
+that includes several modifications to the handling of the preprocessor directives. These modifications aim 
+to improve compatibility and ease of use when integrating with other libraries and frameworks.
+Specifically, we have made the following changes:
+\begin{itemize}
+    \item The preprocessor directives have been updated to have a \verb|PSB_| prefix, which helps to 
+    avoid conflicts with other libraries and ensures that the directives are clearly associated with PSBLAS.
+    \item The preprocessor directives have been moved to two dedicated header files for both PSBLAS and AMG4PSBLAS
+    which are created at the compile time of the two libraries and are the \verb|psb_config.h| and 
+    \verb|amg_config.h| files, respectively. This allows for better organization and management of the 
+    preprocessor directives, making it easier to maintain and update them in the future.
 \end{itemize}
 
-\subsection{{[Subsection Title]}}
-\lipsum[11]
+As part of an ongoing effort to improve the ease of installation of the PSCToolkit libraries, the new RC also 
+includes a new CMake module that simplifies the process of finding and linking the PSBLAS and AMG4PSBLAS libraries
+in CMake-based projects. Furthermore, we have added PSBLAS inside the Spack package manager, which allows for
+easy installation and management of the library in various environments; see \url{https://packages.spack.io/package.html?name=psblas}.
+We expect to add the AMG4PSBLAS library to Spack after the new release candidate is finalized; by the end of 2025.
+
+Another addition to the RC stream was the introduction of the C interface to enable the creation of a parallel context 
+in PSCToolkit from a pre-existing MPI communicator. This capability was already natively available in Fortran, 
+but was not available from the C interfaces. Specifically, we have added the function:
+\begin{verbatim}
+    void psb_c_init_from_fint(psb_c_ctxt *cctxt, psb_i_t f_comm);
+\end{verbatim}
+
+The two RCs of PSBLAS and AMG4PSBLAS are available at the following links:
+\begin{itemize}
+    \item PSBLAS: \url{https://github.com/sfilippone/psblas3/archive/refs/tags/v3.9.0-rc3.tar.gz},
+    \item AMG4PSBLAS: \url{https://github.com/sfilippone/amg4psblas/archive/refs/tags/v1.2.0-rc3.tar.gz}.
+\end{itemize}
+
+\subsection{The interface with Deal.II}
+
+The interface with Deal.II we describe in the following is reported in the pull request
+\url{https://github.com/dealii/dealii/pull/18662} which has yet to be merged in the main branch.
+The bulk of the interface is implemented in the two files
+\begin{itemize}
+    \item \texttt{dealii/source/lac/psblas.cc},
+    \item \texttt{dealii/include/deal.II/lac/psctoolkit.h},
+\end{itemize}
+in addition to the modification to the \texttt{CMakeLists.txt} files and scripts to enable the 
+compilation of the new interface against the new PSCToolkit release candidate.
+
+The interface is organized into four main namespaces: \textbf{Communicator} for MPI communication 
+context management and descriptor operations, \textbf{Matrix} for sparse matrix creation and manipulation, 
+\textbf{PSBVector} for vector operations and data distribution, and \textbf{Solvers} for preconditioners 
+and Krylov solvers. The interface is conditionally compiled when \texttt{DEAL\_II\_WITH\_PSBLAS} 
+is defined, ensuring compatibility only when PSBLAS is available.
+
+\textbf{Communicator Operations:} The \texttt{Communicator} namespace provides essential functions 
+for managing PSBLAS communication contexts and descriptors. The basic initialization function 
+\texttt{Init()} creates a new PSBLAS context over \texttt{MPI\_COMM\_WORLD} and sets the index 
+base to 0 for C-style indexing. For integration with deal.II's MPI management, 
+\lstinline{InitFromMPI(MPI_Comm comm)} allows initialization from an existing MPI communicator, 
+particularly useful when integrating with deal.II's \lstinline{Utilities::MPI::MPI_InitFinalize} class. 
+The function performs proper error checking for null communicators and converts the MPI communicator to 
+Fortran-compatible format before initialization.
+\begin{lstlisting}[caption=Core communicator functions]
+psb_c_ctxt *Init();
+psb_c_ctxt *InitFromMPI(MPI_Comm comm);
+void Info(psb_c_ctxt *cctxt, int *iam, int *nproc);
+void Barrier(psb_c_ctxt *cctxt);
+void Exit(psb_c_ctxt *cctxt);
+\end{lstlisting}
+The \texttt{Info} function retrieves the current process rank and total number of processes, 
+\texttt{Barrier} synchronizes all processes in the PSBLAS context, and \texttt{Exit} properly deallocates 
+the context and associated resources; this function has to be used only if the PSBLAS context was created
+using \texttt{Init()} and not \texttt{InitFromMPI()}, since for the latter the context is handled by the
+deal.II MPI management and should not be explicitly freed.
+
+Descriptors in PSBLAS define the data distribution pattern across processes, specifying which global 
+indices are owned by each process. The \texttt{CreateDescriptor} function integrates 
+with deal.II's \texttt{IndexSet} class, converting the locally owned indices into PSBLAS-compatible 
+format through a process that extracts indices using \texttt{get\_index\_vector()}, converts 
+deal.II's \texttt{types::global\_dof\_index} to PSBLAS's \texttt{psb\_l\_t}, allocates the descriptor 
+using \texttt{psb\_c\_cdall\_vl}, and ensures proper memory management with automatic cleanup.
+\begin{lstlisting}[caption=Descriptor management functions]
+psb_c_descriptor *CreateDescriptor(IndexSet &index_set, psb_c_ctxt cctxt);
+int DescriptorAssembly(psb_c_descriptor *cd);
+int DescriptorFree(psb_c_descriptor *cd);
+\end{lstlisting}
+
+\textbf{Matrix Operations:} The \texttt{Matrix} namespace provides comprehensive functionality 
+for creating, populating, and managing sparse matrices in PSBLAS format. The \texttt{CreateSparseMatrix} 
+function creates a new double-precision sparse matrix and initializes it with the provided descriptor, 
+allocating the matrix in remote format for efficient parallel assembly. Direct value insertion is 
+supported through \texttt{InsertValue}, which allows insertion of matrix entries specified by 
+row indices, column indices, and values.
+\begin{lstlisting}[caption=Matrix creation and value insertion]
+psb_c_dspmat* CreateSparseMatrix(psb_c_descriptor *cd);
+int InsertValue(psb_i_t nz, const psb_l_t *irw, const psb_l_t *icl, 
+                const psb_d_t *val, psb_c_dspmat *mh, psb_c_descriptor *cdh);
+\end{lstlisting}
+
+The interface provides two overloaded \texttt{distribute\_local\_to\_global} functions that 
+integrate with deal.II's finite element assembly process. The first handles matrix-only 
+distribution, while the second handles combined matrix and vector distribution. These 
+functions perform the critical task of distributing local finite element contributions 
+to the global sparse matrix structure by converting deal.II's local DOF indices to PSBLAS format, 
+flattening the dense local matrix into coordinate format (COO), allocating memory for index 
+and value arrays, performing parallel insertion using PSBLAS routines, and ensuring 
+automatic memory cleanup.
+\begin{lstlisting}[caption=Local-to-global distribution functions]
+int distribute_local_to_global(
+    const std::vector<types::global_dof_index>& local_dof_indices,
+    const FullMatrix<double>& cell_matrix,
+    psb_c_dspmat *mh, psb_c_descriptor *cdh);
+
+int distribute_local_to_global(
+    const std::vector<types::global_dof_index>& local_dof_indices,
+    const FullMatrix<double>& cell_matrix,
+    const Vector<double>& cell_rhs,
+    psb_c_dspmat *mh, psb_c_dvector *vec, psb_c_descriptor *cdh);
+\end{lstlisting}
+The selection of the actual sparse matrix format is then handled on the PSBLAS side.
+
+Matrix assembly and management are handled through \texttt{AssembleSparseMatrix}, which 
+checks if the matrix is already assembled to avoid redundant operations, 
+and \texttt{FreeSparseMatrix}, which properly deallocates matrix resources.
+
+\textbf{Vector Operations:} The \texttt{PSBVector} namespace manages distributed vectors, 
+providing functionality for creation, data distribution, and assembly. 
+The \texttt{CreateVector} function creates new vectors initialized with descriptors, 
+while \texttt{AssembleVector} finalizes vector assembly and \texttt{FreeVector} handles proper 
+deallocation. 
+
+The \texttt{distribute\_local\_to\_global} function for vectors distributes local 
+contributions from deal.II's finite element assembly to the global PSBLAS vector, 
+handling the conversion between deal.II and PSBLAS data formats.
+
+\begin{lstlisting}[caption=Vector operations]
+psb_c_dvector* CreateVector(psb_c_descriptor *cd);
+int AssembleVector(psb_c_dvector *vector, psb_c_descriptor *cd);
+int FreeVector(psb_c_dvector *vector, psb_c_descriptor *cd);
+void distribute_local_to_global(
+    const std::vector<types::global_dof_index>& local_dof_indices,
+    const Vector<double>& cell_rhs,
+    psb_c_dvector *vec, psb_c_descriptor *cdh);
+\end{lstlisting}
+
+\textbf{Solver Infrastructure:} The \texttt{Solvers} namespace provides high-level 
+interfaces to PSBLAS's preconditioners and Krylov solvers. Preconditioner management 
+includes creation through \texttt{CreateBasePreconditioner} with support for various 
+types, building through \texttt{BasePrecBuild}, and cleanup through 
+\texttt{FreeBasePreconditioner}.
+
+\begin{lstlisting}[caption=Preconditioner and solver management]
+psb_c_dprec* CreateBasePreconditioner(psb_c_ctxt cctxt, const char *ptype);
+int BasePrecBuild(psb_c_dprec *ph, psb_c_dspmat *mh, psb_c_descriptor *cdh);
+int FreeBasePreconditioner(psb_c_dprec *ph);
+\end{lstlisting}
+
+Solver options are managed through a dedicated structure \texttt{psb\_c\_SolverOptions} 
+containing iteration counts, maximum iterations, trace frequency, restart parameters, 
+stopping criteria, convergence tolerance, and final error values. The interface provides 
+comprehensive management through creation, configuration, printing (both to log and file), 
+and cleanup functions. Default values are chosen: maximum iterations of 1000, 
+convergence tolerance of $10^{-6}$, relative residual norm stopping criterion 
+$\|\mathbf{r}\|_2/\|\mathbf{b}\|_2$, GMRES restart of 30, and trace output every iteration.
+
+\begin{lstlisting}[caption=Solver options structure and management]
+typedef struct {
+    int iter, itmax, itrace, irst, istop;
+    double eps, err;
+} psb_c_SolverOptions;
+
+psb_c_SolverOptions* CreateSolverOptions();
+void SetSolverOptions(psb_c_SolverOptions *opt, int itmax, int itrace,
+                      int irst, int istop, double eps);
+\end{lstlisting}
+
+The core solver interface is provided through \texttt{BaseKrylov}, which provides access to 
+PSBLAS's Krylov solvers supporting methods such as CG for symmetric positive definite 
+systems, GMRES for general systems, BICGSTAB for bi-conjugate gradient stabilized, 
+and BICGSTABL with restart parameters.
+
+\begin{lstlisting}[caption=Krylov solver interface]
+int BaseKrylov(const char *method, psb_c_dspmat *ah, psb_c_dprec *ph,
+               psb_c_dvector *bh, psb_c_dvector *xh,
+               psb_c_descriptor *cdh, psb_c_SolverOptions *opt);
+\end{lstlisting}
+
+\textbf{Error Handling and Integration:} The PSCToolkit interface implements 
+comprehensive error handling throughout all operations with null pointer validation 
+before accessing PSBLAS objects, preventing segmentation faults and providing meaningful 
+error messages. Every PSBLAS function call is monitored for error return codes, with 
+detailed error reporting through deal.II's logging system (\texttt{deallog}). The 
+interface ensures proper memory management with automatic cleanup of temporary arrays, 
+proper deallocation of PSBLAS objects, and protection against double-free operations.
+against double-free operations.
+
+The interface is designed for integration with deal.II's existing 
+infrastructure through direct support for deal.II's \texttt{IndexSet} 
+class enabling natural integration with parallel data distribution mechanisms, 
+acceptance of deal.II's \texttt{FullMatrix<double>} and \texttt{Vector<double>} 
+objects directly without manual data conversion, and compatibility with deal.II's 
+MPI initialization through \texttt{Utilities::MPI::MPI\_InitFinalize} ensuring 
+consistent parallel environment management.
+
+\textbf{Usage:} A typical PSCToolkit usage pattern follows the sequence of initializing 
+the PSBLAS context from MPI communicator, creating descriptors to define data 
+distribution using deal.II's IndexSet, assembling descriptors to finalize the 
+distribution pattern, creating matrices and vectors, distributing local 
+contributions through finite element assembly loops, assembling global 
+objects to finalize parallel assembly, setting up preconditioners, configuring 
+solvers with convergence criteria and methods, solving the system through Krylov 
+solvers, and cleaning up all allocated resources.
+
+Performance considerations include minimizing dynamic memory allocation 
+during assembly by pre-allocating arrays based on degrees of freedom per cell, 
+leveraging PSBLAS's native parallel assembly routines to minimize communication 
+overhead, and ensuring optimal numerical performance through direct 
+integration with PSBLAS's optimized sparse matrix formats.
+
+\textbf{Testing:} The interface has been validated through a series of tests
+to verify its correctness within the deal.II framework. Test covers the creation of PSBLAS contexts,
+descriptors, matrices, and vectors, as well as the distribution of local contributions
+from deal.II's finite element assembly to the global PSBLAS matrix and vector structures.
+These tests ensure that the interface correctly handles parallel assembly,
+data distribution, and solver operations.
+
+\textbf{Extensions:} Future extensions will include integration with AMG4PSBLAS for algebraic multigrid 
+preconditioning through additional wrapper functions, and exposure of PSBLAS's GPU capabilities through 
+additional configuration options and specialized matrix formats.
+
+
+\begin{thebibliography}{10}
+    \bibitem{PSBLAS} S. Filippone and M. Colajanni, "PSBLAS: A library for parallel linear algebra computation on sparse matrices," ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527-550, 2000.
+    \bibitem{AMG4PSBLAS} P. D'Ambra, F. Durastante, and S. Filippone, "AMG preconditioners for linear solvers towards extreme scale," SIAM Journal on Scientific Computing, vol. 43, no. 5, pp. S679-S703, 2021.
+    \bibitem{PSCToolkit} P. D’Ambra, F. Durastante, and S. Filippone. "Parallel Sparse Computation Toolkit." Software Impacts 15 (2023): 100463.
+\end{thebibliography}
 
 \newpage
 
