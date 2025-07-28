@@ -61,6 +61,7 @@
     \addVersion{0.1}{15/07/2025}{Alfredo Buttari}{Initial draft}
     \addVersion{0.2}{22/07/2025}{Marco Feder}{Preliminary experimental results}
     \addVersion{0.3}{23/07/2025}{Fabio Durastante}{Integration of PSCToolkit}
+    \addVersion{0.4}{28/07/2025}{Marco Feder}{Integration of distributed GMSH capabilities}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
@@ -511,10 +512,70 @@ additional configuration options and specialized matrix formats.
 
 \newpage
 
-\section{GMSH}
-\label{sec:section4}
 
-\lipsum[12-13]
+\section{GMSH}
+\label{sec:gmsh}
+
+\subsection{Existing interface}
+The \texttt{GridIn} class in deal.II provides functionality for reading
+mesh data from several formats, allowing users to read and importing
+complex geometries into deal.II for their simulations. Among the many supported formats,
+the Gmsh format~\cite{gmsh} is particularly useful for its ability to handle complex geometries
+and its widespread use in the scientific computing community. So far, external meshes
+were first read on root process, and then distributed to all
+participating processes. After this, it is possible to construct an object of type
+\texttt{parallel::fullydistributed::Triangulation} (hereafter abbreviated as \texttt{p::f::T}), which stores on each process
+the relevant part of the mesh.
+
+\noindent On the other hand, the Gmsh library provides the capability to partition a given mesh
+into multiple subdomains. To give a concrete example, if a user
+wants to partition its mesh file, named \texttt{brain.msh}, into N multiple subdomains, they can use the Gmsh command line switches as follows:
+\begin{lstlisting}[caption=Partitioning a .msh file via command line switches]
+gmsh brain.msh -part N -part_ghosts -part_split -save brain.msh
+\end{lstlisting}
+This would generate N files, \texttt{brain\_1.msh}, \texttt{brain\_2.msh}, ..., \texttt{brain\_{N}.msh}, each one
+describing mesh partitions, including the relevant ghost information for each partition. Sample partitions generated
+when N=4 for a brain mesh are shown in Figure~\ref{fig:partitioned_meshes}.
+
+\subsection{Improvements in handling partitioned meshes}
+The ability to \emph{directly} create a \texttt{p::f::T} object based on the mesh partitions defined in partitioned Gmsh files was not supported
+by deal.II. This task can be achieved by exploiting suitable calls to the Gmsh API, so that Gmsh can be directly
+embedded in the source code. More precisely, they allow local and ghost information for every partition to be retrieved from
+the Gmsh files, and the necessary data structures needed to create a \texttt{p::f::T} object can be readily constructed. In this
+way, it is possible to avoid reading the entire mesh on the root process.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tabular}{cc}
+        \includegraphics[width=0.4\textwidth]{brain_1_cropped.pdf} &
+        \includegraphics[width=0.4\textwidth]{brain_2_cropped.pdf}   \\
+        \includegraphics[width=0.4\textwidth]{brain_3_cropped.pdf} &
+        \includegraphics[width=0.4\textwidth]{brain_4_cropped.pdf}   \\
+    \end{tabular}
+    \caption{Visualizations of the partitions when N=4, for an initial brain mesh comprising $2\,375\,673$ tetrahedra.}
+    \label{fig:partitioned_meshes}
+\end{figure}
+
+\noindent A possible workflow for this feature is summarized in the following code snippet:
+\begin{lstlisting}[caption=Creating a \texttt{p::f::T} object from partitioned Gmsh files]
+// Assume partitioned Gmsh files defined in MESH_DIR
+static constexpr unsigned int dim = 3; // Dimension of the mesh
+MPI_Comm mpi_comm = MPI_COMM_WORLD; // MPI communicator
+parallel::fullydistributed::Triangulation<dim> tria(mpi_comm);
+GridIn<dim>::read_partitioned_msh(tria,
+                                  mpi_comm,
+                                  MESH_DIR "/brain");
+\end{lstlisting}
+
+
+\noindent The integration of this new feature into deal.II is documented in
+pull request \#18759 (\url{https://github.com/dealii/dealii/pull/18759}), and is
+currently under review.
+
+\begin{thebibliography}{10}
+    \bibitem{gmsh} Geuzaine, C. and Remacle, J.-F., Gmsh: A 3-D finite element mesh generator with built-in pre- and post-processing facilities. Int. J. Numer. Meth. Engng., 79: 1309-1331, 2009.
+\end{thebibliography}
+
 
 \newpage
 
