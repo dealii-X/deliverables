@@ -8,7 +8,6 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
-% \usepackage{multirow}
 \usepackage{booktabs}
 \usepackage{listings}
 \lstset{
@@ -94,7 +93,7 @@ Approval Date: [Date]
 \section{{Introduction}}
 
 The objective of the dealii-X Work Package 1 is to enhance the
-capabilities of the deal.ii finite element library through the use of
+capabilities of the deal.II finite element library through the use of
 some external libraries, namely, the MUMPS and PSCToolkit solvers and
 the GMSH three-dimensional finite element mesh generator. MUMPS is a
 parallel direct solver for sparse linear systems, i.e., it achieves
@@ -115,7 +114,7 @@ large scale.
 
 \subsection{{Purpose of the Document}}
 This document describes the integration of the above-mentioned
-external packages, the corresponding API within the deal.ii framework
+external packages, the corresponding API within the deal.II framework
 and the features that are exposed to enable experimenting with
 advanced features in the context of the dealii-X project.
 
@@ -204,9 +203,9 @@ the subsequent phases (symbolic analysis, factorization and
 backward/forward substitution) take place; not only this might be
 infeasible due to memory limitations but it severely limits the
 performance of the sparse direct solver. The MUMPS integration in
-deal.ii was extended to support distributed memory parallelism through
+deal.II was extended to support distributed memory parallelism through
 the use of distributed matrix and vector datatypes as defined in the
-deal.ii PETSc and Trilinos wrappers. This allows for a completely
+deal.II PETSc and Trilinos wrappers. This allows for a completely
 parallel initialization of the MUMPS data structure (that includes the
 system matrix and the right-hand sides) prior to the symbolic
 analysis, numerical factorization and forward/backward substitution.
@@ -223,17 +222,17 @@ values for selected solver parameters.
 
 The work related to above-mentioned extension is documented in pull
 request \#18497 (\url{https://github.com/dealii/dealii/pull/18497})
-which was eventually merged in the master deal.ii branch.
+which was eventually merged in the master deal.II branch.
 
-Furthermore, the deal.ii documentation was updated with a detailed description
-of the MUMPS API within deal.ii:
+Furthermore, the deal.II documentation was updated with a detailed description
+of the MUMPS API within deal.II:
 
 \url{https://dealii.org/developer/doxygen/deal.II/classSparseDirectMUMPS.html}
 
 \subsection{Preliminary experimental results}
 The new MUMPS interface has been validated through a series of tests
 to verify its correctness, using both serial and distributed sparse matrices. Such tests
-have been added to the deal.ii test-suite and are run automatically at
+have been added to the deal.II test-suite and are run automatically at
 each commit. In particular, the following additional steps have
 been carried out to validate the robustness of the current interface:
 \begin{itemize}
@@ -563,7 +562,7 @@ this way, it is possible to avoid loading the entire mesh. An example of this ne
 sketched in Listings~\ref{lst:gmsh_workflow}.
 
 Furthermore, Table~\ref{tab:mesh-sizes} displays, for the \texttt{brain.msh} file and its 4 partitions, the size (in MB) of the original and partitioned mesh files produced through the Gmsh command line
-interface. The memory consumption associated with the triangulation data structure in deal.ii, both for the non-partitioned case and for
+interface. The memory consumption associated with the triangulation data structure in deal.II, both for the non-partitioned case and for
 the partitioned case, is shown in Table~\ref{tab:memory-consumption}, highlighting how the creation of the triangulation data
 structure from the partitioned mesh files allows for a more efficient use of resources, as only the relevant parts of
 the mesh are loaded into memory on each process.
