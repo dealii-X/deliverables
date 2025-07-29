@@ -38,9 +38,9 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{External libraries integration}
     \tableEntry{Deliverable number}{D1.1}
-    \tableEntry{Deliverable version}{0.1}
-    \tableEntry{Date of delivery}{31/07/2025}
-    \tableEntry{Actual date of delivery}{\today}
+    \tableEntry{Deliverable version}{v1}
+    \tableEntry{Date of delivery}{July 31, 2025}
+    \tableEntry{Actual date of delivery}{July 29, 2025}
     \tableEntry{Nature of deliverable}{Dissemination, Exploitation, and Communication}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -65,12 +65,12 @@
     \addVersion{0.4}{28/07/2025}{Marco Feder}{Integration of distributed GMSH capabilities}
     \addVersion{0.5}{29/07/2025}{Alfredo Buttari}{Review and reference}
     \addVersion{0.6}{29/07/2025}{Marco Feder}{Comments about memory consumption}
-    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{1.0}{29/07/2025}{Martin Kronbichler}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: M. Kronbichler \\
+Approval Date: July 29, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -187,9 +187,10 @@ advanced features in the context of the dealii-X project.
 The deal.II package used to support a direct MUMPS integration in the
 past. This support was subsequently remove in favor of an indirect use
 of MUMPS through the PETSc library. As a first step towards the
-objectives of WP1 of the dealii-X project, this support was reverted,
+objectives of WP1 of the dealii-X project, this support was introduced
+into the core library again,
 as documented in Pull Request \#18255
-(\url{https://github.com/dealii/dealii/pull/18255}) which has been
+(\url{https://github.com/dealii/dealii/pull/18255}), which has been
 subsequently merged in the main branch. This minimalistic interface
 includes a number of basic tests.
 
@@ -210,15 +211,16 @@ parallel initialization of the MUMPS data structure (that includes the
 system matrix and the right-hand sides) prior to the symbolic
 analysis, numerical factorization and forward/backward substitution.
 
-Setting-up MUMPS internal configuration parameters was not possible in
-original deal.II MUMPS interface which, therefore, had to be
+Setting up MUMPS internal configuration parameters was not possible in
+the original deal.II MUMPS interface which, therefore, had to be
 extended to enable the use of the more advanced features of the MUMPS
 solver; these include the Block Low-Rank approximations, the GPU
 support and numerous other parameters that allow for fine-tuning both
 the performance and the numerical robustness of the solver. This
 extension was achieved by adding a \texttt{AdditionalData} object
 to the constructor of the MUMPS solver class that takes the desired
-values for selected solver parameters.
+values for selected solver parameters, following the common design
+patterns of the deal.II library.
 
 The work related to above-mentioned extension is documented in pull
 request \#18497 (\url{https://github.com/dealii/dealii/pull/18497})
@@ -232,7 +234,7 @@ of the MUMPS API within deal.II:
 \subsection{Preliminary experimental results}
 The new MUMPS interface has been validated through a series of tests
 to verify its correctness, using both serial and distributed sparse matrices. Such tests
-have been added to the deal.II test-suite and are run automatically at
+have been added to the deal.II test suite and are run automatically at
 each commit. In particular, the following additional steps have
 been carried out to validate the robustness of the current interface:
 \begin{itemize}
@@ -255,10 +257,10 @@ been carried out to validate the robustness of the current interface:
 
 \begin{thebibliography}{10}
     \bibitem{blr} P.~Amestoy, A.~Buttari, J.-Y.~L'Excellent,
-    T.~Mary``Performance and Scalability of the Block Low-Rank
-    Multifrontal Factorization on Multicore Architectures''. ACM
-    Transactions on Mathematical Software, 2019, 45 (1),
-    pp.1-23. ⟨10.1145/3242094⟩
+    T.~Mary: ``Performance and Scalability of the Block Low-Rank
+    Multifrontal Factorization on Multicore Architectures''. \emph{ACM
+    Transactions on Mathematical Software}, 2019, 45 (1),
+    pp.1-23. \href{https://doi.org/10.1145/3242094}{doi:10.1145/3242094}
 \end{thebibliography}
 
 
@@ -270,8 +272,8 @@ been carried out to validate the robustness of the current interface:
 
 PSCToolkit is a high-performance parallel software package designed for solving large-scale sparse linear
 systems that commonly arise in scientific computing applications. It provides a comprehensive collection
-of Krylov subspace iterative methods, including Conjugate Gradient (CG), Generalized Minimal Residual (GMRES),
-and BiConjugate Gradient Stabilized (BiCGSTAB), among others. One of the key strengths of PSCToolkit lies
+of Krylov subspace iterative methods, including the Conjugate Gradient (CG), the Generalized Minimal Residual (GMRES),
+and the BiConjugate Gradient Stabilized (BiCGSTAB) methods, among others. One of the key strengths of PSCToolkit lies
 in its efficient implementation of algebraic multigrid (AMG) preconditioners, which are used to significantly
 improve the convergence rate of iterative solvers for challenging problems such as those arising from
 discretized partial differential equations. The library is specifically designed to leverage modern
@@ -288,12 +290,12 @@ PSCToolkit~\cite{PSCToolkit} is made of two main components:
 The two libraries are designed to work together, with PSBLAS providing the foundational linear algebra operations
 and AMG4PSBLAS building on top of that to provide efficient preconditioning techniques.
 They are implemented in modern Fortran for the bulk of the code, with few routines of AMG4PSBLAS written in C,
-and a module of C/C++ CUDA code for GPU acceleration. To perform the integration with the Deal.II library we
+and a module of C/C++ CUDA code for GPU acceleration. To perform the integration with the deal.II library we
 exploit the already available C interfaces.
 
 \subsection{Improvement in the new RC for PSBLAS and AMG4PSBLAS}
 
-To prepare for the integration with Deal.II, we have developed a new release candidate of PSBLAS and AMG4PSBLAS
+To prepare for the integration with deal.II, we have developed a new release candidate of PSBLAS and AMG4PSBLAS
 that includes several modifications to the handling of the preprocessor directives. These modifications aim
 to improve compatibility and ease of use when integrating with other libraries and frameworks.
 Specifically, we have made the following changes:
@@ -325,10 +327,10 @@ The two RCs of PSBLAS and AMG4PSBLAS are available at the following links:
     \item AMG4PSBLAS: \url{https://github.com/sfilippone/amg4psblas/archive/refs/tags/v1.2.0-rc3.tar.gz}.
 \end{itemize}
 
-\subsection{The interface with Deal.II}
+\subsection{The interface with deal.II}
 
-The interface with Deal.II we describe in the following is reported in the pull request
-\url{https://github.com/dealii/dealii/pull/18662} which has yet to be merged in the main branch.
+The interface with deal.II we describe in the following is reported in the pull request
+\url{https://github.com/dealii/dealii/pull/18662}, which has yet to be merged in the main branch as of writing this document.
 The bulk of the interface is implemented in the two files
 \begin{itemize}
     \item \texttt{dealii/source/lac/psblas.cc},
@@ -391,8 +393,8 @@ int InsertValue(psb_i_t nz, const psb_l_t *irw, const psb_l_t *icl,
 The interface provides two overloaded \texttt{distribute\_local\_to\_global} functions that
 integrate with deal.II's finite element assembly process. The first handles matrix-only
 distribution, while the second handles combined matrix and vector distribution. These
-functions perform the critical task of distributing local finite element contributions
-to the global sparse matrix structure by converting deal.II's local DOF indices to PSBLAS format,
+functions perform the critical task of adding local finite element contributions
+to the correct positions in the global sparse matrix structure by converting deal.II's local DOF indices to PSBLAS format,
 flattening the dense local matrix into coordinate format (COO), allocating memory for index
 and value arrays, performing parallel insertion using PSBLAS routines, and ensuring
 automatic memory cleanup.
@@ -416,12 +418,12 @@ and \texttt{FreeSparseMatrix}, which properly deallocates matrix resources.
 
 \textbf{Vector Operations:} The \texttt{PSBVector} namespace manages distributed vectors,
 providing functionality for creation, data distribution, and assembly.
-The \texttt{CreateVector} function creates new vectors initialized with descriptors,
+The function \texttt{CreateVector} creates new vectors initialized with descriptors,
 while \texttt{AssembleVector} finalizes vector assembly and \texttt{FreeVector} handles proper
 deallocation.
 
 The \texttt{distribute\_local\_to\_global} function for vectors distributes local
-contributions from deal.II's finite element assembly to the global PSBLAS vector,
+contributions from the finite element assembly of deal.II to the global PSBLAS vector,
 handling the conversion between deal.II and PSBLAS data formats.
 
 \begin{lstlisting}[caption=Vector operations]
@@ -485,7 +487,7 @@ interface ensures proper memory management with automatic cleanup of temporary a
 proper deallocation of PSBLAS objects, and protection against double-free operations.
 against double-free operations.
 
-The interface is designed for integration with deal.II's existing
+The interface is designed to be integrated with deal.II's existing
 infrastructure through direct support for deal.II's \texttt{IndexSet}
 class enabling natural integration with parallel data distribution mechanisms,
 acceptance of deal.II's \texttt{FullMatrix<double>} and \texttt{Vector<double>}
@@ -534,18 +536,18 @@ additional configuration options and specialized matrix formats.
 
 \subsection{Existing interface}
 The \texttt{GridIn} class in deal.II provides functionality for reading
-mesh data from several formats, allowing users to read and importing
+mesh data from several formats, allowing users to read and to import
 complex geometries into deal.II for their simulations. Among the many supported formats,
 the Gmsh format~\cite{gmsh} is particularly useful for its ability to handle complex geometries
 and its widespread use in the scientific computing community. So far, external meshes
 are first read as serial triangulations, and then partitioned across all
-participating processes. After this, it is possible to construct an object of type
-\texttt{parallel::fullydistributed::Triangulation} (hereafter abbreviated as \texttt{p::f::T}), which stores on each process
-the relevant part of the mesh.
+participating processes. From these objects, an object of type
+\texttt{parallel::fullydistributed::Triangulation} (hereafter abbreviated as \texttt{p::f::T}) can be created, which stores
+the relevant part of the mesh on each MPI process.
 
 On the other hand, the Gmsh library provides the capability to partition a given mesh
 into multiple subdomains. To give a concrete example, if a user
-wants to partition its mesh file, named \texttt{brain.msh}, into N multiple subdomains, they can use the Gmsh command line switches as follows:
+wants to partition their mesh file, named \texttt{brain.msh}, into N multiple subdomains, they can use the Gmsh command line switches as follows:
 \begin{lstlisting}[caption=Partitioning a .msh file via command line switches]
 gmsh brain.msh -part N -part_ghosts -part_split -save brain.msh
 \end{lstlisting}
@@ -554,7 +556,7 @@ describing mesh partitions, including the relevant ghost information for each pa
 when N=4 for the brain mesh are shown in Figure~\ref{fig:partitioned_meshes}.
 
 \subsection{Improvements in handling partitioned meshes}
-The ability to \emph{directly} create a \texttt{p::f::T} object based on the mesh partitions defined in partitioned Gmsh files was not supported
+The ability to \emph{directly} create a \texttt{p::f::T} object based on the mesh partitions defined in partitioned Gmsh files was not previously supported
 by deal.II. This task can be achieved by exploiting suitable calls to the Gmsh API, so that Gmsh can be directly
 embedded in the source code. More precisely, they allow local and ghost information for every partition to be retrieved from
 the Gmsh files, and the necessary data structures needed to create a \texttt{p::f::T} object can be constructed locally to each process. In
@@ -575,7 +577,7 @@ the mesh are loaded into memory on each process.
         \includegraphics[width=0.4\textwidth]{brain_3_cropped.pdf} &
         \includegraphics[width=0.4\textwidth]{brain_4_cropped.pdf}   \\
     \end{tabular}
-    \caption{Visualizations of the partitions when N=4, for the \texttt{brain.msh} mesh file comprising $2,375,673$ tetrahedra.}
+    \caption{Visualizations of the partitions when N=4, for the \texttt{brain.msh} mesh file comprising $2{,}375{,}673$ tetrahedra.}
     \label{fig:partitioned_meshes}
 \end{figure}
 
@@ -631,7 +633,12 @@ currently under review.
 
 \section{{Conclusion}} \label{sec:conclusion}
 
-\lipsum[20]
+The integration described in this document lays the basis for several
+application simulations with the deal.II library and MUMPS, PSCToolkit and
+Gmsh. It is planned to further enhance the capabilities of the software layers
+that connect these projects with deal.II and the application solvers, and to
+continue the work on more sophisicated algorithms that can efficiently use
+exascale hardware.
 
 \label{MyLastPage}
 
