@@ -62,6 +62,8 @@
     \addVersion{0.2}{22/07/2025}{Marco Feder}{Preliminary experimental results}
     \addVersion{0.3}{23/07/2025}{Fabio Durastante}{Integration of PSCToolkit}
     \addVersion{0.4}{28/07/2025}{Marco Feder}{Integration of distributed GMSH capabilities}
+    \addVersion{0.5}{29/07/2025}{Alfredo Buttari}{Review and reference
+    added}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
@@ -233,7 +235,7 @@ have been added to the deal.ii test-suite and are run automatically at
 each commit. In particular, the following additional steps have
 been carried out to validate the robustness of the current interface:
 \begin{itemize}
-    \item Usage of Block-Low Rank approximations as a preconditioner
+    \item Usage of Block-Low Rank~\cite{blr} approximations as a preconditioner
           for a diffusion problem in 2D and 3D, on a sequence of parallel and
           adaptively refined meshes, both for PETSc and Trilinos distributed matrices, thereby
           confirming the correctness of the distributed memory parallelism
@@ -247,6 +249,19 @@ been carried out to validate the robustness of the current interface:
           ranging from 2 up to approximately 3.
 
 \end{itemize}
+
+
+
+\begin{thebibliography}{10}
+\bibitem{blr} P.~Amestoy, A.~Buttari, J.-Y.~L'Excellent,
+  T.~Mary``Performance and Scalability of the Block Low-Rank
+  Multifrontal Factorization on Multicore Architectures''. ACM
+  Transactions on Mathematical Software, 2019, 45 (1),
+  pp.1-23. ⟨10.1145/3242094⟩
+\end{thebibliography}
+
+
+
 \newpage
 
 \section{PSCToolkit}
