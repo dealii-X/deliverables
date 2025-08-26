@@ -13,7 +13,7 @@
 
 
 % Set the deliverable number (without the D prefix, it's added automatically)
-\setdeliverableNumber{1.2}
+\setdeliverableNumber{1.3}
 
 % Begin document
 \begin{document}
@@ -26,33 +26,33 @@
 % Main Table using the new environment and command
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Report on deal.II improvements}
-    \tableEntry{Deliverable number}{D1.2}
+    \tableEntry{Deliverable number}{D1.3}
     \tableEntry{Deliverable version}{v1}
-    \tableEntry{Date of delivery}{March 31, 2025}
-    \tableEntry{Actual date of delivery}{March 28, 2025}
+    \tableEntry{Date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 28, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
-    \tableEntry{Partner responsible}{UNIPI}
+    \tableEntry{Partner responsible}{SISSA}
 \end{deliverableTable}
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This report details the progress made during the first semester (Months 1--6) of the dealii-X project in enhancing the deal.II finite element library. The focus is on improvements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as the initial performance evaluation of the polygonal discretization module (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
-    \tableEntry{Keywords}{deal.II library; finite element method; Krylov subspace methods; sparse direct solver; matrix-free algorithms; mesh generation; CUDA; Kokkos}
+    \tableEntry{Abstract}{This report details the progress made during the second semester (Months 7--12) of the dealii-X project in enhancing the deal.II finite element library. The focus is on enhancements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as polygonal discretization (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
+    \tableEntry{Keywords}{deal.II library; finite element method; Krylov subspace methods; sparse direct solver; matrix-free algorithms; mesh generation; polygonal discretization; CUDA; Kokkos}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{March 17, 2025}{Luca Heltai}{Initial draft}
-    \addVersion{0.2}{March 24, 2025}{Luca Heltai}{Gathered information from all partners}
-    \addVersion{1.0}{March 27, 2025}{Luca Heltai}{Final adjustments between partners}
+    \addVersion{0.1}{August 10, 2025}{Andrea Cangiani}{Initial draft}
+    \addVersion{0.2}{August 26, 2025}{Andrea Cangiani}{Gathered information from all partners}
+    \addVersion{1.0}{August 29, 2025}{Andrea Cangiani}{Final adjustments between partners}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
 Approved by: M. Kronbichler \\
-Approval Date: March 28, 2025
+Approval Date: August 29, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -120,29 +120,13 @@ In summary, WP1 is dedicated to developing and integrating fundamental software 
 
 \subsection{Purpose and Scope of this Report (Deliverable D1.2)}
 
-The purpose of this initial report on Work Package 1 is to provide a
-comprehensive overview of the foundational activities and progress achieved
-during the early stages of the dealii-X project. Specifically, it aims to
-document the strategies and initial advancements made in enhancing the deal.II
-library to meet the demands of exascale computing and to support the development
-of sophisticated digital twins of human organs. This report serves to establish
-a baseline understanding of the technical developments within WP1, including the
-optimization of computational methods, the integration of key external
-libraries, and the exploration of novel discretization techniques. The scope of
-this report encompasses the activities undertaken within each of the sub-work
-packages of WP1. 
+The purpose of this second report on Work Package 1 is to present an updated and detailed account of the progress achieved during the six months following the initial reporting period of the dealii-X project. Building upon the foundational activities and strategies outlined in the first report (D1.2), this document focuses on the continued development and refinement of the deal.II library to address the requirements of exascale computing and to further enable the creation of advanced digital twins of human organs.
 
-The report will highlight the initial outcomes, any challenges encountered, and
-the solutions identified, thus providing a clear picture of the progress towards
-achieving the objectives of WP1 and its contribution to the overall goals of the
-dealii-X project. It will serve as an initial benchmark for assessing the
-development of the exascale building blocks and support tools for the subsequent
-work packages.
+The scope of this report includes the assessment of technical developments within WP1, with particular emphasis on the optimization and scaling of computational methods, the deepening integration of key external libraries, and the maturation of novel discretization techniques explored during the early stages. It also covers the collaborative efforts across the sub-work packages, highlighting how initial prototypes and concepts have progressed towards more robust and deployable solutions.
 
-A quantitative assessment of the overall advancement of WP1 will be provided in
-the form of a list of pull requests (PRs) and issues opened in the deal.II
-GitHub repository, along with a summary of the improvements made in satellite
-repositories.
+The report will document significant milestones reached, pointing to specific related deliverables such as D1.5, challenges encountered in this intermediate phase, and the strategies adopted to overcome them. It will provide a mid-term perspective on the trajectory of WP1 towards its objectives, demonstrating its growing contribution to the overarching goals of the dealii-X project.
+
+As with the first report, quantitative evaluation of WP1's advancement is based on an updated list of pull requests (PRs) and issues recorded in the deal.II GitHub repository, alongside a summary of improvements in related satellite repositories.%, enabling a clear measurement of technical and collaborative progress since the first reporting period.
 
 \section{Improvements for Exascale Readiness}
 
@@ -150,235 +134,67 @@ Work package 1.1 focuses on enabling efficient finite element computations
 with the deal.II finite element library, where matrix-free evaluation
 techniques and multigrid methods are the core scientific components.
 
-The activities of the group at RUB can be summarized as follows:
+\subsection{Objectives and Planned Activities (Task WP1.1.1)}
+
+The primary objective of WP1.1, led by RUB, is to extend the capabilities of deal.II’s matrix-free implementations for modern graphics cards. To test and evaluate the performance of these accelerators, CEED benchmarks \cite{Kolev2021} were implemented. 
+
+\subsection{Progress and Current Status}
+
+The current status of the implementation focuses on element-wise communication-free algorithms such as mass and stiffness matrix operators. 
+
+Implementations are available in the \url{https://github.com/dealii-X/benchmarks} repository. A brief overview of the kernels is provided below:
 \begin{itemize}
-\item Benchmarks to assess the current performance of the core components.
-\item Exascale readiness of Raviart--Thomas finite element algorithms for
-  high-performance computing.
-\item Restart capabilities in application solver ExaDG.
-\item Initial setup of a domain decomposition infrastructure in the deal.II library to establish additional solver paradigms for the exascale era.
+\item Bake-off Kernel 1 (BK1) for mass-matrix operator on Gauss-Lobatto quadrature points.
+\item Bake-off Kernel 5 (BK5) for stiffness-matrix operator on Gauss-Lobatto-Legendre quadrature points.
 \end{itemize}
 
-\subsection{Benchmarks for GPU systems}
+The main challenge in implementing benchmarks on cutting-edge accelerators is the growing number of GPU vendors such as Nvidia, AMD, and Intel, whose non-standard programming models bring an additional burden on developers. To address this, this subproject also aims to ensure portability across different GPUs by employing the Kokkos library~\cite{Trott2022}, which supports multiple back-ends. Accordingly, current implementations evaluate the portability and performance of Kokkos by comparing it with CUDA kernels.
 
-In order to assess the core matrix-free algorithms on GPU systems, we have
-worked towards a set of benchmarks.
 
-\pgfplotstableread{
- 5   6          8        1331  3.79912e-05   4.2353e+07  3.14263e-05  2.54234e-05   4.2e6   96  1.84954e-05
- 5   6         16        2541  4.29821e-05  7.07614e+07  3.59094e-05  2.88131e-05   8.3e6  100  2.24764e-05
- 5   6         32        4851  4.43232e-05  1.27189e+08  3.81402e-05  3.10807e-05   1.3e7  100  2.42564e-05
- 5   6         64        9261  4.99301e-05  2.16052e+08  4.28646e-05  3.67775e-05   2.2e7  100  2.80755e-05
- 5   6        128       18081   5.1163e-05  4.13633e+08  4.37127e-05  3.80174e-05   4.1e7  100  2.86181e-05
- 5   6        256       35301  5.32898e-05  7.85706e+08   4.4929e-05  3.95952e-05   8.2e7  100  3.15277e-05
- 5   6        512       68921   5.6458e-05   1.4457e+09  4.76731e-05  4.35147e-05   1.4e8  100  3.26065e-05
- 5   6       1024      136161  5.64253e-05  2.87537e+09  4.73542e-05  4.09125e-05   2.6e8  100  3.20385e-05
- 5   6       2048      269001  7.93226e-05  3.90264e+09  6.89279e-05  6.07493e-05   2.7e8  100  5.07143e-05
- 5   6       4096      531441  0.000129025  4.39204e+09  0.000121001  0.000103359   2.7e8  100  9.24265e-05
- 5   6       8192     1056321  0.000222163  5.00917e+09  0.000210877  0.000176216   2.7e8  100  0.000166144
- 5   6      16384     2099601  0.000443032  5.53296e+09  0.000379472  0.000332482   2.8e8  100  0.000314249
- 5   6      32768     4173281  0.000864378  5.63024e+09  0.000741226  0.000662211   2.7e8  100  0.000615349
- 5   6      65536     8320641   0.00170104  5.66888e+09   0.00146777   0.00128264   2.7e8  100   0.00122682
- 5   6     131072    16589601   0.00572042  2.96308e+09   0.00559876   0.00316049   2.5e8  100   0.00241532
- 5   6     262144    33076161     0.019618   2.1394e+09    0.0154605   0.00896981   2.5e8  100   0.00542828
- 5   6     524288    66049281    0.0462221   2.1247e+09    0.0310864    0.0183618   2.6e8  100    0.0114346
- 5   6    1048576   131892801    0.0926743  2.14576e+09    0.0614668    0.0364508   2.6e8  100    0.0238106
- 5   6    2097152   263374721     0.182145  2.18134e+09      0.12074    0.0721931   2.6e8  100    0.0467826
-}\tableBPFiveAMD
-\pgfplotstableread{
-nele        ampere 
-256         0.85  
-512         1.65  
-1024        2.75  
-2048        3.38  
-4096        4.07  
-8192        4.62  
-16384       4.93  
-32768       5.18  
-65536       5.20  
-131072      5.22 
-262144      5.23 
-524288      5.24  
-1048576     nan   
-}\tableBP
+\subsection{Implementation Details}
 
-\pgfplotstableread{
- 4   5        256       18785  0.000372951  5.03686e+07    99  0.000251866
- 4   5        384       28033  0.000408611  6.86056e+07   100  0.000289283
- 4   5        512       36465  0.000488475  7.46507e+07   100  0.000365702
- 4   5        768       54417  0.000611396  8.90046e+07   100  0.000490703
- 4   5       1024       70785  0.000735216  9.62778e+07   100  0.000605897
- 4   5       1536      105633    0.0010361  1.01953e+08   100  0.000898252
- 4   5       2048      140481   0.00128128  1.09641e+08   100   0.00114143
- 4   5       3072      210177    0.0020391  1.03074e+08   100   0.00189293
- 4   5       4096      276705   0.00254333  1.08796e+08   100   0.00238997
- 4   5       6144      413985   0.00367827  1.12549e+08   100   0.00351821
- 4   5       8192      545025   0.00477614  1.14114e+08   100   0.00461896
- 4   5      12288      815425   0.00699715  1.16537e+08   100   0.00681141
- 4   5      16384     1085825   0.00921008  1.17895e+08   100   0.00899371
- 4   5      24576     1626625    0.0137157  1.18595e+08   100    0.0134318
- 4   5      32768     2154945    0.0183288  1.17572e+08   100    0.0179785
- 4   5      49152     3228225    0.0273663  1.17964e+08   100    0.0268812
- 4   5      65536     4276737    0.0363368  1.17697e+08   100    0.0357235
- 4   5      98304     6406785    0.0547228  1.17077e+08   100    0.0538665
- 4   5     131072     8536833    0.0724943  1.17759e+08   100    0.0714299
- 4   5     196608    12796929     0.109293  1.17088e+08   100     0.107686
-  }\tableMFKokkos
-
-\pgfplotstableread{
- 128  0.06204099359     0.06122035118     0.9288824383     0.9893643334     0.6850488097     0.04748168987     0.08408660921     1.34873135     1.354440024     1.185448618     1.266223488
- 256  0.1201602638     0.1235158795     1.756697409     1.912388693     1.250928423     0.09173891106     0.1659966282     2.626395272     2.534653465     2.312472901     2.411999699
- 512  0.2421426599     0.2463262745     3.462079411     3.66028024     2.112211221     0.1840169756     0.3358874777     4.959318094     4.842615012     4.368600683     4.669147151
- 1024  0.4796846074     0.4812030075     6.195247084     6.339772164     2.836879433     0.355389707     0.6525252216     7.599145096     7.74677722     7.532070142     7.880802857
- 2048  0.9150766019     0.946119248     9.304015991     10.13018875     3.588852128     0.7014505779     1.292504986     11.9108547     11.61313736     10.93689922     12.17192849
- 4096  1.848021859     1.848695803     13.6406021     14.23725043     4.247517442     1.383828665     2.567600096     15.72240135     15.63120134     14.63275221     16.29379754
- 8192  3.602500642     3.753184159     16.65257269     17.67498058     4.526346964     2.764735582     5.107996209     17.45742196     18.29192047     16.59024999     19.70215877
- 16384  2.806802109     4.818063976     19.18087906     20.10129167     4.568226734     2.156073168     9.049493838     19.50290449     19.9912148     18.52203562     21.74143825
- 32768  2.820670501     6.145351977     20.67590419     21.60462896     4.627798881     2.521856914     9.146450391     20.6549474     21.20686531     19.65205876     23.18538687
- 65536  2.461917958     9.090636711     21.5591429     22.51446318     4.658868143     2.419041685     12.35685238     21.31407296     21.81101733     20.26488821     24.04673144
- 131072  2.030735197     9.311207093     22.02793019     22.97760861     4.68662755     1.884650075     12.40399284     21.64933469     22.14215632     20.59101129     24.49376219
- 262144  1.82988666     9.352695193     22.265483     22.97002219     4.695679339     1.477229265     11.6228092     21.81543165     22.31424488     20.75276921     24.71834678
- 524288  1.830664127     8.872589741     22.39760604     23.34501724     4.703506688     1.462271549     10.67090272     21.90104228     22.40858047     20.83938828     24.57966544
- 1048576  1.806746246     9.19572938     22.4594457     23.41187244     4.704535319     1.449557117     10.92101941     21.94892494     22.45115915     20.87924376     24.9059036
-}\tableLowLevel
-
-As a benchmark, we consider a matrix-free operator using the CEED benchmark
-BP5\footnote{\url{https://ceed.exascaleproject.org/bps/}, see the benchmark
-  description at \url{https://doi.org/10.1177/1094342020915762}}, which uses a
-3D Poisson equation on a mesh of deformed elements and solving the linear
-system with a conjugate gradient iterative solver and diagonal
-preconditioner. We list the throughput in terms of degrees of freedom (DoFs)
-per second and CG iteration. Figure~\ref{fig:bp5} lists the measured
-performance in February 2025. The CPU code uses advanced data locality
-optimizations established in our previous
-research\footnote{\url{https://doi.org/10.1177/10943420221107880}}, and
-therefore the CPU codes reach a relatively high throughput despite a formally
-much slower memory subsystem compared to the A100, where the CUDA code reaches
-1.1 TB/s of memory bandwidth. The Kokkos code currently integrated in deal.II
-was found to be really slow in this experiment, reaching 0.12 GDoF/s with the
-code from February 2025 vs. 5.2 GDoF/s with CUDA (code established in
-2016--2022). Also for the CPU, the Kokkos abstractions give poor performance
-with 0.26 GDoF/s vs. 3.6 GDoF/s.
-
-\begin{figure}
-  \centering
-      \begin{tikzpicture}
-    \begin{semilogxaxis}[
-      title style={font=\scriptsize},
-      tick label style={font=\scriptsize},
-      title={Node-level GPU performance},
-      label style={font=\scriptsize},
-      legend style={font=\tiny},
-      width=0.5\columnwidth,
-      height=0.4\textwidth,
-      xlabel={DoFs},
-      ylabel={[billion DoFs $\times$ CG its] / [sec]},
-      legend columns = 2,
-      legend to name=legend:node,
-      legend cell align={left},
-      grid,
-      semithick,
-      ymin=0,ymax=7,ytick={0,1,2,3,4,5,6,7},
-      xmin=1e4,xmax=1.7e8
-      ]
-
-      \addplot [red, solid, mark=triangle] table[x expr={\thisrowno{3}}, y expr={\thisrowno{3}/\thisrowno{7}*1e-9}] {\tableBPFiveAMD};
-      \addlegendentry{CPU 2$\times$\,64C Zen 2};
-      \addplot [green!50!black, dashed, solid, mark=square*] table[x expr={\thisrowno{0}*125}, y expr={\thisrowno{1}}] {\tableBP};
-\addlegendentry{A100, CUDA};
-      \addplot [red!50!black, solid] table[x expr={\thisrowno{3}}, y expr={\thisrowno{8}*1e-9}] {\tableBPFiveAMD};
-\addlegendentry{CPU 2$\times$\,64C Zen 2, Kokkos};
-      \addplot [black, solid, mark=x] table[x expr={\thisrowno{3}}, y expr={\thisrowno{5}*1e-9}] {\tableMFKokkos};
-\addlegendentry{A100, Kokkos};
-
-\end{semilogxaxis}
-  \end{tikzpicture}
-  \\
-  \strut\hfill\pgfplotslegendfromname{legend:node}\hfill\strut
-  \caption{Throughput of CEED BP5 benchmark case with deal.II using Kokkos and native CUDA/CPU implementations.}
-  \label{fig:bp5}
-\end{figure}
-
-In order to better understand the performance gap and mitigate performance
-differences, we have worked on more low-level sum Factorization benchmarks to
-assess the performance of the Kokkos programming model in comparison. The
-algorithm successively applies matrix-vector products on finite elements in 3D
-with polynomial degree 5, with a focus on optimizing the use of shared memory
-and ensuring coalesced memory access patterns. The objective of the benchmark
-is to compare the throughput, measured in degrees of freedom per second, for
-each programming model, highlighting performance differences between the
-vendor-neutral Kokkos library and the native programming model
-CUDA. Fig.~\ref{fig:sum_fact} shows the results of this experiment.
-
-\begin{figure}
-  \centering
-      \begin{tikzpicture}
-    \begin{semilogxaxis}[
-      title style={font=\scriptsize},
-      tick label style={font=\scriptsize},
-      title={Node-level GPU performance},
-      label style={font=\scriptsize},
-      legend style={font=\tiny},
-      width=0.5\columnwidth,
-      height=0.4\textwidth,
-      xlabel={DoFs},
-      ylabel={[billion DoFs] / [sec]},
-      legend columns = 2,
-      legend to name=legend:new,
-      legend cell align={left},
-      grid,
-      semithick,
-      ymin=0,
-      xmin=1e4,xmax=1.7e8
-      ]
-
-      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{2}}] {\tableLowLevel};
-      \addlegendentry{Kokkos, across elem};
-      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{4}}] {\tableLowLevel};
-      \addlegendentry{Kokkos, per thread};
-      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{5}}] {\tableLowLevel};
-      \addlegendentry{cuBLAS};
-      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{7}}] {\tableLowLevel};
-      \addlegendentry{CUDA, across elem};
-      \addplot table[x expr={\thisrowno{0} * 125}, y expr={\thisrowno{11}}] {\tableLowLevel};
-      \addlegendentry{CUDA, per thread};
-
-\end{semilogxaxis}
-  \end{tikzpicture}
-  \\
-  \strut\hfill\pgfplotslegendfromname{legend:new}\hfill\strut
-  \caption{Throughput evaluation of sum factorization kernels for forward evaluation (basis functions $\to$ values at quadrature points) with CUDA and Kokkos on an A100 GPU.}
-  \label{fig:sum_fact}
-\end{figure}
-
-\subsection{Raviart--Thomas finite elements}
-
-Another string of activities is centered around the application-readiness of Raviart--Thomas elements, where future requirements and potential improvement opportunities are investigated with the ExaDG application code pioneering the use of Raviart-Thomas elements for high-Reynolds incompressible flow problems in a matrix-free setting based on deal.II.
-
-This will also require some debugging in the deal.II implementation of the
-Raviart--Thomas elements, as these code paths are quite new and have not been
-extensively used by the community yet due to the fact that the use of
-Raviart--Thomas elements has significantly increased in the last
-years. Currently, the time integration and matrix-free solver capabilities in
-ExaDG have been extended, and further testing regarding the performance will
-be executed in the near future on the JUPITER system.
+All implemented GPU kernels follow a common sequence for matrix-free evaluations, which can be described as:
 \begin{itemize}
-\item Improvements of Raviart-Thomas incompressible flow solvers in ExaDG:\\
-  \href{https://github.com/kronbichler/exadg/tree/martin}{https://github.com/kronbichler/exadg/tree/martin}
+\item[1] Each block/warp is assigned to an element to perform operator evaluation.
+\item [2] Each block/warp caches the required interpolation matrices from global memory into shared memory.
+\item[3] Each block/warp performs the tensor contractions and stores intermediate values in shared memory.
+\item[4] Inserted block/warp-level synchronizations ensure thread safety after each contraction.
+\item[5] Element-wise solution vectors are copied back from shared memory to global memory.
 \end{itemize}
 
-\subsection{Restart capabilities}
+Certain optimization strategies and algorithmic design choices are partially motivated by the findings of the research~\cite{Swiry2019} in our implementations. Our optimization techniques can be classified based on the four categories;
+\begin{itemize}
+\item[1] Thread Granularity (block-centric and warp-centric)
+\item [2] Thread-level Data Mapping (strided fashion, simple map)
+\item[3] Thread Dimension in each Thread-Block (2D and 3D)
+\item[4] Compile time and runtime evaluation of number of quadrature points.
+\end{itemize}
 
-To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal re-usability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the startup phase. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
-    \begin{itemize}
-        \item Grid-to-grid projection:\\
-        \href{https://github.com/exadg/exadg/pull/735}{https://github.com/exadg/exadg/pull/735}    
-        \item Restarting including grid-to-grid projection and rollout to all time integrators (implicit and explicit, various single step and multi step schemes) and physics (convection-diffusion, Navier-Stokes equations for compressible and incompressible flow, acoustic conservation equations) in ExaDG:\\
-        \href{https://github.com/exadg/exadg/pull/729}{https://github.com/exadg/exadg/pull/729}\\
-        \href{https://github.com/exadg/exadg/pull/731}{https://github.com/exadg/exadg/pull/731}\\
-        \href{https://github.com/exadg/exadg/pull/732}{https://github.com/exadg/exadg/pull/732}\\
-        \href{https://github.com/exadg/exadg/pull/734}{https://github.com/exadg/exadg/pull/734}     
-    \end{itemize}
+\subsection{Preliminary Results}
+
+{\bf BK1.} Early performance results for the different test cases are shown in Figures~\ref{fig:BK1_1} and~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
+The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block. This leads to under-utilization of the warp (size 32) on the target hardware.
+The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Nvidia H100 GPU with CUDA programming model. Various polynomial orders are tested, and saturation of hardware resources is visible after $10^6$ degrees of freedom. Polynomial order 1 performs the worst due to under-occupation of the single warp. {\color{red} Have not placed the two figures side-by-side as requested as labels are already too small. Please provide new figures.}}
+\label{fig:BK1_1}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{BK1_2}
+\caption{BK1 performance results on an NVIDIA H100 GPU using the Kokkos library. The same test conditions and optimization techniques as in Figure 1 were applied. Kokkos attains nearly 90\% of the performance delivered by CUDA.}
+\label{fig:BK1_2}
+\end{figure}
+
+{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
+
+Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute. In these measurements, both CUDA and Kokkos executions completed in 0.71 ms, showing identical performance. Nsight Compute reported an arithmetic intensity of 1.97 FLOP/byte, which places these kernels in the memory-bound region of the roofline model for the H100 GPU. The achieved performance was 5.7 TFLOPs, compared to the hardware limit of 6.6 TFLOPs at this arithmetic intensity. This corresponds to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor.
+
+Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations deliver near-optimal performance on the H100, efficiently exploiting available memory bandwidth and achieving performance levels very close to the hardware limits.
+
 
 \section{Improvement of pre-exascale modules of the deal.II library}
 
@@ -529,82 +345,76 @@ computers.
 
 \section{Polygonal Discretization Methods}
 
-Work Package 1.3 of the dealii-X project is dedicated to the introduction and
-development of an experimental module for polygonal discretization within the
-deal.II library. 
+ The dealii-X project Work Package 1.3, lead by the SISSA team, will deliver an experimental module enhancing the
+deal.II library with the capability to perform efficiently polygonal discretization, that is numerical methods based on general polygonal and polyhedral meshes.% in place of standard simplicial and hexahedral meshes. 
 
-\subsection{Objectives and Planned Activities (Task WP1.3.1)}
+\subsection{Objectives and Planned Activities (Task WP1.3.1 and WP1.3.2)}
 
-The primary objective of this sub work package is the development of a polygonal
-discretization module within the deal.II library. The deal.II library currently
+%The primary objective of WP1.3 is the development of a polygonal discretization module within the deal.II library. 
+The deal.II library currently
 supports a wide range of finite element methods, defined on standard simplicial
 and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes.
+The primary objective of WP1 is the development of a polygonal
+discretization module within the deal.II library. The module is designed to be integrated into the deal.II library, and its integration is expected to be completed by the end of the project.
 
-Planned activities include:
-\begin{itemize}
-    \item Develop data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes;
-	\item Exploit  R-tree data structures for efficient generation of balanced and nested hierarchies of  polytopic meshes and test use of such hierarchies of  polytopic meshes to enhance multigrid solvers;
-	\item Develop extensive library of examples of polytopic finite element methods for complex multiscale problems.  
-\end{itemize}
+This task requires the development of the basic data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes and the exploitation of such data structure for the implementation of polygonal discretizations.
+
 
  \subsection{Progress and Current Status}
 
-A Preliminary version of the polygonal discretization module has been developed
-as part of this work package, and it is currently available in the repository
-\url{https://github.com/fdrmrc/Polydeal}. The module is designed to be
-integrated into the deal.II library, and its integration is expected to be
-completed by the end of the project.
-
-The results of this early stage of the project are presented in the article ``R3MG:
-R-tree based agglomeration of polytopal grids with applications to multilevel
-methods''~\cite{FederEtAl2025}, that clearly shows the potential of such
-discretization methods. 
-
-This work introduces a novel approach for the agglomeration of standard deal.II
-grids into polygonal and polyhedral meshes, based on spatial indices,
-specifically the R-tree data structure. The ``R3MG'' article demonstrates how
-building an R-tree spatial database from an arbitrary fine mesh offers a natural
-and efficient agglomeration strategy with several key features: 
-
-\begin{itemize}
-    \item 
-    The process is fully automated, robust, and dimension-independent;
-    \item It automatically generates a
-balanced and nested hierarchy of agglomerates. This is a crucial property for
-the subsequent application of multigrid methods;
-\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes and thus are characterized by good and easy to assess  shape-regularity properties.
-\end{itemize}
-
-A fundamental aspect of this approach is the ability to automatically extract
-nested sequences of agglomerated meshes, which can be directly used within
-multigrid solvers. This is particularly relevant for WP1.3, as one of its
-objectives is the development of agglomeration-based multigrid methods for
-single-physics problems. The R-tree based approach, named R3MG (R-tree based
-MultiGrid), is proposed as a multigrid preconditioning technique with
-Discontinuous Galerkin methods. The experiments presented in the article, based
-on polygonal Discontinuous Galerkin methods, confirm the effectiveness of the
-approach in the context of complex three-dimensional geometries relevant to biomedical applications and in the
-design of geometric multigrid preconditioners, at least for model problems.
-
-Furthermore, the ``R3MG'' article highlights how the R-tree-based method preserves
-mesh quality and significantly reduces the computational cost associated with
-the agglomeration process, favorably comparing it with graph partitioning tools
-like METIS. In particular, it is demonstrated that R-tree-based agglomeration
-preserves structured meshes, a property not shared by METIS. The ability to
-generate nested grid hierarchies through R-tree agglomeration simplifies the use
-of simpler and more economical intergrid transfer operators compared to the
-non-nested case. In summary, the ``R3MG'' article represents a significant
-contribution to the objective of WP1.3 to develop an experimental polygonal
-discretization module in deal.II, providing an efficient and automated
-methodology for generating R-tree based agglomerated polygonal grid hierarchies,
-specifically designed for application with Discontinuous Galerkin methods and
-multigrid techniques.
+The preliminary version of the polygonal discretization module developed within the first six months of the project was made available at https://github.com/fdrmrc/Polydeal.
+The module has since been extensively tested and parallelised. 
+Milestone M5 has been reached and deployed as deliverable D1.5 (cf. the specific report for more details). The milestone was set to establish the parallel implementation of polygonal discretization methods. The deliverable provides a tutorial program on polygonal discretizations, showcasing the implementation of these methods for the solution of a basic model problem. Aside from the tutorial, a series of problems and tests have been run, confirming the validity and robustness of the approach for the solution of problems in the dimension-independent setting. In particular, the polytopic discontinuous Galerkin methods have been implemented for the solution of a series of benchmark problems, including fluid mechanics and electrophysiology.
 
 
+{\bf Fluid mechanics.}
+The polytopic discontinuous Galerkin method has been extended to the solution of fluid mechanics boundary value problems with the analysis of the method for the solution of the Oseen problem. This required a new analysis which has been carried out for the $hp$-version of the method, hence permitting arbitrarily high-order implementations. Both stabilised equal order $(\mathcal{P}_k,\mathcal{P}_{k})$ and pressure lower-order $(\mathcal{P}_k,\mathcal{P}_{k-1})$ versions have been analysed. 
+New working examples implementing the new method have been committed by the SISSA team within the examples suits of the {\em polydeal} repository \url{https://github.com/fdrmrc/Polydeal}.
+% https://github.com/fdrmrc/Polydeal/blob/main/examples/darcy_stokes.cc
+Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is achieving the optimal convergence rate when applied to the Oseen problem. Using the \emph{polydeal} data structure, a sequence of polygonal meshes obtained by agglomeration of a single fine quadrilateral mesh has been created, see Figure~\ref{fig:metis}. The corresponding results shown in Table~\ref{tab:meshes} display the corresponding convergence rate achieved by the polyDG method solving a model problem for the Oseen equation with variable coefficients.
+\begin{figure}[!htb]
+\centering
+\includegraphics[height=0.3\linewidth]{metis_level3}
+\includegraphics[height=0.3\linewidth]{metis_level4}
+\includegraphics[height=0.3\linewidth]{metis_level5}
+\label{fig:meshes}
+\caption{Three subsequent levels of the meshes obtained by METIS-based agglomeration of an underlying fine quadrilateral mesh.}
+\end{figure}
+\begin{table}[!ht]\centering
+\caption{$\normdg{(\cdot,\cdot)}_{\star}$ norms of errors and convergence orders for the test problem on three different meshes with $Re=1$. {\color{red} TABLE IN PROGRESS!}}
+\label{tb1}
+{\small
+\begin{tabular}[c]{cc|cccccc}\hline\hline
+&\multirow{2}*{Level}
+&\multicolumn{2}{c}{ Mesh 1 }
+&\multicolumn{2}{c}{ Mesh 2 }
+&\multicolumn{2}{c}{ Mesh 3 }
+ \\ \cline{3-8}
+&&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order
+&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order\\ \hline
+\multirow{4}*{$\mathcal{P}_2$-$\mathcal{P}_2$}
+&4 &8.32E-00&1.85&6.75E-00&2.03&7.69E-00&1.86\\
+&5 &2.17E-00&1.94&1.76E-00&1.94&2.46E-00&1.64\\
+&6 &4.54E-01&2.25&4.91E-01&1.84&6.50E-01&1.92\\
+&7 &8.87E-02&2.36&1.17E-01&2.08&1.17E-01&2.48\\
+\hline
+\multirow{4}*{$\mathcal{P}_3$-$\mathcal{P}_2$}
+&4 &1.20E-00&2.63&1.14E-00&2.59&1.16E-00&2.70\\
+&5 &1.73E-01&2.79&1.50E-01&2.93&2.14E-01&2.44\\
+&6 &1.99E-02&3.13&2.07E-02&2.85&3.21E-02&2.73\\
+&7 &1.98E-03&3.32&2.68E-03&2.95&2.68E-03&3.58\\
+\hline\hline
+\end{tabular}}
+\label{tab:oseen}
+\end{table}
+A publication presenting both the new sharp a priori analysis of the discontinuous Galerkin method for the Oseen problem as well as numerical experiments validating the approach for both the solution of the Oseen and coupled Darcy-Stokes problems is under preparation. It will be submitted to a top numerical analysis journal within the next semester.
+
+{\bf Electrophysiology.}
 
  \subsection{Challenges and Future Plans}
 
-The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a range of examples for comprehensive benchmarking of both polytopic discretization methods and multigrid solvers, before integration within the deal.II library. This include the implementation of polytopic discontinuous Galerkin methods for fluid flow problems and a multigrid solver for accelerating the solution of complex electrophysiological models.
+Before integration into the deal.II library, additional testing and generalization are necessary to demonstrate the potential of polygonal discretization in solving the same range of models currently supported by standard finite elements. Moreover, further work on efficient implementation is required to fully exploit the complexity-reduction capabilities of these methods. This effort will include, for example, the development of advanced solvers, such as multigrid techniques and automated mesh adaptivity algorithms, which constitute the next phase of the project.
+
 
 \section{Integration of PSCToolkit into deal.II (WP1.4)}
     \subsection{Objectives and Planned Activities}
@@ -667,9 +477,10 @@ The repository \url{https://github.com/fdrmrc/Polydeal} is being enriched with a
     crucial to streamline integration and reduce maintenance efforts.
 
 \bibliographystyle{abbrv}
-\bibliography{../common/bibliography.bib}
+%\bibliography{../common/bibliography.bib}
+\bibliography{bibliography.bib}
     
-\label{MyLastPage}
+%\label{MyLastPage}
 
 
 \end{document}
