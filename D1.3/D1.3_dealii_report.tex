@@ -6,6 +6,8 @@
 % Tell LaTeX where to find graphics files
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{xspace}
 \usepackage{lipsum}
 \usepackage{pgfplots}
@@ -410,6 +412,19 @@ Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is a
 A publication presenting both the new sharp a priori analysis of the discontinuous Galerkin method for the Oseen problem as well as numerical experiments validating the approach for both the solution of the Oseen and coupled Darcy-Stokes problems is under preparation. It will be submitted to a top numerical analysis journal within the next semester.
 
 {\bf Electrophysiology.}
+A novel multilevel preconditioning strategy has been developed and implemented for solving the monodomain equation in cardiac electrophysiology using high-order Discontinuous Galerkin methods. The approach centers on the R*-tree spatial data structure to automatically generate coarse grid hierarchies from predetermined fine meshes, in order to create agglomerated polytopic elements by traversing tree levels. The mathematical framework employs inherited bilinear forms where coarse operators are constructed via Galerkin projection $A_{l+1} = (P_{l+1}^l)^T A_l P_{l+1}^l$, avoiding the computational expense of assembling operators on polytopic elements. The monodomain equation $\frac{\partial u}{\partial t} + \mathcal{I}_{ion}(u,\mathbf{w}) - \nabla \cdot (\mathbb{D} \nabla u) = \mathcal{I}_{app}$ is discretized using Symmetric Interior Penalty DG with semi-implicit time stepping, treating diffusion implicitly and reaction terms explicitly.
+
+The C++ implementation builds upon the \url{https://github.com/fdrmrc/Polydeal} library, based on deal.II. The agglomeration algorithm demonstrates excellent scalability, maintaining load balance across 128 to 1024 processors even on realistic three-dimensional cardiac geometries. Memory requirements scale favorably due to the matrix-free implementation of prolongation and restriction operators.
+
+Numerical experiments, performed on two different test cases, demonstrate consistent superior performance compared to algebraic multigrid preconditioning. For polynomial degrees ranging from $p=1$ to $p=5$, the method achieves lower iteration counts across all test cases, as reported in Figure \ref{fig:iterates_level_3D_monodomain_p_2}. The advantage becomes more pronounced with increasing polynomial degree. The method also exhibits minimal dependence on the number of multigrid levels. The coarsening algorithm maintains geometric quality while preserving the spatial locality of agglomerated elements, resulting in well-conditioned coarse grid operators. The preconditioner integrates V-cycle multigrid with Chebyshev smoothers, using eigenvalue estimates computed via Lanczos iterations.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{l_p_2.pdf}
+    \caption{Number of CG iterations per time step for the monodomain problem in an idealized ventricle test case with $p=2$ and different number of levels.}
+    \label{fig:iterates_level_3D_monodomain_p_2}
+\end{figure}
+
 
  \subsection{Challenges and Future Plans}
 
