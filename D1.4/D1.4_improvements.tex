@@ -1,0 +1,126 @@
+\documentclass[a4paper,12pt]{article}
+
+% Import the deliverable package from common directory
+\usepackage{../common/deliverable}
+
+% Tell LaTeX where to find graphics files
+\graphicspath{{../common/logos/}{./figures/}{../}}
+
+\usepackage{xspace}
+\usepackage{lipsum}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{1.4}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Enhancements in Pre-Exascale Modules of deal.II}
+
+\newpage
+
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{Enhancements in Pre-Exascale Modules}
+    \tableEntry{Deliverable number}{D1.4}
+    \tableEntry{Deliverable version}{1.0}
+    \tableEntry{Date of delivery}{31 August 2025}
+    \tableEntry{Actual date of delivery}{31 August 2025}
+    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP1}
+    \tableEntry{Partner responsible}{UNIPI}
+\end{deliverableTable}
+
+% Abstract and Keywords Section
+\begin{deliverableTable}
+    \tableEntry{Abstract}{ This report documents the progress achieved during
+        the second year of the dealii-X project (Months 7–18) in enhancing the
+        deal.II finite element library towards exascale readiness. Building upon
+        the foundations laid in D1.2, this deliverable focuses on the
+        consolidation of the new features, their integration into real-world
+        biomedical applications, and preliminary scaling tests on EuroHPC
+        pre-exascale systems. Major achievements include significant
+        improvements in GPU matrix-free solvers, the stabilization and extension
+        of the generalized interface for coupling operators, the maturation of
+        the polygonal discretization module, and the integration of external
+        solver technologies (PSCToolkit and MUMPS) into the deal.II workflow. }
+        \tableEntry{Keywords}{Mesh handling; Polygona discretization; Non-matching methods and preconditioning}
+\end{deliverableTable}
+
+\newpage
+
+\begin{documentControl}
+    \addVersion{0.1}{1 August 2025}{Luca Heltai}{Initial draft}
+    \addVersion{0.2}{27 August 2025}{Luca Heltai}{Collection of contributions}
+    \addVersion{1.0}{31 August 2025}{Luca Heltai}{Final version}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: Martin Kronbichler \\
+Approval Date: 31 August 2025
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{{Introduction}}
+
+The goal of Work Package 1 (WP1) is to strengthen the numerical and software backbone of the dealii-X Centre of Excellence by extending the capabilities of the deal.II library, enabling the exascale transition of digital twins for human organs. Deliverable D1.4 provides a consolidated report on the technical progress, following the preliminary results described in D1.2, and emphasizes integration, benchmarking, and readiness for multiphysics biomedical applications.
+
+\subsection{{Purpose of the Document}}
+
+The purpose of this document is to provide a comprehensive overview of the advancements made in the deal.II library as part of the dealii-X project. It aims to inform stakeholders about the current state of the library, the challenges encountered, and the strategies employed to overcome them.
+
+\section{Improvements for Exascale Readiness (WP1.1)}
+\label{sec:section2}
+GPU Matrix-Free Solvers
+
+\lipsum[4-5]
+
+\subsection{Polygonal Discretization Methods (WP1.3)}
+
+The Polydeal module has been further developed, enriched with a suite of test cases and benchmark applications. The R-tree agglomeration (R3MG) has been successfully applied to generate multigrid hierarchies in large brain poromechanics simulations, confirming its robustness and scalability. Work is ongoing to merge the module into the official deal.II repository, including comprehensive documentation and tutorials.
+
+\lipsum[6]
+
+\subsection{Integration of PSCToolkit (WP1.4)}
+\lipsum[7]
+
+\newpage
+
+\section{Integration of MUMPS (WP1.5)}
+\label{sec:section3}
+
+\lipsum[8-9]
+
+\subsection{Challenges and Future Plans}
+
+Key challenges remain in achieving uniform GPU performance across architectures (NVIDIA, AMD, Intel), minimizing data movement overheads, and ensuring robust interoperability between deal.II and external solvers. Future efforts will focus on:
+
+Finalizing the integration of polygonal methods and external solver backends into the main deal.II release.
+
+Conducting large-scale benchmarks on organ applications (brain poromechanics, liver hemodynamics).
+
+Preparing training materials and tutorials for the broader deal.II community.
+
+\lipsum[20]
+
+\label{MyLastPage}
+
+\end{document}
