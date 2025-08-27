@@ -383,52 +383,32 @@ Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is a
 \caption{Three subsequent levels of the meshes obtained by METIS-based agglomeration of an underlying fine quadrilateral mesh.}
 \end{figure}
 \begin{table}[!ht]\centering
-\caption{$\normdg{(\cdot,\cdot)}_{\star}$ norms of errors and convergence orders for the test problem on three different meshes with $Re=1$. {\color{red} TABLE IN PROGRESS!}}
+\caption{Energy-norm errors and convergence orders for an Oseen test problem with variable coefficients and $Re=1$ in function of the agglomeration level for the meshes sampled in Figure~\ref{fig:meshes}.}
 \label{tb1}
 {\small
-\begin{tabular}[c]{cc|cccccc}\hline\hline
-&\multirow{2}*{Level}
-&\multicolumn{2}{c}{ Mesh 1 }
-&\multicolumn{2}{c}{ Mesh 2 }
-&\multicolumn{2}{c}{ Mesh 3 }
- \\ \cline{3-8}
-&&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order
-&$\normdg{({\bf e}_{\vecu},e_p)}_{\star}$&order\\ \hline
-\multirow{4}*{$\mathcal{P}_2$-$\mathcal{P}_2$}
-&4 &8.32E-00&1.85&6.75E-00&2.03&7.69E-00&1.86\\
-&5 &2.17E-00&1.94&1.76E-00&1.94&2.46E-00&1.64\\
-&6 &4.54E-01&2.25&4.91E-01&1.84&6.50E-01&1.92\\
-&7 &8.87E-02&2.36&1.17E-01&2.08&1.17E-01&2.48\\
+\begin{tabular}[c]{cc|cc}\hline\hline%\cline{3-8}
+&{Level}&energy-norm error&order\\ \hline
+{$\mathcal{P}_2$-$\mathcal{P}_2$}
+&4 &7.69E-00&1.86\\
+&5 &2.46E-00&1.64\\
+&6 &6.50E-01&1.92\\
+&7 &1.17E-01&2.48\\
 \hline
-\multirow{4}*{$\mathcal{P}_3$-$\mathcal{P}_2$}
-&4 &1.20E-00&2.63&1.14E-00&2.59&1.16E-00&2.70\\
-&5 &1.73E-01&2.79&1.50E-01&2.93&2.14E-01&2.44\\
-&6 &1.99E-02&3.13&2.07E-02&2.85&3.21E-02&2.73\\
-&7 &1.98E-03&3.32&2.68E-03&2.95&2.68E-03&3.58\\
+{$\mathcal{P}_3$-$\mathcal{P}_2$}
+&4 &1.16E-00&2.70\\
+&5 &2.14E-01&2.44\\
+&6 &3.21E-02&2.73\\
+&7 &2.68E-03&3.58\\
 \hline\hline
 \end{tabular}}
 \label{tab:oseen}
 \end{table}
-A publication presenting both the new sharp a priori analysis of the discontinuous Galerkin method for the Oseen problem as well as numerical experiments validating the approach for both the solution of the Oseen and coupled Darcy-Stokes problems is under preparation. It will be submitted to a top numerical analysis journal within the next semester.
-
-{\bf Electrophysiology.}
-A novel multilevel preconditioning strategy has been developed and implemented for solving the monodomain equation in cardiac electrophysiology using high-order Discontinuous Galerkin methods. The approach centers on the R*-tree spatial data structure to automatically generate coarse grid hierarchies from predetermined fine meshes, in order to create agglomerated polytopic elements by traversing tree levels. The mathematical framework employs inherited bilinear forms where coarse operators are constructed via Galerkin projection $A_{l+1} = (P_{l+1}^l)^T A_l P_{l+1}^l$, avoiding the computational expense of assembling operators on polytopic elements. The monodomain equation $\frac{\partial u}{\partial t} + \mathcal{I}_{ion}(u,\mathbf{w}) - \nabla \cdot (\mathbb{D} \nabla u) = \mathcal{I}_{app}$ is discretized using Symmetric Interior Penalty DG with semi-implicit time stepping, treating diffusion implicitly and reaction terms explicitly.
-
-The C++ implementation builds upon the \url{https://github.com/fdrmrc/Polydeal} library, based on deal.II. The agglomeration algorithm demonstrates excellent scalability, maintaining load balance across 128 to 1024 processors even on realistic three-dimensional cardiac geometries. Memory requirements scale favorably due to the matrix-free implementation of prolongation and restriction operators.
-
-Numerical experiments, performed on two different test cases, demonstrate consistent superior performance compared to algebraic multigrid preconditioning. For polynomial degrees ranging from $p=1$ to $p=5$, the method achieves lower iteration counts across all test cases, as reported in Figure \ref{fig:iterates_level_3D_monodomain_p_2}. The advantage becomes more pronounced with increasing polynomial degree. The method also exhibits minimal dependence on the number of multigrid levels. The coarsening algorithm maintains geometric quality while preserving the spatial locality of agglomerated elements, resulting in well-conditioned coarse grid operators. The preconditioner integrates V-cycle multigrid with Chebyshev smoothers, using eigenvalue estimates computed via Lanczos iterations.
-
-\begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.9\textwidth]{l_p_2.pdf}
-    \caption{Number of CG iterations per time step for the monodomain problem in an idealized ventricle test case with $p=2$ and different number of levels.}
-    \label{fig:iterates_level_3D_monodomain_p_2}
-\end{figure}
+A publication presenting both the new sharp a priori analysis of the discontinuous Galerkin method for the Oseen problem as well as numerical experiments validating the approach for the solution of the Oseen problem is under preparation. It will be submitted to a top numerical analysis journal within the next semester.
 
 
  \subsection{Challenges and Future Plans}
 
-Before integration into the deal.II library, additional testing and generalization are necessary to demonstrate the potential of polygonal discretization in solving the same range of models currently supported by standard finite elements. Moreover, further work on efficient implementation is required to fully exploit the complexity-reduction capabilities of these methods. This effort will include, for example, the development of advanced solvers, such as multigrid techniques and automated mesh adaptivity algorithms, which constitute the next phase of the project.
+Before integration into the deal.II library, additional testing and generalization are necessary to demonstrate the potential of polygonal discretization in solving the same range of models currently supported by standard finite elements. Moreover, further work on efficient implementation is required to fully exploit the complexity-reduction capabilities of these methods. This effort will include, for example, the automatic construction of coarse polygonal grid hierarchies and mesh adaptivity algorithms, as well as the development of advanced solvers, such as multigrid techniques, which constitute the next phase of the project.
 
 
 \section{Integration of PSCToolkit into deal.II (WP1.4)}
