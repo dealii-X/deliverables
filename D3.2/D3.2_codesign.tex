@@ -191,8 +191,50 @@ streaming operations implemented using different frameworks on CPU and GPU archi
 
 \subsection{Kokkos}
 
+
+
 \subsection{OpenMP Offloading}
 
+Since their introduction in OpenMP 4.5, offloading has become an integral component
+of the OpenMP programming framework.
+Adding OpenMP directives offloading to an existing code can be quite straightforward,
+assuming the right data structures and loop patterns are already in place.
+When using OpenMP for GPU offloading it is important to distinguish between two
+categories of directives, memory movement and work sharing.
+
+To provide fine-grained control over the hierarchical parallelism in terms of 
+teams and threads. The two main directives from this point of view are, `omp teams` and `omp parallel`, which can also be used to program in a SPMD-like mode (also called "me" mode). Typically however, there directives are combined with work-sharing
+constructs like `distribute`, `for` to control the parallelization of (nested) loops.
+A very useful work-sharing construct is the `loop` directive, which provides 
+a descriptive form of parallelism, which is slightly less flexible.
+The advantage is the precise assignment of the loop iteration space to teams and threads is left to the compiler. 
+As explained by Deakin \& Mattson, this kind of descriptiveness provides
+superior performance portability, assuming the compilers succeeds to auto-parallelize
+the loop well.
+
+In figure X we show the parallelization of the BK1 algortihm using the \texttt{omp loop} directives. First we open a `target` region, instructing the compiler to generate
+device code for the upcoming region/scope. The `map` clauses are used to communicate the
+array sizes and avoid unnecessary memory movement.
+For this particular kernel the simpler `omp loop` directive would also work, but here we wanted
+to emphasize the assigment of elements to individual teams.
+
+The OpenMP model encourages programmers to focus on correctness of the
+(sequential) algorithm first.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_openmp} % replace with your filename
+  \caption{BK1 performance, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:openmp_pvc}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{gh200_openmp} % replace with your filename
+  \caption{BK1 performance, Nvidia GH200 (Hopper).}
+  \label{fig:openmp_pvc}
+\end{figure}
 
 \section{Energy Efficiency}
 
