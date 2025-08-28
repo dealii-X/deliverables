@@ -7,7 +7,12 @@
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
 \usepackage{xspace}
+\usepackage{booktabs}
+\usepackage{amssymb}
 \usepackage{lipsum}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.17}
+\usepackage{caption}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.4}
@@ -159,7 +164,7 @@ and partitioning for realistic biomedical geometries, such as brain and liver
 models, in exascale digital twin applications.
 
 
-\subsection{Development of block preconditioners (WP1.2)}
+\subsection{Development of block preconditioners}
 \label{sec:preconditioning}
 This section describes the developments of novel block preconditioners for the solution of problems stemming from
 non-matching discretizations and fictitious domain approaches, which are relevant in the solution
@@ -173,16 +178,47 @@ as an equivalent one, which provides better spectral properties. The resulting l
 
 A thorough theoretical analysis of the preconditioner has been carried out, providing lower and upper bounds for the spectrum of
 the preconditioned system and demonstrating independence with respect to the mesh size. Several numerical experiments have been conducted,
-in order to validate the theoretical findings and to assess the performance of the preconditioner. The associated work is currently under revision, and a preprint is available on
-arXiv~\cite{ALprec}.
+in order to validate the theoretical findings and to assess the performance of the preconditioner. The application of the
+preconditioner on a vector does not require exact inversion of diagonal blocks, but cheaper inexact solves with loose internal tolerances are enough to guarantee
+low and constant iteration counts. To give a concrete example, we report in Table~\ref{tab:stokes_3D_torus} the number of
+outer FGMRES iterations required to solve a three dimensional Stokes problem with a toroidal immersed surface over which we impose a constraint on the
+velocity field $\mathbf{u}$. We denote with $V_h$ and $Q_h$ a classical stable finite element spaces for the velocity and the pressure, respectively, while
+$\Lambda_h$ is the Lagrange multiplier space, defined on the immersed surface.
 
-A memory-distributed implementation based on \texttt{deal.II} has been developed and is available at the following maintained GitHub
+The associated work has been submitted and is currently under revision, while a preprint is available on
+arXiv~\cite{ALprec}. The memory-distributed implementation of this methodology is based on \texttt{deal.II}
+and can be found at the following maintained GitHub
 repository \url{https://github.com/fdrmrc/fictitious_domain_AL_preconditioners}.
 
-Current efforts are directed on the extension of the proposed preconditioning technique to handle
-the following more complex scenarios:
+
+
+\begin{center}
+      \begin{minipage}{\linewidth}
+            \centering
+            \pgfplotstabletypeset[
+                  col sep=comma,
+                  string type,
+                  header=false,
+                  columns={0,1},
+                  columns/0/.style={column name={DoF $\bigl(|V_h|+|Q_h|+|\Lambda_h|\bigr)$}, column type=l||},
+                  columns/1/.style={column name=FGMRES iterations, column type=c},
+                  every head row/.style={
+                              before row=\toprule
+                              \multicolumn{2}{c}{\textbf{Iteration counts}} \\ \midrule,
+                              after row=\midrule
+                        },
+                  every last row/.style={after row=\bottomrule}
+            ]{data/data_torus.csv}
+            \captionof{table}{FGMRES iteration counts for the 3D Stokes problem with a toroidal immersed surface.}
+            \label{tab:stokes_3D_torus}
+      \end{minipage}
+\end{center}
+
+
+Current efforts are directed towards the extension of the proposed preconditioning technique
+to handle the following more complex scenarios:
 \begin{itemize}
-    \item Elliptic interface problems with large jumps in the coefficients.
+    \item Elliptic interface problems with large jumps in the coefficients,
     \item Fluid-structure interaction problems.
 \end{itemize}
 Preliminary results indicate that the preconditioner maintains its robustness and efficiency in these more
