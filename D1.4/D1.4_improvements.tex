@@ -46,7 +46,7 @@
         of the generalized interface for coupling operators, the maturation of
         the polygonal discretization module, and the integration of external
         solver technologies (PSCToolkit and MUMPS) into the deal.II workflow. }
-        \tableEntry{Keywords}{Mesh handling; Polygona discretization; Non-matching methods and preconditioning}
+        \tableEntry{Keywords}{Mesh handling; Polygonal discretization; Non-matching methods and preconditioning}
 \end{deliverableTable}
 
 \newpage
@@ -54,6 +54,7 @@
 \begin{documentControl}
     \addVersion{0.1}{1 August 2025}{Luca Heltai}{Initial draft}
     \addVersion{0.2}{27 August 2025}{Luca Heltai}{Collection of contributions}
+    \addVersion{0.3}{28 August 2025}{Marco Feder}{Add preconditioner section}
     \addVersion{1.0}{31 August 2025}{Luca Heltai}{Final version}
 \end{documentControl}
 
@@ -156,6 +157,43 @@ deal.II in the coming release cycle, completing the Gmsh-related part of the
 dealii-X roadmap. This work directly addresses the bottleneck of mesh generation
 and partitioning for realistic biomedical geometries, such as brain and liver
 models, in exascale digital twin applications.
+
+
+\subsection{Development of block preconditioners (WP1.2)}
+\label{sec:preconditioning}
+This section describes the developments of novel block preconditioners for the solution of problems stemming from
+non-matching discretizations and fictitious domain approaches, which are relevant in the solution
+of fluid-structure interaction problems. In this context, the use of Lagrange multipliers to enforce coupling conditions
+leads to the solution of large (and multiple) saddle point linear systems, for which the design of robust and
+efficient preconditioners is still a challenge.
+
+We started our investigations with Poisson and Stokes interface problems, where the interface conditions are enforced
+using Lagrange multipliers. In particular, our preconditioning strategy is based on augmented Lagrangian ideas~\cite{BenziAL}, where the original saddle point system is recasted
+as an equivalent one, which provides better spectral properties. The resulting linear systems are solved using a Krylov subspace method such as (flexible) GMRES.
+
+A thorough theoretical analysis of the preconditioner has been carried out, providing lower and upper bounds for the spectrum of
+the preconditioned system and demonstrating independence with respect to the mesh size. Several numerical experiments have been conducted,
+in order to validate the theoretical findings and to assess the performance of the preconditioner. The associated work is currently under revision, and a preprint is available on
+arXiv~\cite{ALprec}.
+
+A memory-distributed implementation based on \texttt{deal.II} has been developed and is available at the following maintained GitHub
+repository \url{https://github.com/fdrmrc/fictitious_domain_AL_preconditioners}.
+
+Current efforts are directed on the extension of the proposed preconditioning technique to handle
+the following more complex scenarios:
+\begin{itemize}
+    \item Elliptic interface problems with large jumps in the coefficients.
+    \item Fluid-structure interaction problems.
+\end{itemize}
+Preliminary results indicate that the preconditioner maintains its robustness and efficiency in these more
+challenging settings.
+
+\begin{thebibliography}{10}
+    \bibitem{BenziAL} M. Benzi, and M. Olshanskii "An Augmented Lagrangian-Based Approach to the Oseen Problem", SIAM Journal on Scientific
+Computing, vol. 28, no. 6, pp. 2095-2113, 2006.
+    \bibitem{ALprec} M. Benzi, M. Feder, L. Heltai, and F. Mugnaioni "Scalable augmented Lagrangian preconditioners for fictitious domain problems," \url{https://arxiv.org/abs/2504.11339}, 2025.
+\end{thebibliography}
+
 
 \subsection{VTK interoperability: mesh \& field I/O utilities (prototype)}
 Preliminary VTK support has been prototyped in the \texttt{reduced\_lagrange\_multipliers}
