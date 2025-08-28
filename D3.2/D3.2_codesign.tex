@@ -231,11 +231,17 @@ The OpenMP model encourages programmers to focus on correctness of the
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.8\textwidth]{gh200_openmp} % replace with your filename
-  \caption{BK1 performance, Nvidia GH200 (Hopper).}
+  \includegraphics[width=0.8\textwidth]{gh200_templated} % replace with your filename
+  \caption{BK1 performance for templated kernel, $q = 4$, Nvidia GH200 (Hopper).}
   \label{fig:openmp_pvc}
 \end{figure}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{gh200_variable} % replace with your filename
+  \caption{BK1 performance for variable kernel, $q = 4$, Nvidia GH200 (Hopper).}
+  \label{fig:openmp_pvc}
+\end{figure}
 \section{Energy Efficiency}
 
 Implement energy measurement strategies for the main algorithmic ingredients
