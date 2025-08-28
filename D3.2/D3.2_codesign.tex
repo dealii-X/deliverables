@@ -8,6 +8,11 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
+\usepackage{listings}
+\usepackage{xcolor} % for custom colors
+
+% Small font size in lstlistings
+\lstset{basicstyle=\ttfamily\small}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.2}
@@ -212,6 +217,17 @@ As explained by Deakin \& Mattson, this kind of descriptiveness provides
 superior performance portability, assuming the compilers succeeds to auto-parallelize
 the loop well.
 
+\begin{lstlisting}[language=C++,caption={Simple C++ hello world},label={lst:cpp-hello}]
+#pragma omp target \
+    map(to: basis0[:nm0*nq0], basis1[:nm1*nq1], basis2[:nm2*nq2]) \
+    map(to: in[:nelmt*nm0*nm1*nm2], JxW[:nelmt*nq0*nq1*nq2]) \
+    map(from: out[:nelmt*nm0*nm1*nm2])
+#pragma omp teams loop
+for(size_t e = 0; e < nelmt; ++e) {
+    /* ... sum factorization ... */
+}
+\end{lstlisting}
+
 In figure X we show the parallelization of the BK1 algortihm using the \texttt{omp loop} directives. First we open a `target` region, instructing the compiler to generate
 device code for the upcoming region/scope. The `map` clauses are used to communicate the
 array sizes and avoid unnecessary memory movement.
@@ -230,10 +246,21 @@ The OpenMP model encourages programmers to focus on correctness of the
 
 \begin{figure}[htbp]
   \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl} % replace with your filename
+  \caption{BK1 using OpenCL and 3D Simple Map work-item strategy, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_opencl}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=0.8\textwidth]{pvc_kokkos} % replace with your filename
   \caption{BK1 using Kokkos with SYCL backend, Intel Max Series 1550 GPU (Ponte Vecchio).}
   \label{fig:pvc_kokkos}
 \end{figure}
+
+%
+% Figures (q = 4)
+%
 
 \begin{figure}[htbp]
   \centering
@@ -249,6 +276,19 @@ The OpenMP model encourages programmers to focus on correctness of the
   \label{fig:gh200_variable}
 \end{figure}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_static} % replace with your filename
+  \caption{BK1 performance for templated kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_static}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_dynamic} % replace with your filename
+  \caption{BK1 performance for variable kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_dynamic}
+\end{figure}
 
 
 \section{Energy Efficiency}
