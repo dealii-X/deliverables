@@ -224,24 +224,33 @@ The OpenMP model encourages programmers to focus on correctness of the
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{pvc_openmp} % replace with your filename
-  \caption{BK1 performance, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:openmp_pvc}
+  \caption{BK1 using OpenMP, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_openmp}
 \end{figure}
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_kokkos} % replace with your filename
+  \caption{BK1 using Kokkos with SYCL backend, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_kokkos}
+\end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{gh200_templated} % replace with your filename
   \caption{BK1 performance for templated kernel, $q = 4$, Nvidia GH200 (Hopper).}
-  \label{fig:openmp_pvc}
+  \label{fig:gh200_templated}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{gh200_variable} % replace with your filename
   \caption{BK1 performance for variable kernel, $q = 4$, Nvidia GH200 (Hopper).}
-  \label{fig:openmp_pvc}
+  \label{fig:gh200_variable}
 \end{figure}
+
+
+
 \section{Energy Efficiency}
 
 Implement energy measurement strategies for the main algorithmic ingredients
