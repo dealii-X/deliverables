@@ -16,7 +16,7 @@
 \begin{document}
 
 % Create the title page with the title as argument
-\maketitlepage{Co-Design and Energy Efficiency Report}
+\maketitlepage{Co-Design and Energy Efficiency Report I}
 
 \newpage
 
@@ -24,25 +24,25 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Co-Design and Energy Efficiency Report}
     \tableEntry{Deliverable number}{D3.2}
-    \tableEntry{Deliverable version}{[Version number]}
-    \tableEntry{Date of delivery}{[Planned date]}
+    \tableEntry{Deliverable version}{0.1}
+    \tableEntry{Date of delivery}{31 August 2025}
     \tableEntry{Actual date of delivery}{[Actual date]}
-    \tableEntry{Nature of deliverable}{[Report/Demonstrator/Website/etc.]}
-    \tableEntry{Dissemination level}{[Public/Confidential]}
-    \tableEntry{Work Package}{WP[X]}
-    \tableEntry{Partner responsible}{[Lead partner acronym]}
+    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP3}
+    \tableEntry{Partner responsible}{BADW-LRZ}
 \end{deliverableTable}
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
     \tableEntry{Abstract}{\lipsum[1][1-5]}
-    \tableEntry{Keywords}{Keyword 1; Keyword 2; Keyword 3; Keyword 4; Keyword 5}
+    \tableEntry{Keywords}{performance; benchmarks; gpu-programming; Keyword 4; Keyword 5}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{[Date]}{[Author name]}{Initial draft}
+    \addVersion{0.1}{[Date]}{Ivan Pribec}{Initial draft}
     \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
     \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
@@ -72,121 +72,166 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-\lipsum[1-2]
+This report described advances in co-design, technology exploitation and energy efficiency.
+
+\begin{itemize}
+    \item Investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing
+to achieve optimal performance
+    \item Identify and evaluate emerging technologies that can be exploited to enhance the capabilities of the exascale computing
+system.
+    \item Explore and implement techniques to optimize energy consumption and power efficiency in the exascale computing
+infrastructure.
+    \item Identify and address bottlenecks in the system to improve overall computational efficiency.
+\end{itemize}
 
 \subsection{{Purpose of the Document}}
-\lipsum[3]
 
-\subsection{{Structure of the Document}}
+The objective of this document is to describe our ongoing co-design activies
+aimed at achieving optimal performance, energy efficiency and technology exploitation
+on novel hardware architectures. 
+
+To achieve this we have performed profiling runs
+of representative algorithmic patterns including the CEED bakeoff problems and
+the related streaming kernels.
+
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
+\item CUDA Support: Enabling programming support for NVIDIA GPUs using the CUDA parallel computing model and
+supporting compatibility with AMDs HIP framework.
+\item SYCL Integration: Incorporating SYCL (Standard C++ for heterogeneous computing) for programming heterogeneous
+systems using C++. Porting from and compatibility with CUDA.
+\item Using OpenMP and/or OpenACC offloading techniques and ensuring their compatibility on different
+platforms.
+\item Employing parallel programming techniques like SIMD (Single Instruction, Multiple Data) for efficient accelerator
+and CPU utilization.
+\item We will support programming approaches and frameworks such as Kokkos (already supported by deal.II) and RAJA
+that supporting a range of accelerator programming paradigms ensure flexibility and compatibility with different
+hardware architectures, enabling developers to harness the full potential of accelerators in their applications. This avoids maintaining paradigm-specific code branches in parallel.
 \end{itemize}
 
 \newpage
 
-\section{{[Section Title]}}
-\label{sec:section2}
+\section{CEED Bakeoff Problems}
 
-\lipsum[4-5]
+To study the performance of high-order finite element we focus on a representative
+set of problems originating from the CEED project \cite{}, designed to test and compare
+the performance of high-order codes.
 
-\subsection{{[Subsection Title]}}
-\lipsum[6]
+The CEED benchmarks\footnote{\url{https://ceed.exascaleproject.org/bps/}} include the following problems,
+\begin{itemize}
+    \item BP1: scalar PCG with mass matrix, $q = p+2$
+    \item BP2: vector PCG with mass matrix, $q = p+2$
+    \item BP3: scalar PCG with stiffness matrix, $q = p+2$
+    \item BP4: vector PCG with stiffness matrix, $q = p+2$
+    \item BP5: scalar PCG with stiffness matrix, $q = p+1$
+    \item BP6: scalar PCG with stiffness matrix, $q = p+1$
+\end{itemize}
+In parallel to the set of benchmark problems, are the benchmark kernels,
+\begin{itemize}
+    \item BP1: scalar PCG with mass matrix, $q = p+2$
+    \item BP2: vector PCG with mass matrix, $q = p+2$
+    \item BP3: scalar PCG with stiffness matrix, $q = p+2$
+    \item BP4: vector PCG with stiffness matrix, $q = p+2$
+    \item BP5: scalar PCG with stiffness matrix, $q = p+1$
+    \item BP6: scalar PCG with stiffness matrix, $q = p+1$
+\end{itemize}
+which exclude the scatter/gather steps that are necessary when 
+the problem is partitioned across devices.
 
-\subsection{{[Subsection Title]}}
-\lipsum[7]
+\subsection{CUDA Support}
+\subsection{SYCL Integration}
+\subsection{OpenMP Offloading}
+\subsection{Kokkos Portability Framework}
+\subsection{Tiny Tensor Compiler}
 
-\newpage
+\label{sec:tinytc}
 
-\section{{[Section Title]}}
-\label{sec:section3}
+A different route to performance portability is offered by the use of domain-specific languages (DSL). In contrast to general purpose languages which are meant to be broadly applicable across different computing fields, DSLs are designed to be specialized to a particular domain.
 
-\lipsum[8-9]
+The use of DSLs in the context of finite element methods is not new.
+Notable "high-level" DSLs in this space include FreeFem++ and UML (part of tge FEniCS project).
+These languages have been designed for the declaration of finite element discretizations in variational form, offering a 
+a flexible way of defining expressions in weak form and selecting finite element spaces. 
+The definition of the problem in variational form is then handed to the domain specific compiler, which typically generates output in C (potentially including SIMD intrinsics) or another intermediate representation (e.g. LLVM IR). 
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \lipsum[10][1-2]
-    \item \lipsum[10][3-4]
-    \item \lipsum[10][5-6]
+Recently, Intel has developed the Tiny Tensor Compiler (TinyTC).
+This tool accepts sub-programs, also called \textit{kernels}, written in "tensor language" and translates them to OpenCL-C and/or SPIR-V. 
+The translated programs can be loaded from programs written using the OpenCL, Level Zero or SYCL frameworks, 
+and executued on GPU and CPU devices.
+Both C and C++ APIs are supported.
+
+The tensor language of TinyTC assumes a batched execution model, where each instance of a kernel is executed by one work-group. Consistent with SYCL and OpenCL terminology, each work-group consists of work-items that execute concurrently. Further details of the execution model and available instructions can be found in the online documentation \footnote{\url{https://intel.github.io/tiny-tensor-compiler/manual/tensor-ir.html}, accessed on 25.08.2028}
+
+As a first demonstration of tensor language we the BK1 kernel using a naive algorithm, where
+each tensor product has been translated using the "loop over GEMM" approach. 
+
+FIXME: missing snippet
+
+While functional, this kernel fails to obtain good performance for several reasons.
+One of several optimizations is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. 
+
+For example, by fusing the dimensions in step 1, the loop over GEMMs can be rewritten as a single GEMM.
+
+FIXME: missing snippet
+
+Another possible optimization is related to SIMD execution and threading.
+To ensure correctness of the kernel when shared local memory is used, TinyTC is forced to insert barriers
+after each GEMM region, introducing unnecessary synchronization overhead.
+
+The naive kernel assigns multiple threads to cooperate on the evaluation of a single element.
+For lower order elements (N = 3, 5) this leads to sub-optimal use of SIMD instructions. 
+
+\section{Streaming Kernels}
+
+Iterative linear system solvers make heavy use of low arithmetic intensity operations, so called streaming operations.
+When matrix-free high-order FEM schemes are combined with iterative solvers. 
+Kronbichler et al. \cite{} have shown previously on an example of the conjugate gradient method, that above a certain problem size, the streaming operations contribute a significant chunk of the run-time.
+
+In this section we present some preliminary results on the performance and portability of
+streaming operations implemented using different frameworks on CPU and GPU architectures.
+
+\subsection{Kokkos}
+
+\subsection{OpenMP Offloading}
+
+
+\section{Energy Efficiency}
+
+Implement energy measurement strategies for the main algorithmic ingredients
+
+FIXME: cite Salvatore's work, energy-meter 
+
+\section{Algorithmic development}
+
+
+\section{Next steps}
+
+\begin{itemize}
+    \item TinyTC kernel optimization using fusion and cross-element vectoritation
+    \item Use of advanced multigrid solvers and preconditioners
 \end{itemize}
 
-\subsection{{[Subsection Title]}}
-\lipsum[11]
 
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section4}
-
-\lipsum[12-13]
+\section{Hardware systems}
 
 \begin{center}
     \begin{table}[h!]
     \small
-    \caption{[Table Caption]}
+    \caption{GPUs used for evaluation}
     \renewcommand{\arraystretch}{1.25}
     \label{tab:example_table}
     \begin{tabular}{|l|l|l|c|}
     \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
+    \textbf{Column 1} & \textbf{Ampere} & \textbf{Hopper} & \textbf{Ponte Vecchio} \\
     \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
+    execution units & Description & Category & Value \\
+    base frequency & Description & Category & Value \\
+    SIMT/SIMD width & Description & Category & Value \\
+    last level cache & Description & Category & Value \\
+    memory bandwidth & Description & Category & Value \\
     \hline
     \end{tabular}
     \end{table}
 \end{center}
 
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section5}
-
-\lipsum[14-15]
-
-\subsection{{[Subsection Title]}}
-\lipsum[16]
-
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
-\end{itemize}
-
-\newpage
-
-\section{{[Section Title]}}
-\label{sec:section6}
-
-\lipsum[18-19]
-
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
-
-\newpage 
-
-\section{{Conclusion}} \label{sec:conclusion}
-
-\lipsum[20]
-
-\label{MyLastPage}
 
 \end{document}
