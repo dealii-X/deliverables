@@ -15,7 +15,7 @@
 \usepackage{amssymb}
 \lstset{
     language=C++,
-    basicstyle=\ttfamily\footnotesize,
+    basicstyle=\ttfamily\scriptsize,
     keywordstyle=\color{blue},
     commentstyle=\color{gray},
     stringstyle=\color{red},
@@ -42,8 +42,8 @@
     \tableEntry{Deliverable title}{Polygonal discretization in deal.II}
     \tableEntry{Deliverable number}{D1.5}
     \tableEntry{Deliverable version}{v1}
-    \tableEntry{Date of delivery}{-}
-    \tableEntry{Actual date of delivery}{-}
+    \tableEntry{Date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 29, 2025}
     \tableEntry{Nature of deliverable}{DEM - Demonstrator, pilot, prototype}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -62,11 +62,12 @@
 
 \begin{documentControl}
     \addVersion{0.1}{13/08/2025}{Marco Feder}{Initial draft}
+    \addVersion{1.0}{29/08/2025}{Martin Kronbichler}{Review and final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: - \\
-Approval Date: -
+Approved by: Martin Kronbichler \\
+Approval Date: August 29, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -87,20 +88,20 @@ Approval Date: -
 \newpage
 
 \section{{Introduction}}
-This objective of the dealii-X Work Package 1.3 is dedicated to the introduction, development, and validation
-of an experimental module for polygonal discretization within the deal.II library. The deal.II library
+This objective of the dealii-X Work Package 1.5 is dedicated to the introduction, development, and validation
+of an experimental module for polygonal discretizations within the deal.II library. The deal.II library
 currently supports a wide range of finite element methods, defined on standard simplicial
 and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes. Polytopal methods
 gained popularity in recent years due to their ability to handle complex geometries and adapt to varying mesh
 sizes. These methods enable enhanced accuracy while reducing the number of degrees
 of freedom. In particular, discontinuous Galerkin methods formulated on polytopal meshes
-(PolyDG)~\cite{polyDG,Antoniettihp} naturally accommodate complex geometries, benefiting from the inherent flexibility of
-agglomerated grid structures, i.e. by grouping together several cells of an initial fine mesh.
+(PolyDG)~\cite{polyDG,Antoniettihp} naturally accommodate complex geometries, benefitting from the inherent flexibility of
+agglomerated grid structures, i.e., by grouping together several cells of an initial fine mesh.
 
-Recently, several Agglomeration strategies have been recently proposed within the community: among them, we mention
+Recently, several agglomeration strategies have been proposed within the community: among them, we mention
 the \texttt{R3MG}~\cite{FEDER2025113773} approach, which
 allows the generation of \emph{sequences} of nested polytopal meshes and can be used
-also in the context of multilevel methods, and is part of this Work Package.
+also in the context of multilevel methods. This is the approach described in this Work Package.
 
 \subsection{{Purpose of the Document}}
 The objective of this document is to provide a comprehensive description of
@@ -153,7 +154,7 @@ discretizations:
 \end{lstlisting}
 
 
-First, a standard mesh made by usual shapes is created: this can be done using the built-in deal.II mesh generation capabilities,
+First, a standard mesh made by usual shapes is created. This can be done using the built-in deal.II mesh generation capabilities,
 or by importing an external mesh file through the \texttt{GridIn} class. In this example, we assume to use the latter approach.
 
 \begin{lstlisting}[caption=Importing an external mesh]
@@ -166,7 +167,7 @@ grid_in.read_msh(gmsh_file);
 \end{lstlisting}
 
 The number of polytopes to be created is defined by the user, and it is set to \texttt{n\_subdomains} in the following snippet. It is equal
-to the number of partitions that will be asked to the graph partitioner. \texttt{AgglomerationHandler} is a new class which plays the pivotal role of
+to the number of partitions that will be queried from the graph partitioner. \texttt{AgglomerationHandler} is a new class which plays the pivotal role of
 handling \emph{general} polytopal shapes, as well as the management of their properties. Each polytope is hence defined as a collection of cells, which are here grouped together based on an integer index. After
 that, the \texttt{AgglomerationHandler} is informed about the definition of each agglomerate through the \texttt{define\_agglomerate()} method.
 
@@ -221,10 +222,10 @@ agglo_handler->create_agglomeration_sparsity_pattern(sparsity_pattern)
 system_matrix.reinit(sparsity_pattern);
 \end{lstlisting}
 
-The assembly phase consists in looping over all polytopes in $\mathcal{T}_h$, and
+The assembly phase consists of looping over all polytopes in $\mathcal{T}_h$, and
 scattering the local contributions to the global stiffness matrix and
 right-hand side vector in the usual way as in deal.II tutorials.
-To this aim, suitable iterators and accessors on mesh entities have been developed: this allows
+To this aim, suitable iterators and accessors on mesh entities have been developed. This allows
 to hide all the implementation details and the underlying data structures in user codes, in the same fashion
 as the deal.II library does for standard meshes.
 
@@ -253,7 +254,8 @@ for (const auto &polytope : agglo_handler->polytope_iterators()) {
             // and local cell rhs
         }
     // distribute DoFs
-    constraints.distribute_local_to_global(cell_matrix, cell_rhs, local_dof_indices, stiffness_matrix, system_rhs);
+    constraints.distribute_local_to_global(cell_matrix, cell_rhs, local_dof_indices,
+                                           stiffness_matrix, system_rhs);
   }
 \end{lstlisting}
 
@@ -271,7 +273,11 @@ utility functions defined in the included header file \texttt{poly\_utils.h}. Fi
 computed on the polytopal mesh $u_h$ is interpolated onto the original mesh, and visualized using the \texttt{DataOut} class
 provided by deal.II.
 
-In this specific program, the analytical solution is set to be $u(x,y)=\sin(\pi x)\sin(\pi y)$. In Figure~\ref{fig:poly_mesh_and_solution}, we
+In this specific program, the analytical solution is set to be
+\[
+  u(x,y)=\sin(\pi x)\sin(\pi y).
+\]
+In Figure~\ref{fig:poly_mesh_and_solution}, we
 show the polytopic solution $u_h$ interpolated onto the original mesh, and the polytopal grid over which the discretization has
 been performed. The original mesh is an unstructured quadrilateral mesh, displayed in Figure~\ref{fig:unstructured_mesh}.
 
@@ -302,11 +308,12 @@ been performed. The original mesh is an unstructured quadrilateral mesh, display
 \newpage
 \section{{Conclusion}} \label{sec:conclusion}
 
+The presented tutorial program demonstrates the use of the polytopal discretization module of deal.II. The future code development will be based on the code in \url{https://github.com/fdrmrc/Polydeal} and extended to additional equations and approaches.
 
 
 \begin{thebibliography}{10}
     \bibitem{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
-    \bibitem{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "\$hp\$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
+    \bibitem{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
     \bibitem{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
     \bibitem{METIS}George Karypis, and Vipin Kumar, "A Fast and High Quality Multilevel Scheme for Partitioning Irregular Graphs", SIAM Journal on Scientific Computing, vol. 20, 359-392, 1998.
 \end{thebibliography}
