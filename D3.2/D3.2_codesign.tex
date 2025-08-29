@@ -31,7 +31,7 @@
 \begin{document}
 
 % Create the title page with the title as argument
-\maketitlepage{Co-Design AMD Energien Efficiency Report I}
+\maketitlepage{Co-Design and Energy Efficiency Report I}
 
 \newpage
 
@@ -164,8 +164,21 @@ In order to obtain a wider impression of GPU programming models available we hav
 
 In the following sub-sections we describe our preliminary findings from the BK1 benchmark.
 We present experiments from multiple accelerator devices, showcasing their throughput capabilities in terms of degrees of freedom updated per second versus the problem size.
-The problem size is measured in number of degrees of freedom which is related closely to the number of elements.
+The problem size is measured in number of degrees of freedom (DoFs) which is related closely to the number of elements.
 Besides the variation w.r.t. problem size, we also study the influence of the quadrature order.
+
+In the experiments presented below, the following compilers (including OpenMP) are used:
+\begin{itemize}
+    \item Intel oneAPI Toolkit version 2024.1 (`icpx')
+    \item Nvidia HPC SDK v2024.5 (`nvc++')
+    \item Tiny Tensor Compiler v0.3.1
+\end{itemize}
+The libraries used are
+\begin{itemize}
+    \item Kokkos Version 4.6.2
+    \item Intel OpenCL (driver version: )
+    \item Nvidia OpenCL (driver version: )
+\end{itemize}
 
 \subsection{Kokkos and CUDA Performance Results}
 {\bf BK1.} Early performance results for the different test cases are shown in Figure~\ref{fig:BK1_1} and Figure~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
@@ -191,6 +204,26 @@ Both CUDA and Kokkos kernels were implemented with three-dimensional thread bloc
 
 Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations deliver near-optimal performance on the H100, efficiently exploiting available memory bandwidth and achieving performance levels very close to the hardware limits.
 
+
+%
+% Figures GH200 (q = 4)
+%
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{gh200_templated} % replace with your filename
+  \caption{BK1 performance for templated kernel, $q = 4$, Nvidia GH200 (Hopper).}
+  \label{fig:gh200_templated}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{gh200_variable} % replace with your filename
+  \caption{BK1 performance for variable kernel, $q = 4$, Nvidia GH200 (Hopper).}
+  \label{fig:gh200_variable}
+\end{figure}
+
+
 \subsection{OpenCL}
 
 For experimentation across a wider array of potential accelerator devices, the CUDA kernels have also been translated to the OpenCL-C language for use with the vendor-neutral OpenCL framework from Khronos.
@@ -198,6 +231,26 @@ OpenCL remains widely supported across both CPU and GPU devices from multiple ve
 The verbose setup required via the OpenCL runtime API, the split kernel source model, and restriction to C level language semantics, are some of the main criticisms from scientific software developers. 
 The growing popularity of C++ coupled with powerful syntactic features has shifted the attention to more expressive programming models including SYCL and Kokkos, which provide similar capabilities as OpenCL, but are arguably simpler to use. 
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl} % replace with your filename
+  \caption{BK1 using OpenCL and 3D Simple Map work-item strategy, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_opencl}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_static} % replace with your filename
+  \caption{BK1 performance for templated kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_static}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_dynamic} % replace with your filename
+  \caption{BK1 performance for variable kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_dynamic}
+\end{figure}
 
 \subsection{OpenMP Offloading}
 
@@ -238,6 +291,13 @@ device code for the scope of the upcoming for-loop.
 The `map' clauses are used to communicate the array sizes and exert control over the direction of memory movement to the minimum necessary.
 Finally, the `teams loop` directive is used to divide the calculation of elements across threads in a concurrent fashin.
 For this particular kernel the simpler `omp loop' directive (without `teams`) would also be sufficient, but instead we wanted to emphasize the assigment of elements across teams first.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{pvc_openmp} % replace with your filename
+  \caption{BK1 using OpenMP, Intel Max Series 1550 GPU (Ponte Vecchio).}
+  \label{fig:pvc_openmp}
+\end{figure}
 
 
 \subsection{Tiny Tensor Compiler}
@@ -350,61 +410,6 @@ Despite these initial challenges, the use of a specialized tensor DSL offers num
 \item Optimized memory and SIMD usage: temporary arrays are automatically placed in shared local memory; cooperative matrix instructions can reduce synchronization overhead.
 \end{itemize}
 
-
-
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pvc_openmp} % replace with your filename
-  \caption{BK1 using OpenMP, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:pvc_openmp}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pvc_opencl} % replace with your filename
-  \caption{BK1 using OpenCL and 3D Simple Map work-item strategy, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:pvc_opencl}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pvc_kokkos} % replace with your filename
-  \caption{BK1 using Kokkos with SYCL backend, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:pvc_kokkos}
-\end{figure}
-
-%
-% Figures (q = 4)
-%
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{gh200_templated} % replace with your filename
-  \caption{BK1 performance for templated kernel, $q = 4$, Nvidia GH200 (Hopper).}
-  \label{fig:gh200_templated}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{gh200_variable} % replace with your filename
-  \caption{BK1 performance for variable kernel, $q = 4$, Nvidia GH200 (Hopper).}
-  \label{fig:gh200_variable}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_static} % replace with your filename
-  \caption{BK1 performance for templated kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:pvc_static}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{pvc_opencl_q4_dynamic} % replace with your filename
-  \caption{BK1 performance for variable kernel, $q = 4$, Intel Max Series 1550 GPU (Ponte Vecchio).}
-  \label{fig:pvc_dynamic}
-\end{figure}
 
 \section{Streaming Kernels}
 
