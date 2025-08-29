@@ -160,6 +160,32 @@ The benchmarks kernels form the algorithm core of the benchmark problems (BP), w
 
 The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
 
+\subsection{Kokkos and CUDA Performance Results}
+{\bf BK1.} Early performance results for the different test cases are shown in Figure~\ref{fig:BK1_1} and Figure~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
+The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block. This leads to under-utilization of the warp (size 32) on the target hardware.
+The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Nvidia H100 GPU with CUDA programming model. Various polynomial orders are tested, and saturation of hardware resources is visible after $10^6$ degrees of freedom. Polynomial order 1 performs the worst due to under-occupation of the single warp.}
+\label{fig:BK1_1}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{BK1_2}
+\caption{BK1 performance results on an NVIDIA H100 GPU using the Kokkos library. The same test conditions and optimization techniques as in Figure 1 were applied. Kokkos attains nearly 90\% of the performance delivered by CUDA.}
+\label{fig:BK1_2}
+\end{figure}
+
+{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
+
+Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute. In these measurements, both CUDA and Kokkos executions completed in 0.71 ms, showing identical performance. Nsight Compute reported an arithmetic intensity of 1.97 FLOP/byte, which places these kernels in the memory-bound region of the roofline model for the H100 GPU. The achieved performance was 5.7 TFLOPs, compared to the hardware limit of 6.6 TFLOPs at this arithmetic intensity. This corresponds to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor.
+
+Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations deliver near-optimal performance on the H100, efficiently exploiting available memory bandwidth and achieving performance levels very close to the hardware limits.
+
+\subsection{OpenCL}
+
 For experimentation across a wider array of potential accelerator devices, the CUDA kernels have also been translated to the OpenCL-C language for use with the vendor-neutral OpenCL framework from Khronos.
 OpenCL remains widely supported across both CPU and GPU devices from multiple vendors.
 The verbose setup required via the OpenCL runtime API, the split kernel source model, and restriction to C level language semantics, are some of the main criticisms from scientific software developers. 
@@ -167,10 +193,6 @@ The growing popularity of C++ coupled with powerful syntactic features has shift
 
 In order to obtain a wider impression of programming models we have also created variants using OpenMP target offloading and a fifth variant relying on the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
 
-\subsection{Kokkos}
-\subsection{CUDA}
-
-\subsection{OpenCL}
 
 
 \subsection{OpenMP Offloading}
