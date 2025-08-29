@@ -10,6 +10,7 @@
 \usepackage{lipsum}
 \usepackage{listings}
 \usepackage{xcolor} % for custom colors
+\usepackage[round]{natbib}
 
 % Small font size in lstlistings
 \lstset{basicstyle=\ttfamily\small}
@@ -30,7 +31,7 @@
 \begin{document}
 
 % Create the title page with the title as argument
-\maketitlepage{Co-Design and Energy Efficiency Report I}
+\maketitlepage{Co-Design AMD Energien Efficiency Report I}
 
 \newpage
 
@@ -38,9 +39,9 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Co-Design and Energy Efficiency Report}
     \tableEntry{Deliverable number}{D3.2}
-    \tableEntry{Deliverable version}{0.1}
-    \tableEntry{Date of delivery}{31 August 2025}
-    \tableEntry{Actual date of delivery}{[Actual date]}
+    \tableEntry{Deliverable version}{v1}
+    \tableEntry{Date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 29, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP3}
@@ -56,15 +57,15 @@
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{[Date]}{Ivan Pribec}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.1}{22/08/2025}{Ivan Pribec}{Initial draft}
+    \addVersion{0.2}{25/08/2025}{Enes Mustafa Soydan}{Added results of RUB group}
+    \addVersion{0.3}{29/08/2025}{Martin Kronbichler}{Review}
+    \addVersion{1.0}{29/08/2025}{Ivan Pribec}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: August 29, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -99,11 +100,11 @@ Approval Date: [Date]
     \end{itemize}
 }
 
-This report describes our advances investigating novel hardware and software solutions, and evaluating emerging technologies for exascale computing with the final goal of achieving state of art performance and optimal technology exploitation.
+This report describes our advances investigating novel hardware and software solutions, and evaluating emerging technologies for exascale computing with the final goal of achieving state-of-the-art performance and optimal technology exploitation.
 
-Our main achievement in this period has been the preparation and analysis of benchmark kernels for the matrix-free application of discrete finite element operators, focused on addressing newer GPU architectures. 
+Our main achievement in this period has been the preparation and analysis of benchmark kernels for the matrix-free application of discrete finite element operators, see also our overall frameworks described in \cite{Kronbichler12,Kronbichler19}, focused on addressing newer GPU architectures. 
 
-The benchmark repository is publically available at: \url{https://github.com/dealii-X/benchmarks/}
+The benchmark repository is made publically available at: \url{https://github.com/dealii-X/benchmarks/}
 
 The preparation of these benchmarks has been the focus of Milestone \#3 -- Public repository of benchmark sets for performance evaluation -- verified by means of runs of the software on at
 least three different accelerated platforms.
@@ -112,20 +113,20 @@ For performance optimization purposes we have focused on two families of kernels
 
 
 
-The CEED Bakeoff Problems focus on the fast evaluation of the basic finite element operators (discretized bilinear forms) on hexahedral grids using sum factorization techniques. 
+The CEED Bakeoff Problems~\citep{Fischer20scalability} are a benchmark to measure the evaluation speed of the basic finite element operators (discretized bilinear forms), posed for problems on hexahedral grids, and the primary focus being sum factorization techniques. 
 Both scalar and vector  problems are included in the benchmarks. So far our efforts have been focused on the scalar problems.
 Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular 
 finite element operator and is of high arithmetic intensity. 
 The efficient implementation of these kernels is paramount to obtain good performance. 
 
-The benchmark kernels exploit algebraic sum factorization techniques to achieve an affordable evaluation of high-order finite element operators in comparison to the naive nestem sum algorithm. This type of technique has been popularized in recent years by several groups, including the deal.ii authors. The translation of these techniques to modern GPU architectures remains an open challenge at both software and hardware level due to the heterogeneity of both devices (CPUs, GPUs and other accelerators) and parallel programming frameworks provided by different vendors.
+The benchmark kernels are based on a numerical quadrature approach to evaluate the finite-element integrals and exploit algebraic sum factorization techniques \citep{Deville02} to achieve an affordable evaluation of high-order finite element operators in comparison to the naive nested sum algorithm or dense interpolation matrices. This type of technique has been popularized in recent years by several groups, including the deal.II authors~\citep{Kronbichler12,Kronbichler19,Arndt21}. The translation of these techniques to modern GPU architectures, see also the work by~\cite{Swirydowicz19}, remains an open challenge at both software and hardware level due to the heterogeneity of both devices (CPUs, GPUs and other accelerators) and parallel programming frameworks provided by different vendors.
 
-The Streaming Kernels\footnote{Chalmers \& Warburton (2020), Table 1, \url{https://arxiv.org/abs/2009.10917}} capture a second group of low intensity operations, where memory movement is dominant.
+The Streaming Kernels \citep[Table 1]{chalmers20} capture a second group of low intensity operations, where memory movement is dominant.
 The kernels generally take one or two long vectors as arguments. 
 The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). 
-The fifth kernel is the fused conjugate gradient update that involved the combination of a scaled sum and norm of a residual vector in a single sweep.    
+The fifth kernel is the fused conjugate gradient update that involves the combination of a scaled sum and norm of a residual vector in a single sweep.    
 The last two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom associated with a given finite element mesh into a linear vector.
-The gather and scatter kernels are tied to particular mesh and finite element space, requiring more extensive driver setup. 
+The gather and scatter kernels are tied to a particular mesh and finite element space, requiring more extensive driver setup. 
 Hence, they are not addressed in this report.
 
 \begin{itemize}
@@ -149,7 +150,7 @@ hardware architectures, enabling developers to harness the full potential of acc
 To study the performance and portability of high-order finite element implementation we focus on a subset of the CEED Bakeoff problems, designed to test and compare
 the performance of high-order codes.
 
-The subset we've focused on so far are,
+The subset we have focused on so far are,
 \begin{itemize}
     \item BK1: scalar PCG with mass matrix, $q = p+2$
     \item BP3: scalar PCG with stiffness matrix, $q = p+1$
@@ -157,7 +158,7 @@ The subset we've focused on so far are,
 \end{itemize}
 The benchmarks kernels form the algorithm core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
 
-The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem \footnote{Kokkos,\url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
+The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
 
 \subsection{Kokkos}
 \subsection{CUDA}
@@ -171,12 +172,12 @@ When using OpenMP for GPU offloading it is important to distinguish between two
 categories of directives, memory movement and work sharing.
 
 To provide fine-grained control over the hierarchical parallelism in terms of 
-teams and threads. The two main directives from this point of view are, `omp teams` and `omp parallel`, which can also be used to program in a SPMD-like mode (also called "me" mode). Typically however, there directives are combined with work-sharing
-constructs like `distribute`, `for` to control the parallelization of (nested) loops.
+teams and threads. The two main directives from this point of view are, `omp teams' and `omp parallel', which can also be used to program in a SPMD-like mode (also called ``me'' mode). Typically however, there directives are combined with work-sharing
+constructs like `distribute', `for' to control the parallelization of (nested) loops.
 A very useful work-sharing construct is the `loop` directive, which provides 
 a descriptive form of parallelism, which is slightly less flexible.
 The advantage is the precise assignment of the loop iteration space to teams and threads is left to the compiler. 
-As explained by Deakin \& Mattson, this kind of descriptiveness provides
+As explained by \cite{Deakin23}, this kind of descriptiveness provides
 superior performance portability, assuming the compilers succeeds to auto-parallelize
 the loop well.
 
@@ -191,10 +192,10 @@ for(size_t e = 0; e < nelmt; ++e) {
 }
 \end{lstlisting}
 
-In figure X we show the parallelization of the BK1 algortihm using the \texttt{omp loop} directives. First we open a `target` region, instructing the compiler to generate
-device code for the upcoming region/scope. The `map` clauses are used to communicate the
+In figure X we show the parallelization of the BK1 algorithm using the \texttt{omp loop} directives. First we open a `target' region, instructing the compiler to generate
+device code for the upcoming region/scope. The `map' clauses are used to communicate the
 array sizes and avoid unnecessary memory movement.
-For this particular kernel the simpler `omp loop` directive would also work, but here we wanted
+For this particular kernel the simpler `omp loop' directive would also work, but here we wanted
 to emphasize the assigment of elements to individual teams.
 
 
@@ -202,11 +203,11 @@ to emphasize the assigment of elements to individual teams.
 
 \label{sec:tinytc}
 
-The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by Intel for efficient execution of tensor computations on CPUs and GPUs. TinyTC compiles programs written in a domain-specific tensor language into OpenCL-C or SPIR-V, supporting runtime environments such as OpenCL, Level Zero, and SYCL. C and C++ APIs are available. TinyTC assumes a batched execution model, where each kernel is executed by a work-group with concurrent work-items, and the compiler maps tensor operations to efficient GPU instructions, including cooperative GEMMs and subgroup vectorization. Further details of the execution model and available instructions can be found in the online documentation \footnote{\url{https://intel.github.io/tiny-tensor-compiler/manual/tensor-ir.html}, accessed on 25.08.2028}
+The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by Intel for efficient execution of tensor computations on CPUs and GPUs. TinyTC compiles programs written in a domain-specific tensor language into OpenCL-C or SPIR-V, supporting runtime environments such as OpenCL, Level Zero, and SYCL. C and C++ APIs are available. TinyTC assumes a batched execution model, where each kernel is executed by a work-group with concurrent work-items, and the compiler maps tensor operations to efficient GPU instructions, including cooperative GEMMs and subgroup vectorization. Further details of the execution model and available instructions can be found in the online documentation.\footnote{\url{https://intel.github.io/tiny-tensor-compiler/manual/tensor-ir.html}, accessed on 25/08/2028}
 
 Domain-specific languages (DSLs) provide abstraction and performance portability by expressing operations in a form closer to the mathematical problem rather than low-level loops. In recent years, DSLs such as FreeFem++ or FEniCS UML allow variational forms to be compiled into optimized C or LLVM IR. Similarly, TinyTC aims to represent tensor operations, representing multi-dimensional contractions, fusions, and GEMMs in a dedicated tensor language, but remains unaware of finite element specifics.
 
-Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language we present the BK1 kernel using an algorithm presented by Świrydowicz et al. (2019), see Listing \ref{lst:tinytc}, where each tensor product is implemented using the loop over GEMM approach. For simplicity the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage.
+Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language we present the BK1 kernel using an algorithm presented by \cite{Swirydowicz19}, see Listing \ref{lst:tinytc}, where each tensor product is implemented using the loop over GEMM approach. For simplicity the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage.
 
 \begin{lstlisting}[language=TensorIR,caption={BK1 using Tensor IR},basicstyle=\ttfamily\tiny,
                    label={lst:tinytc}]
@@ -368,7 +369,7 @@ Despite these initial challenges, the use of a specialized tensor DSL offers num
 
 Iterative linear system solvers make heavy use of low arithmetic intensity operations, so called streaming operations.
 When matrix-free high-order FEM schemes are combined with iterative solvers. 
-As shown previously by Kronbichler et al. \cite{kronbichler2023} on the case of the conjugate gradient method, above a certain problem size the streaming operations contribute a significant chunk of the run-time.
+As shown previously by Kronbichler et al. \cite{kronbichler2023enhancing} on the case of the conjugate gradient method, above a certain problem size the streaming operations contribute a significant chunk of the run-time.
 
 In this section we present some preliminary results on the performance and portability of
 streaming operations implemented using different frameworks on CPU and GPU architectures.
@@ -415,7 +416,7 @@ FIXME: cite Salvatore's work, energy-meter
     \end{table}
 \end{center}
 
-\bibliographystyle{plain}  % or abbrv, unsrt, alpha, etc.
+\bibliographystyle{plainnat}
 \bibliography{refs}        % refs.bib in the same folder
 
 \label{MyLastPage}

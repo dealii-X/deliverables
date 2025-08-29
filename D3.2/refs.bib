@@ -1,22 +1,32 @@
 @article{Cielo25,
-  author    = {Cielo, S. and Pöppl, A. and Pribec, I.},
+  author    = {Cielo, Salvatore and Pöppl, Alexander and Pribec, Ivan},
   title     = {SYCL for Energy-Efficient Numerical Astrophysics: the case of DPEcho},
   journal   = {arXiv preprint arXiv:2508.14117},
   year      = {2025}
 }
 
 @article{Kronbichler19,
-  author    = {Kronbichler, M. and Kormann, K.},
-  title     = {Fast matrix-free evaluation of discontinuous Galerkin finite element operators},
-  journal   = {ACM Transactions on Mathematical Software (TOMS)},
-  volume    = {45},
-  number    = {3},
-  pages     = {1--40},
-  year      = {2019}
+  author =       {Martin Kronbichler and Katharina Kormann},
+  title =        {Fast matrix-free evaluation of discontinuous {G}alerkin finite element operators},
+  journal   = {ACM Transactions on Mathematical Software},
+  volume =       {45},
+  number =       3,
+  pages =        {29:1--29:40},
+  year =         2019, 
+  doi =          {10.1145/3325864}
+}
+
+@Article{Kronbichler12,
+  author =       {Martin Kronbichler and Katharina Kormann},
+  title =        {A generic interface for parallel cell-based finite element operator application},
+  journal =      {Computers \& Fluids},
+  year =         2012,
+  volume =       63,
+  pages =        {135--147}
 }
 
 @article{Swirydowicz19,
-  author    = {Świrydowicz, K. and Chalmers, N. and Karakus, A. and Warburton, T.},
+  author    = {Świrydowicz, Kasia and Chalmers, Noel and Karakus, Aali and Warburton, Tim},
   title     = {Acceleration of tensor-product operations for high-order finite element methods},
   journal   = {International Journal of High Performance Computing Applications},
   volume    = {33},
@@ -26,14 +36,14 @@
 }
 
 @article{Chalmers20,
-  author    = {Chalmers, N. and Warburton, T.},
+  author    = {Chalmers, Noel and Warburton, Tim},
   title     = {Portable high-order finite element kernels I: Streaming operations},
   journal   = {arXiv preprint arXiv:2009.10917},
   year      = {2020}
 }
 
 @inproceedings{Baratta22,
-  author    = {Baratta, I. and Richardson, C. and Wells, G.},
+  author    = {Baratta, Igor and Richardson, Chris and Wells, Garth},
   title     = {Performance analysis of matrix-free conjugate gradient kernels using SYCL},
   booktitle = {Proceedings of the 10th International Workshop on OpenCL},
   pages     = {1--10},
@@ -42,7 +52,7 @@
 }
 
 @article{Sun20,
-  author    = {Sun, T. and Mitchell, L. and Kulkarni, K. and Klöckner, A. and Ham, D. A. and Kelly, P. H.},
+  author    = {Sun, Tianjiao and Mitchell, Lawrence and Kulkarni, Kaushik and Klöckner, Andreas and Ham, David A. and Kelly, Paul H. J.},
   title     = {A study of vectorization for matrix-free finite element methods},
   journal   = {International Journal of High Performance Computing Applications},
   volume    = {34},
@@ -58,6 +68,44 @@
   volume={37},
   number={2},
   pages={61--81},
-  year={2023},
-  publisher={Sage Publications Sage UK: London, England}
+  year={2023}
+}
+
+
+@article{Fischer20scalability,
+  doi = {10.1177/1094342020915762},
+  year = {2020},
+  volume = {34},
+  number = {5},
+  pages = {562--586},
+  author = {Paul Fischer and Misun Min and Thilina Rathnayake and Som Dutta and Tzanio Kolev and Velelin Dobrev and Jean-Sylvain Camier and Martin Kronbichler and Tim Warburton and Kasia {\'{S}}wirydowicz and Jed Brown}, 
+  title = {Scalability of high-performance {PDE} solvers},
+  journal = {The International Journal of High Performance Computing Applications}
+}
+
+@book{Deville02,
+  title={High-order methods for incompressible fluid flow},
+  author={Deville, M. O. and Fischer, P. F. and Mund, E. H.},
+  volume={9}, 
+  year={2002},
+  publisher={Cambridge University Press}
+}
+
+@article{Arndt21,
+  author = {D. Arndt and W. Bangerth and D. Davydov and T.
+    Heister and L. Heltai and M. Kronbichler and M. Maier and 
+      J.-P. Pelteret and B. Turcksin and D. Wells},
+  title = {The deal.{{II}} finite element library: design, features, and insights},
+  doi = {10.1016/j.camwa.2020.02.022},
+  journal = {Comput Math with Appl},
+  volume = {81},
+  pages = {407--422},
+  year = {2021},
+}
+
+@book{Deakin23,
+author = {Tom Deakin and Timothy G. Mattson},
+title = {Programming Your GPU with OpenMP: Performance Portability for GPUs},
+publisher = {MIT Press},
+year = 2023
 }
