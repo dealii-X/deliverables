@@ -14,6 +14,13 @@
 % Small font size in lstlistings
 \lstset{basicstyle=\ttfamily\small}
 
+% Define a custom DSL (keywords of your choice)
+\lstdefinelanguage{TensorIR}{
+    morekeywords={alloca,gemm,gemv,fuse,subview},
+    morecomment=[l]{\;},
+}
+
+
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.2}
 
@@ -164,26 +171,111 @@ The translated programs can be loaded from programs written using the OpenCL, Le
 and executued on GPU and CPU devices.
 Both C and C++ APIs are supported.
 
-The tensor language of TinyTC assumes a batched execution model, where each instance of a kernel is executed by one work-group. Consistent with SYCL and OpenCL terminology, each work-group consists of work-items that execute concurrently. Further details of the execution model and available instructions can be found in the online documentation \footnote{\url{https://intel.github.io/tiny-tensor-compiler/manual/tensor-ir.html}, accessed on 25.08.2028}
+The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by Intel for efficient execution of tensor computations on CPUs and GPUs. TinyTC compiles programs written in a specialized tensor language into OpenCL-C or SPIR-V, supporting runtime environments such as OpenCL, Level Zero, and SYCL. C and C++ APIs are available. TinyTC assumes a batched execution model, where each kernel is executed by a work-group with concurrent work-items, and the compiler maps tensor operations to efficient GPU instructions, including cooperative GEMMs and subgroup vectorization. Further details of the execution model and available instructions can be found in the online documentation \footnote{\url{https://intel.github.io/tiny-tensor-compiler/manual/tensor-ir.html}, accessed on 25.08.2028}
 
+
+Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. Following the CEED benchmark description, the kernel assumes a  
 As a first demonstration of tensor language we the BK1 kernel using a naive algorithm, where
 each tensor product has been translated using the "loop over GEMM" approach. 
 
-FIXME: missing snippet
+\begin{lstlisting}[language=TensorIR,caption={BK1 using Tensor IR},basicstyle=\ttfamily\tiny]
+func @sum_factorization(%basis0: memref<f32x3x4>,
+                        %basis1: memref<f32x3x4>,
+                        %basis2: memref<f32x3x4>,
+                        %JxW:    memref<f32x4x4x4x?>,
+                        %in:     memref<f32x3x3x3x?>,
+                        %out:    memref<f32x3x3x3x?>) {
+
+    %gid = group_id
+
+    %wsp0 = alloca -> memref<f32x3x3x3>; // Reserve temporary memory
+    %wsp1 = alloca -> memref<f32x3x3x4>; // Reserve temporary memory
+    %wsp2 = alloca -> memref<f32x3x4x4>; // Reserve temporary memory
+    %wsp3 = alloca -> memref<f32x4x4x4>; // Reserve temporary memory
+    %wsp4 = alloca -> memref<f32x4x4x4>;
+
+    %J_e = subview %JxW[:,:,:,%gid] : memref<f32x4x4x4x?>;
+    %in_e = subview %in[:,:,:,%gid] : memref<f32x3x3x3x?>;
+    %out_e = subview %out[:,:,:,%gid] : memref<f32x3x3x3x?>;
+
+    for %j1 = 0, 3 { ; Batch of GEMMs
+
+        %tmp = subview %in_e[:,%j1,:] : memref<f32x3x3x3>
+        %res = subview %wsp1[:,%j1,:] : memref<f32x3x3x4>
+
+        gemm.n.n 1.0, %tmp, %basis0, 0.0, %res :
+            f32, memref<f32x3x3,strided<1,9>>, memref<f32x3x4>, f32, memref<f32x3x4,strided<1,9>>;
+    }
+
+    
+    for %j2 = 0, 4 { ; Batch of GEMMs
+        %tmp = subview %wsp1[:,:,%j2] : memref<f32x3x3x4>
+        %res = subview %wsp2[:,%j2,:] : memref<f32x3x4x4>
+
+        gemm.n.n 1.0, %tmp, %basis1, 0.0, %res :
+            f32, memref<f32x3x3>, memref<f32x3x4>, f32, memref<f32x3x4,strided<1,12>>
+    }
+
+    for %j3 = 0, 4 { ; Batch of GEMV
+        for %p3 = 0, 4 {
+        
+            %tmp = subview %wsp2[:,%p3,%j3] : memref<f32x3x4x4>
+            %res = subview %wsp3[:,%j3,%p3] : memref<f32x4x4x4>
+
+            gemv.t 1.0, %basis2, %tmp, 0.0, %res :
+                f32, memref<f32x3x4>, memref<f32x3>, f32, memref<f32x4> 
+        }
+    }    
+
+    %flat1 = fuse %J_e[0,2] : memref<f32x4x4x4>
+    %flat2 = fuse %wsp3[0,2] : memref<f32x4x4x4>
+    %flat3 = fuse %wsp4[0,2] : memref<f32x4x4x4> ;  This one is probably redundant...
+
+    hadamard 1.0, %flat1, %flat2, 0.0, %flat3 :
+        f32, memref<f32x64>, memref<f32x64>, f32, memref<f32x64>
+
+
+    for %q6 = 0, 4 {                               ; Step 6
+        for %p6 = 0, 4 {
+            
+            %tmp = subview %wsp4[:,%q6,%p6] : memref<f32x4x4x4>
+            %res = subview %wsp2[:,%p6,%q6] : memref<f32x3x4x4>
+             
+            gemv.n 1.0, %basis2, %tmp, 0.0, %res :
+                f32, memref<f32x3x4>, memref<f32x4>, f32, memref<f32x3> 
+        }
+    }
+
+    for %p7 = 0, 4 {
+        %tmp = subview %wsp2[:,%p7,:] : memref<f32x3x4x4>
+        %res = subview %wsp1[:,:,%p7] : memref<f32x3x3x4>
+        
+        gemm.n.t 1.0, %tmp, %basis1, 0.0, %res :
+            f32, memref<f32x3x4,strided<1,12>>,memref<f32x3x4>, f32, memref<f32x3x3>
+    }
+
+    for %j8 = 0, 3 {
+        %tmp = subview %wsp1[:,%j8,:] : memref<f32x3x3x4>
+        %res = subview %out_e[:,%j8,:] : memref<f32x3x3x3>
+        gemm.n.t 1.0, %tmp, %basis0, 0.0, %res :
+            f32, memref<f32x3x4,strided<1,9>>, memref<f32x3x4>, f32, memref<f32x3x3,strided<1,9>>
+    }
+    
+}
+\end{lstlisting}
 
 While functional, this kernel fails to obtain good performance for several reasons.
-One of several optimizations is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. 
+One of several optimizations is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. For for instance in step 1, the loop over GEMMs can be rewritten as a single GEMM.
 
-For example, by fusing the dimensions in step 1, the loop over GEMMs can be rewritten as a single GEMM.
-
-FIXME: missing snippet
+\begin{lstlisting}[language=TensorIR,caption={BK1 using Tensor IR},basicstyle=\ttfamily\tiny]
+    %tmp1 = fuse %in_e[0,1] : memref<f32x9x3>
+    %res1 = fuse %wsp1[0,1] : memref<f32x9x4,local>    
+    gemm.n.n %c1, %tmp1, %basis0, %c0, %res1
+\end{lstlisting}
 
 Another possible optimization is related to SIMD execution and threading.
 To ensure correctness of the kernel when shared local memory is used, TinyTC is forced to insert barriers
-after each GEMM region, introducing unnecessary synchronization overhead.
-
-The naive kernel assigns multiple threads to cooperate on the evaluation of a single element.
-For lower order elements (N = 3, 5) this leads to sub-optimal use of SIMD instructions. 
+after each GEMM region, introducing unnecessary synchronization overhead. The naive kernel assigns multiple threads to cooperate on the evaluation of a single element. For lower order elements (N = 3, 5) this leads to sub-optimal use of the wide SIMD instructions.
 
 \section{Streaming Kernels}
 
