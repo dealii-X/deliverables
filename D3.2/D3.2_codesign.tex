@@ -158,13 +158,13 @@ The subset we have focused on so far are,
 \end{itemize}
 The benchmarks kernels form the algorithm core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
 
-The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
+The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. We note that the deal.II library currently bases the portable kernels on Kokkos, and the investigations presented in this report have the objective of providing insight into the behavior of the methods on modern hardware. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e., the assignment of degrees-of-freedom and quadrature points to GPU threads.
 
-In order to obtain a wider impression of GPU programming models available we have also created variants using OpenCL, OpenMP target offloading and variant for the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
+In order to obtain a wider impression of GPU programming models available we have also created variants using OpenCL, OpenMP target offloading and a variant for the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
 
 In the following sub-sections we describe our preliminary findings from the BK1 benchmark.
 We present experiments from multiple accelerator devices, showcasing their throughput capabilities in terms of degrees of freedom updated per second versus the problem size.
-The problem size is measured in number of degrees of freedom (DoFs) which is related closely to the number of elements.
+In the BK benchmarks, the problem size is measured in number of degrees of freedom (DoFs), a number obtained by the number of polynomial basis functions per element times the number of elements.
 Besides the variation w.r.t. problem size, we also study the influence of the quadrature order.
 
 In the experiments presented below, the following compilers (including OpenMP) are used:
@@ -182,7 +182,7 @@ The libraries used are
 
 \subsection{Kokkos and CUDA Performance Results}
 {\bf BK1.} Early performance results for the different test cases are shown in Figure~\ref{fig:BK1_1} and Figure~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
-The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block. This leads to under-utilization of the warp (size 32) on the target hardware.
+The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block, see the benchmarks described in \cite{Fischer20scalability}. This leads to under-utilization of the warp (size 32) on the target hardware.
 The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead.
 
 \begin{figure}
@@ -198,7 +198,7 @@ The second finding is that Kokkos achieves approximately 90\% of the performance
 \label{fig:BK1_2}
 \end{figure}
 
-{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
+{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster \citep{Kronbichler19}, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
 
 Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute. In these measurements, both CUDA and Kokkos executions completed in 0.71 ms, showing identical performance. Nsight Compute reported an arithmetic intensity of 1.97 FLOP/byte, which places these kernels in the memory-bound region of the roofline model for the H100 GPU. The achieved performance was 5.7 TFLOPs, compared to the hardware limit of 6.6 TFLOPs at this arithmetic intensity. This corresponds to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor.
 
@@ -273,7 +273,7 @@ superior performance portability, assuming the compiler succeeds to auto-paralle
 the loop well.
 
 \begin{lstlisting}[language=C++,caption={The `omp teams loop' directive},
-                   label={lst:omp_loop}]
+                   label={lst:omp_loop},basicstyle=\ttfamily\footnotesize]
 #pragma omp target \
     map(to: basis0[:nm0*nq0], basis1[:nm1*nq1], basis2[:nm2*nq2]) \
     map(to: in[:nelmt*nm0*nm1*nm2], JxW[:nelmt*nq0*nq1*nq2]) \
@@ -289,7 +289,7 @@ The loop shown here is the outer loop across elements of the E-vector in CEED te
 First a `target' region is opened, instructing the compiler to generate
 device code for the scope of the upcoming for-loop. 
 The `map' clauses are used to communicate the array sizes and exert control over the direction of memory movement to the minimum necessary.
-Finally, the `teams loop` directive is used to divide the calculation of elements across threads in a concurrent fashin.
+Finally, the `teams loop` directive is used to divide the calculation of elements across threads in a concurrent fashion.
 For this particular kernel the simpler `omp loop' directive (without `teams`) would also be sufficient, but instead we wanted to emphasize the assigment of elements across teams first.
 
 \begin{figure}[htbp]
@@ -425,11 +425,11 @@ streaming operations implemented using different frameworks on CPU and GPU archi
 
 \section{Energy Efficiency}
 
-The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by Cielo et al. \cite{Cielo2025} in a case study of an astrophysical simulation, accelerators can deliver a 5–10× improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
+The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by \cite{Cielo25} in a case study of an astrophysical simulation, accelerators can deliver a 5–10× improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
 
 Maximizing these benefits requires energy-aware practices from both HPC practitioners and application developers. Since power and energy usage vary across devices, workloads, and runtime conditions, precise modeling is difficult, making empirical measurement essential. System-level monitoring frameworks such as Intel’s RAPL, AMD uProf, NVIDIA’s NVML, or Arm’s Streamline provide access to hardware counters, while job- and process-level tools such as the Energy Aware Runtime, perf, likwid-powermeter, and PAPI enable finer-grained insights. For kernel-level breakdowns, vendor tools like NVIDIA Nsight or Intel VTune are available, but they often involve heavy instrumentation and vendor lock-in. In practice, lightweight and portable solutions remain highly attractive.
 
-To this end, Cielo et al. \cite{Cielo2025} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
+To this end, \cite{Cielo25} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
 
 In the remaining period of this work package, we plan to adopt this strategy to measure the energy usage of the core algorithmic kernels and gain an overview of their power behavior. Although we have not yet carried out such experiments, we take inspiration from a recent presentation by S. Cielo (LRZ), who demonstrated the benefits of these techniques, and we intend to implement them as part of our future performance and energy-efficiency evaluations.
 
@@ -469,5 +469,6 @@ In the remaining period of this work package, we plan to adopt this strategy to 
 \bibliographystyle{plainnat}
 \bibliography{refs}        % refs.bib in the same folder
 
+\label{MyLastPage}
 
 \end{document}
