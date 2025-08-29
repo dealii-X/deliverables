@@ -160,8 +160,19 @@ The benchmarks kernels form the algorithm core of the benchmark problems (BP), w
 
 The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
 
+For experimentation across a wider array of potential accelerator devices, the CUDA kernels have also been translated to the OpenCL-C language for use with the vendor-neutral OpenCL framework from Khronos.
+OpenCL remains widely supported across both CPU and GPU devices from multiple vendors.
+The verbose setup required via the OpenCL runtime API, the split kernel source model, and restriction to C level language semantics, are some of the main criticisms from scientific software developers. 
+The growing popularity of C++ coupled with powerful syntactic features has shifted the attention to more expressive programming models including SYCL and Kokkos, which provide similar capabilities as OpenCL, but are simpler to use and learn. 
+
+In order to obtain a wider impression of programming models we have also created variants using OpenMP target offloading and a fifth variant relying on the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
+
 \subsection{Kokkos}
 \subsection{CUDA}
+
+\subsection{OpenCL}
+
+
 \subsection{OpenMP Offloading}
 
 Since its introduction in OpenMP 4.5, offloading has become an integral component
@@ -194,7 +205,7 @@ for(size_t e = 0; e < nelmt; ++e) {
 }
 \end{lstlisting}
 
-Listing \ref{lst:omp_loop} shows an excerpt of from the BK1 algorithm using the \texttt{omp teams loop} directive. 
+Listing \ref{lst:omp_loop} shows an excerpt of from the BK1 algorithm, parallelized using using the \texttt{omp teams loop} directive. 
 The loop shown here is the outer loop across elements of the E-vector in CEED terminology.
 First a `target' region is opened, instructing the compiler to generate
 device code for the scope of the upcoming for-loop. 
