@@ -164,24 +164,26 @@ The initial kernels have been implemented in three variants: 1) sequential kerne
 \subsection{CUDA}
 \subsection{OpenMP Offloading}
 
-Since their introduction in OpenMP 4.5, offloading has become an integral component
-of the OpenMP programming framework.
-Adding OpenMP directives offloading to an existing code can be quite straightforward,
+Since its introduction in OpenMP 4.5, offloading has become an integral component
+of this directive-based parallel programming framework.
+Adding OpenMP directives for offloading to an existing code can be quite straightforward,
 assuming the right data structures and loop patterns are already in place.
-When using OpenMP for GPU offloading it is important to distinguish between two
-categories of directives, memory movement and work sharing.
+When using OpenMP for GPU offloading, it is important to distinguish between two
+categories of directives for memory movement and work sharing.
 
-To provide fine-grained control over the hierarchical parallelism in terms of 
-teams and threads. The two main directives from this point of view are, `omp teams' and `omp parallel', which can also be used to program in a SPMD-like mode (also called ``me'' mode). Typically however, there directives are combined with work-sharing
-constructs like `distribute', `for' to control the parallelization of (nested) loops.
-A very useful work-sharing construct is the `loop` directive, which provides 
-a descriptive form of parallelism, which is slightly less flexible.
-The advantage is the precise assignment of the loop iteration space to teams and threads is left to the compiler. 
-As explained by \cite{Deakin23}, this kind of descriptiveness provides
-superior performance portability, assuming the compilers succeeds to auto-parallelize
+Similar to other GPU programming models, OpenMP offers fine-grained control over the hierarchical parallelism in terms of teams and threads. These are reflected by the two directives, `omp teams' which replicates execution across a league of teams and `omp parallel' which replicates execution across threads of a team. 
+The two directives can also be used to program in a SPMD-like mode (also called ``me'' mode). 
+Typically however, the directives are combined with work-sharing
+constructs like `distribute' and `for' which control the parallelization of (nested) loops.
+A very useful work-sharing construct is the `[teams] loop` directive, which provides 
+a descriptive form of parallelism in contrast to other prescriptive directives.
+With the `target [teams] loop' directive, the precise distribution of the loop iteration space across teams and threads is left to the compiler. 
+As explained by \cite{Deakin23}, this kind of descriptiveness can provide
+superior performance portability, assuming the compiler succeeds to auto-parallelize
 the loop well.
 
-\begin{lstlisting}[language=C++,caption={Simple C++ hello world},label={lst:cpp-hello}]
+\begin{lstlisting}[language=C++,caption={The `omp teams loop' directive},
+                   label={lst:omp_loop}]
 #pragma omp target \
     map(to: basis0[:nm0*nq0], basis1[:nm1*nq1], basis2[:nm2*nq2]) \
     map(to: in[:nelmt*nm0*nm1*nm2], JxW[:nelmt*nq0*nq1*nq2]) \
@@ -192,11 +194,13 @@ for(size_t e = 0; e < nelmt; ++e) {
 }
 \end{lstlisting}
 
-In figure X we show the parallelization of the BK1 algorithm using the \texttt{omp loop} directives. First we open a `target' region, instructing the compiler to generate
-device code for the upcoming region/scope. The `map' clauses are used to communicate the
-array sizes and avoid unnecessary memory movement.
-For this particular kernel the simpler `omp loop' directive would also work, but here we wanted
-to emphasize the assigment of elements to individual teams.
+Listing \ref{lst:omp_loop} shows an excerpt of from the BK1 algorithm using the \texttt{omp teams loop} directive. 
+The loop shown here is the outer loop across elements of the E-vector in CEED terminology.
+First a `target' region is opened, instructing the compiler to generate
+device code for the scope of the upcoming for-loop. 
+The `map' clauses are used to communicate the array sizes and exert control over the direction of memory movement to the minimum necessary.
+Finally, the `teams loop` directive is used to divide the calculation of elements across threads in a concurrent fashin.
+For this particular kernel the simpler `omp loop' directive (without `teams`) would also be sufficient, but instead we wanted to emphasize the assigment of elements across teams first.
 
 
 \subsection{Tiny Tensor Compiler}
