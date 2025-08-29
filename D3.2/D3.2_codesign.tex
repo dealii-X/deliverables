@@ -102,9 +102,23 @@ The objective of this document is to describe our ongoing co-design activies
 aimed at achieving optimal performance, energy efficiency and technology exploitation
 on novel hardware architectures. 
 
-To achieve this we have performed profiling runs
-of representative algorithmic patterns including the CEED bakeoff problems and
-the related streaming kernels.
+
+For performance optimization purposes we have focused on two families of kernels, the CEED Bakeoff Problems and Streaming Kernels, that serve as a suitable proxy for the algorithmic core of simulation codes using high-order finite elements.
+
+The CEED Bakeoff problems focus on the fast evaluation of the basic operators, namely bilinear forms, on hexahedral grids using sum factorization techniques. 
+Both scalar and vector PDE problems are included in the benchmark, so far our efforts have been focused on the scalar problems.
+Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular bilinear form. 
+For high-order finite elements, the BKs rank highly in terms of arithmetic intensity.
+The efficient evaluation of these kernels is paramount to obtain good performance. 
+
+The Streaming Kernels capture a second group of low intensity operations, where memory movement is dominant.
+The kernels generally take one or two long vectors as arguments. 
+The first four kernels included are: copy, scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). 
+The fifth kernel performs a fused scaled sum and dot product. 
+The remaining two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom
+associated with a given finite element mesh into a linear vector.
+The gather and scatter kernels are not addressed in this report.
+
 
 \begin{itemize}
 \item CUDA Support: Enabling programming support for NVIDIA GPUs using the CUDA parallel computing model and
@@ -243,7 +257,7 @@ func @sum_factorization(%basis0: memref<f32x3x4>,
 As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. The kernel shown above only attained 10 GDoF/s on the Intel Ponte Vecchio GPU. One of several optimizations possible is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. For instance in step 1 (the \texttt{j1}-loop), the loop over GEMMs can be rewritten as a single GEMM by fusing dimensions (Listing \ref{lst:tincytc_fuse}).
 
 \begin{lstlisting}[language=TensorIR,caption={BK1 using Tensor IR},basicstyle=\ttfamily\small,
-                   label={lst:tinytc_fuse]
+                   label={lst:tinytc_fuse}]
     %tmp1 = fuse %in_e[0,1] : memref<f32x9x3>
     %res1 = fuse %wsp1[0,1] : memref<f32x9x4,local>    
     gemm.n.n %c1, %tmp1, %basis0, %c0, %res1
