@@ -100,15 +100,24 @@ infrastructure.
 
 The objective of this document is to describe our ongoing co-design activies
 aimed at achieving optimal performance, energy efficiency and technology exploitation
-on novel hardware architectures. 
+on novel hardware architectures.
 
+Our main achievement in this period has been the preparation and analysis of benchmark kernels for the matrix-free application of discrete finite element operators, focused on addressing newer GPU architectures. 
+The benchmark repository can be found at: \url{https://github.com/dealii-X/benchmarks/}
+
+The preparation of these benchmarks has been the focus of Milestone \#3 -- Public repository of benchmark sets for performance evaluation -- verified by means of runs of the software on at
+least three different accelerated platforms.
 
 For performance optimization purposes we have focused on two families of kernels, the CEED Bakeoff Problems and Streaming Kernels, that serve as a suitable proxy for the algorithmic core of simulation codes using high-order finite elements.
 
+The benchmark kernels exploit algebraic sum factorization techniques to achieve an affordable evaluation in comparison to a naive sum algorithm. This type of technique has been popularized in recent years by several groups, including the deal.ii authors. 
+
+The translation of these techniques to modern GPU architectures remains an open challenge at both software and hardware level. At the latter,  programmers are faced with a plethora of differeerms of achieving maximum effective utilizations, and the software level, where a multitude of 
+
 The CEED Bakeoff problems focus on the fast evaluation of the basic operators, namely bilinear forms, on hexahedral grids using sum factorization techniques. 
 Both scalar and vector PDE problems are included in the benchmark, so far our efforts have been focused on the scalar problems.
-Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular bilinear form. 
-For high-order finite elements, the BKs rank highly in terms of arithmetic intensity.
+Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular 
+finite element operator and is of high arithmetic intensity. 
 The efficient evaluation of these kernels is paramount to obtain good performance. 
 
 The Streaming Kernels capture a second group of low intensity operations, where memory movement is dominant.
