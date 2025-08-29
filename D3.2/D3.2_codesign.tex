@@ -420,7 +420,14 @@ As shown previously by Kronbichler et al. \cite{kronbichler2023enhancing} on the
 In this section we present some preliminary results on the performance and portability of
 streaming operations implemented using different frameworks on CPU and GPU architectures.
 
-% FIXME
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{omp_grace} % replace with your filename
+  \caption{Streaming kernel results on Nvidia Grace using OpenMP-annotated do-loops. All kernels achieve over 60\% of the peak bandwidth.}
+  \label{fig:streaming_omp_grace}
+\end{figure}
+
 
 
 \section{Energy Efficiency}
