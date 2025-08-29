@@ -153,12 +153,19 @@ the performance of high-order codes.
 The subset we have focused on so far are,
 \begin{itemize}
     \item BK1: scalar PCG with mass matrix, $q = p+2$
-    \item BP3: scalar PCG with stiffness matrix, $q = p+1$
+    \item BK3: scalar PCG with stiffness matrix, $q = p+1$
     \item BK5: scalar PCG with stiffness matrix, $q = p+2$
 \end{itemize}
 The benchmarks kernels form the algorithm core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
 
 The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
+
+In order to obtain a wider impression of GPU programming models available we have also created variants using OpenCL, OpenMP target offloading and variant for the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
+
+In the following sub-sections we describe our preliminary findings from the BK1 benchmark.
+We present experiments from multiple accelerator devices, showcasing their throughput capabilities in terms of degrees of freedom updated per second versus the problem size.
+The problem size is measured in number of degrees of freedom which is related closely to the number of elements.
+Besides the variation w.r.t. problem size, we also study the influence of the quadrature order.
 
 \subsection{Kokkos and CUDA Performance Results}
 {\bf BK1.} Early performance results for the different test cases are shown in Figure~\ref{fig:BK1_1} and Figure~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
@@ -189,10 +196,7 @@ Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations d
 For experimentation across a wider array of potential accelerator devices, the CUDA kernels have also been translated to the OpenCL-C language for use with the vendor-neutral OpenCL framework from Khronos.
 OpenCL remains widely supported across both CPU and GPU devices from multiple vendors.
 The verbose setup required via the OpenCL runtime API, the split kernel source model, and restriction to C level language semantics, are some of the main criticisms from scientific software developers. 
-The growing popularity of C++ coupled with powerful syntactic features has shifted the attention to more expressive programming models including SYCL and Kokkos, which provide similar capabilities as OpenCL, but are simpler to use and learn. 
-
-In order to obtain a wider impression of programming models we have also created variants using OpenMP target offloading and a fifth variant relying on the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
-
+The growing popularity of C++ coupled with powerful syntactic features has shifted the attention to more expressive programming models including SYCL and Kokkos, which provide similar capabilities as OpenCL, but are arguably simpler to use. 
 
 
 \subsection{OpenMP Offloading}
@@ -416,9 +420,13 @@ streaming operations implemented using different frameworks on CPU and GPU archi
 
 \section{Energy Efficiency}
 
-Implement energy measurement strategies for the main algorithmic ingredients
+The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by Cielo et al. \cite{Cielo2025} in a case study of an astrophysical simulation, accelerators can deliver a 5–10× improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
 
-FIXME: cite Salvatore's work, energy-meter 
+Maximizing these benefits requires energy-aware practices from both HPC practitioners and application developers. Since power and energy usage vary across devices, workloads, and runtime conditions, precise modeling is difficult, making empirical measurement essential. System-level monitoring frameworks such as Intel’s RAPL, AMD uProf, NVIDIA’s NVML, or Arm’s Streamline provide access to hardware counters, while job- and process-level tools such as the Energy Aware Runtime, perf, likwid-powermeter, and PAPI enable finer-grained insights. For kernel-level breakdowns, vendor tools like NVIDIA Nsight or Intel VTune are available, but they often involve heavy instrumentation and vendor lock-in. In practice, lightweight and portable solutions remain highly attractive.
+
+To this end, Cielo et al. \cite{Cielo2025} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
+
+In the remaining period of this work package, we plan to adopt this strategy to measure the energy usage of the core algorithmic kernels and gain an overview of their power behavior. Although we have not yet carried out such experiments, we take inspiration from a recent presentation by S. Cielo (LRZ), who demonstrated the benefits of these techniques, and we intend to implement them as part of our future performance and energy-efficiency evaluations.
 
 \section{Algorithmic development}
 
@@ -456,6 +464,5 @@ FIXME: cite Salvatore's work, energy-meter
 \bibliographystyle{plainnat}
 \bibliography{refs}        % refs.bib in the same folder
 
-\label{MyLastPage}
 
 \end{document}
