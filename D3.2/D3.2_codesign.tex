@@ -84,7 +84,7 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-This report described advances in co-design, technology exploitation and energy efficiency.
+This report describes advances in co-design, technology exploitation and energy efficiency.
 
 \begin{itemize}
     \item Investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing
@@ -108,26 +108,25 @@ The benchmark repository can be found at: \url{https://github.com/dealii-X/bench
 The preparation of these benchmarks has been the focus of Milestone \#3 -- Public repository of benchmark sets for performance evaluation -- verified by means of runs of the software on at
 least three different accelerated platforms.
 
-For performance optimization purposes we have focused on two families of kernels, the CEED Bakeoff Problems and Streaming Kernels, that serve as a suitable proxy for the algorithmic core of simulation codes using high-order finite elements.
+For performance optimization purposes we have focused on two families of kernels, the CEED\footnote{Center for Efficient Exascale Discretization, Exascale Computing Project, \url{https://ceed.exascaleproject.org/}} Bakeoff Problems\footnote{\url{https://libceed.org/en/latest/examples/bps/}} and Streaming Kernels, that serve as a suitable proxy for the algorithmic core of simulation codes using high-order finite elements.
 
-The benchmark kernels exploit algebraic sum factorization techniques to achieve an affordable evaluation in comparison to a naive sum algorithm. This type of technique has been popularized in recent years by several groups, including the deal.ii authors. 
 
-The translation of these techniques to modern GPU architectures remains an open challenge at both software and hardware level. At the latter,  programmers are faced with a plethora of differeerms of achieving maximum effective utilizations, and the software level, where a multitude of 
 
-The CEED Bakeoff problems focus on the fast evaluation of the basic operators, namely bilinear forms, on hexahedral grids using sum factorization techniques. 
-Both scalar and vector PDE problems are included in the benchmark, so far our efforts have been focused on the scalar problems.
+The CEED Bakeoff Problems focus on the fast evaluation of the basic finite element operators (discretized bilinear forms) on hexahedral grids using sum factorization techniques. 
+Both scalar and vector  problems are included in the benchmarks. So far our efforts have been focused on the scalar problems.
 Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular 
 finite element operator and is of high arithmetic intensity. 
-The efficient evaluation of these kernels is paramount to obtain good performance. 
+The efficient implementation of these kernels is paramount to obtain good performance. 
 
-The Streaming Kernels capture a second group of low intensity operations, where memory movement is dominant.
+The benchmark kernels exploit algebraic sum factorization techniques to achieve an affordable evaluation of high-order finite element operators in comparison to the naive nestem sum algorithm. This type of technique has been popularized in recent years by several groups, including the deal.ii authors. The translation of these techniques to modern GPU architectures remains an open challenge at both software and hardware level due to the heterogeneity of both devices (CPUs, GPUs and other accelerators) and parallel programming frameworks provided by different vendors.
+
+The Streaming Kernels\footnote{Chalmers \& Warburton (2020), Table 1, \url{https://arxiv.org/abs/2009.10917}} capture a second group of low intensity operations, where memory movement is dominant.
 The kernels generally take one or two long vectors as arguments. 
-The first four kernels included are: copy, scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). 
-The fifth kernel performs a fused scaled sum and dot product. 
-The remaining two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom
-associated with a given finite element mesh into a linear vector.
-The gather and scatter kernels are not addressed in this report.
-
+The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). 
+The fifth kernel is the fused conjugate gradient update that involved the combination of a scaled sum and norm of a residual vector in a single sweep.    
+The last two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom associated with a given finite element mesh into a linear vector.
+The gather and scatter kernels are tied to particular mesh and finite element space, requiring more extensive driver setup. 
+Hence, they are not addressed in this report.
 
 \begin{itemize}
 \item CUDA Support: Enabling programming support for NVIDIA GPUs using the CUDA parallel computing model and
@@ -147,30 +146,18 @@ hardware architectures, enabling developers to harness the full potential of acc
 
 \section{CEED Bakeoff Problems}
 
-To study the performance of high-order finite element we focus on a representative
-set of problems originating from the CEED project \cite{}, designed to test and compare
+To study the performance and portability of high-order finite element implementation we focus on a subset of the CEED Bakeoff problems, designed to test and compare
 the performance of high-order codes.
 
-The CEED benchmarks\footnote{\url{https://ceed.exascaleproject.org/bps/}} include the following problems,
+The subset we've focused on so far are,
 \begin{itemize}
-    \item BP1: scalar PCG with mass matrix, $q = p+2$
-    \item BP2: vector PCG with mass matrix, $q = p+2$
-    \item BP3: scalar PCG with stiffness matrix, $q = p+2$
-    \item BP4: vector PCG with stiffness matrix, $q = p+2$
-    \item BP5: scalar PCG with stiffness matrix, $q = p+1$
-    \item BP6: scalar PCG with stiffness matrix, $q = p+1$
+    \item BK1: scalar PCG with mass matrix, $q = p+2$
+    \item BP3: scalar PCG with stiffness matrix, $q = p+1$
+    \item BK5: scalar PCG with stiffness matrix, $q = p+2$
 \end{itemize}
-In parallel to the set of benchmark problems, are the benchmark kernels,
-\begin{itemize}
-    \item BP1: scalar PCG with mass matrix, $q = p+2$
-    \item BP2: vector PCG with mass matrix, $q = p+2$
-    \item BP3: scalar PCG with stiffness matrix, $q = p+2$
-    \item BP4: vector PCG with stiffness matrix, $q = p+2$
-    \item BP5: scalar PCG with stiffness matrix, $q = p+1$
-    \item BP6: scalar PCG with stiffness matrix, $q = p+1$
-\end{itemize}
-which exclude the scatter/gather steps that are necessary when 
-the problem is partitioned across devices.
+The benchmarks kernels form the algorithm core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
+
+The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem \footnote{Kokkos,\url{https://kokkos.org}} and 3) using the CUDA Driver API. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e. the assignment of degrees-of-freedom and quadrature points to GPU threads.
 
 \subsection{CUDA Support}
 \subsection{SYCL Integration}
@@ -287,7 +274,7 @@ Despite these initial challenges, the use of a specialized tensor DSL offers num
 
 Iterative linear system solvers make heavy use of low arithmetic intensity operations, so called streaming operations.
 When matrix-free high-order FEM schemes are combined with iterative solvers. 
-Kronbichler et al. \cite{} have shown previously on an example of the conjugate gradient method, that above a certain problem size, the streaming operations contribute a significant chunk of the run-time.
+Kronbichler et al. \cite{kronbichler2023} have shown previously on an example of the conjugate gradient method, that above a certain problem size, the streaming operations contribute a significant chunk of the run-time.
 
 In this section we present some preliminary results on the performance and portability of
 streaming operations implemented using different frameworks on CPU and GPU architectures.
@@ -428,5 +415,7 @@ FIXME: cite Salvatore's work, energy-meter
     \end{table}
 \end{center}
 
+\bibliographystyle{plain}  % or abbrv, unsrt, alpha, etc.
+\bibliography{refs}        % refs.bib in the same folder
 
 \end{document}
