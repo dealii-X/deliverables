@@ -95,11 +95,11 @@ and hexahedral meshes, but does not support polygonal and polyhedral (\emph{poly
 gained popularity in recent years due to their ability to handle complex geometries and adapt to varying mesh
 sizes. These methods enable enhanced accuracy while reducing the number of degrees
 of freedom. In particular, discontinuous Galerkin methods formulated on polytopal meshes
-(PolyDG)~\cite{polyDG,Antoniettihp} naturally accommodate complex geometries, benefitting from the inherent flexibility of
+(PolyDG)~\citep{polyDG,Antoniettihp} naturally accommodate complex geometries, benefitting from the inherent flexibility of
 agglomerated grid structures, i.e., by grouping together several cells of an initial fine mesh.
 
 Recently, several agglomeration strategies have been proposed within the community: among them, we mention
-the \texttt{R3MG}~\cite{FEDER2025113773} approach, which
+the \texttt{R3MG}~\citep{FEDER2025113773} approach, which
 allows the generation of \emph{sequences} of nested polytopal meshes and can be used
 also in the context of multilevel methods. This is the approach described in this Work Package.
 
@@ -133,7 +133,7 @@ a polytopal mesh $\mathcal{T}_h$:
 \end{equation}
 where $f \in L^2(\Omega)$ is the right-hand side, and $g_D$ is a Dirichlet
 boundary condition. We consider meshes made of polygonal or polyhedral cells generated through agglomeration. This process
-can be performed using classical graph-partitioners such as \texttt{METIS}~\cite{METIS}.
+can be performed using classical graph-partitioners such as \texttt{METIS}~\citep{METIS}.
 
 
 \subsection{The tutorial program}
@@ -200,12 +200,12 @@ at hand.
 
 On the polytopal mesh $\mathcal{T}_h$, it is possible to define a discontinuous
 Galerkin (DG) discretization. This involves the use of local polynomial
-spaces defined on the \emph{bounding box} on each polytope~\cite{polyDG}. To construct a nodal
-DG space on the polytopal mesh, we can use the \texttt{FE\_DGQ} class provided by deal.II. This will define,
+spaces defined on the \emph{bounding box} on each polytope~\citep{polyDG}. To construct a nodal
+DG space on the polytopal mesh, we can use the \texttt{FE\_DGQ} 7class provided by deal.II. This will define,
 on each bounding box, a nodal polynomial space of degree $p$ in each coordinate direction. It is then possible to enumerate
 the degrees of freedom (DoFs) on the polytopal mesh, and to
 create the sparsity pattern associated with the discretization space, necessary to initialize
-sparse matrix associated with the problem. This is achieved
+the pattern of nonzero entries in the sparse matrix associated with the problem. This is achieved
 again through the \texttt{AgglomerationHandler} class, which provides the necessary methods
 \texttt{distribute\_agglomerated\_dofs()} and \texttt{create\_agglomeration\_sparsity\_pattern()}.
 
@@ -312,10 +312,10 @@ The presented tutorial program demonstrates the use of the polytopal discretizat
 
 
 \begin{thebibliography}{10}
-    \bibitem{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
-    \bibitem{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
-    \bibitem{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
-    \bibitem{METIS}George Karypis, and Vipin Kumar, "A Fast and High Quality Multilevel Scheme for Partitioning Irregular Graphs", SIAM Journal on Scientific Computing, vol. 20, 359-392, 1998.
+    \bibitem[Cangiani et al., 2014]{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
+    \bibitem[Antonietti et al., 2013]{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
+    \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
+    \bibitem[Karypis and Kumar, 2005]{METIS}George Karypis, and Vipin Kumar, "A Fast and High Quality Multilevel Scheme for Partitioning Irregular Graphs", SIAM Journal on Scientific Computing, vol. 20, 359-392, 1998.
 \end{thebibliography}
 
 
