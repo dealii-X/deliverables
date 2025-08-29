@@ -120,7 +120,7 @@ Specifically, the sub-work packages aim to:
 
 In summary, WP1 is dedicated to developing and integrating fundamental software components within the deal.II library and external libraries, with a strong emphasis on enabling exascale computation for the digital twin applications in WP2.
 
-\subsection{Purpose and Scope of this Report (Deliverable D1.2)}
+\subsection{Purpose and Scope of this Report (Deliverable D1.3)}
 
 The purpose of this second report on Work Package 1 is to present an updated and detailed account of the progress achieved during the six months following the initial reporting period of the dealii-X project. Building upon the foundational activities and strategies outlined in the first report (D1.2), this document focuses on the continued development and refinement of the deal.II library to address the requirements of exascale computing and to further enable the creation of advanced digital twins of human organs.
 
@@ -222,127 +222,9 @@ making it an even more robust and efficient library for a wide range of
 scientific and engineering applications aiming for the use of exascale
 computers.
 
-\subsection{Extension of current gmsh API for exascale simulations}
-    The key researcher in this task is a postdoc researcher, Dr. Devi Raksha, who
-    has been hired on the project, and will start her position in April 2025.
-    The task is to extend the gmsh API to support large-scale simulations, with
-    a focus on biomedical applications, and to improve the gmsh deal.II
-    interface to enable the generation and handling of large-scale meshes.
 
-    The task has not been started yet, and it is postponed to the second
-    semester of the project.
+\subsection{Progress and Current Status}
 
-\subsection{Generalized Interface for Coupling Operators in deal.II}
-    \subsubsection{Objectives and Planned Activities (Task WP1.2.2)}
-
-    The objective of this task is to develop a generalized interface for
-    coupling operators in deal.II, which is essential for multiphysics and
-    multiscale problems. The focus is on two different types of coupling:
-    \begin{itemize}
-        \item Coupling between different physical processes, such as fluid-structure interaction or heat transfer in porous media;
-        \item Coupling between different discretization schemes, including
-        non-matching and non-overlapping discretizations.
-    \end{itemize}
-
-    This subtask was supposed to start on the second semester of the project,
-    but an early version of the generalized interface has been developed and
-    merged into the deal.II repository in April 2024, before the official start
-    of the dealii-X project, making it more convenient to start the development
-    of the rest of this task in the first semester.
-
-    The developed approach encompasses two main aspects: a high-level interface
-    for defining coupling operators and a low-level interface for implementing
-    efficient evaluation of coupled bilinear forms (on possibly non-matching or
-    non-nested grids). The high-level interface enables the computation of
-    abstract bilinear forms for coupling between geometric entities, supporting
-    various kernels and use cases like BEM and bulk-surface coupling. The low
-    level interface needs to be flexible enough to allow the use of different
-    discretization schemes, including non-conforming discretizations, and
-    possibly different parallel distributions of the meshes.
-
-    \subsubsection{Implementation Details} 
-
-    The two pull requests, ``FECouplingValues''
-    (\url{https://github.com/dealii/dealii/pull/15773}) and
-    ``FEValuesViews::RenumberedView''
-    (\url{https://github.com/dealii/dealii/pull/15819}), directly address the
-    objective of developing a ``Generalized interface for coupling operators in
-    deal.II'', as outlined in Work Package 1.2.2 of the dealii-X project, by
-    providing the high level interface discussed in the introduction.
-
-    Pull request \#15773 introduces a new class called `FECouplingValues`, specifically designed for the computation of general coupling operators. The primary goal of this class is to enable the computation of abstract bilinear forms of the type:
-    $$ \int_{T_1} \int_{T_2} K(x_1, x_2) f(x_1) g(x_2) \, dT_1 \, dT_2, $$ where
-    $T_1$ and $T_2$ represent two arbitrary sets (cells, faces, edges, or their
-    combinations), and $K$ is a coupling kernel (potentially singular). The
-    class is designed to support various types of kernels $K$. The pull request
-    includes several tests demonstrating how the class can be used for different
-    types of coupling:
-    \begin{itemize}
-        \item Coupling for Boundary Element Methods (BEM);
-        \item As a replacement for `FEInterfaceValues`, integrating
-        discontinuous Galerkin flux terms;
-        \item For bulk-surface coupling computations.
-    \end{itemize}
-
-
-    Pull request \#15819 introduces the class `FEValuesViews::RenumberedView`.
-    This component was developed as part of the work for \#15773 and is intended
-    for use by `FECouplingValues`. `RenumberedView` allows the creation of a
-    reordered view of an `FEValuesBase` object, where both degrees of freedom
-    and quadrature points are renumbered according to provided renumbering
-    vectors.
-
-    In summary, these two pull requests jointly implement the "Generalized interface for coupling operators in deal.II" envisioned in WP1.2.2:
-    \begin{itemize}
-        \item `FECouplingValues` provides the framework for defining and
-        computing general coupling operators between different geometric
-        entities and discrete spaces. This addresses the need for a versatile
-        interface to manage various coupling techniques, including methods for
-        non-matching grids and non-local coupling.
-        \item `FEValuesViews::RenumberedView` provides a fundamental tool for managing the correspondence (or lack thereof) between the degrees of freedom and quadrature points of the different spaces being coupled via `FECouplingValues`.
-    \end{itemize}
-
-    The integration of these two functionalities into the deal.II library
-    provides users with powerful and flexible tools to tackle complex coupling
-    problems essential for the multiphysics and multiscale simulations at the
-    core of the dealii-X project.
-
-    The two pull requests were merged into the main deal.II repository on April
-    11, 2024, and included in the Release 9.6 milestone, before the official
-    start of the dealii-X project. As part of the WP1.2 tasks, a biologically
-    relevant application that uses the new functionality is being developed and
-    will be integrated in the deal.II repository as a new tutorial program. The
-    tutorial will demonstrate the use of the new `FECouplingValues` class for
-    the computation of a bulk-surface coupling operator.
-
-    A low level interface for coupling operators has been developed and merged
-    into the deal.II repository in pull request \#17919, which introduces a new
-    abstract base class `MGTwoLevelTransferBase` to enable non-nested multigrid
-    transfers. The primary goal of this class is to generalize the interface for
-    managing transfers between non-nested grids, which is a crucial step towards
-    addressing the challenges of coupling operators on non-matching grids. 
-
-    The `MGTwoLevelTransferBase` class provides a flexible framework for
-    implementing matrix-free transfer operators between different levels of a
-    multigrid hierarchy. This development aligns with the objectives of WP1.2.2,
-    as it contributes to the creation of a generalized interface for coupling
-    operators in deal.II. Additionally, the techniques developed for non-nested
-    multigrid transfers could offer valuable insights and algorithms for
-    tackling coupling problems on non-matching grids in more general contexts.
-
-    The implementation of this low-level interface is expected to enhance the
-    scalability and efficiency of multigrid methods in deal.II, particularly for
-    applications involving complex grid hierarchies or non-conforming
-    discretizations. This work also complements the high-level interface
-    provided by `FECouplingValues`, creating a comprehensive toolkit for
-    addressing a wide range of coupling and multigrid challenges in the dealii-X
-    project. The work has been submitted, and is currently under review. A
-    preprint is available at ~\cite{FederEtAl2024b}.
-
-   A tutorial program that illustrates the use of the non-nested multigrid
-   transfer has been proposed and is currently under review in the deal.II
-   library
-    \url{https://github.com/dealii/dealii/pull/17919}.
 
 
 \section{Polygonal Discretization Methods}
@@ -423,19 +305,27 @@ Before integration into the deal.II library, additional testing and generalizati
         \end{itemize}
 
         \subsection{Progress and Current Status}
-        Initial efforts have focused on designing the interface between PSCToolkit and deal.II's existing data structures. A pull request has been opened in the deal.II repository to support detection and linkage with the PSBLAS library (one of the two core libraries identified for interfacing PSCToolkit with deal.II; the other is AMG4PSBLAS, whose integration will follow in a subsequent pull request) \url{https://github.com/dealii/dealii/pull/18199}. A prototype of the interface has been planned in collaboration with the MUMPS team to ensure seamless integration with deal.II's current data structures of both interfaces.
+ 
+The activities at UNITOV have centered around the integration of PSCToolkit solvers into the deal.II framework; our work has been conducted with close coordination with UNIPI. 
+To interface PSCToolkit we have had to 
+Redefine some interfacing machinery on PSCToolkit side:
+\begin{itemize}
+\item Complete CMAKE build support:
+\item Upgrading the SUNDIALS interface.
+\end{itemize}
+The use of PSCToolkit into deal.II is planned through the availability of a SUNDIALS/KINSOL interface: deal.II makes calls into KINSOL/SUNDIALS, which in turn calls into PSCToolkit. Previous releases of PSCToolkit had already been interfaced with SUNDIALS, but we had to tackle the upgrades needed for using a new version towards which the entire infrastructure is transitioning. 
 
-        Several enhancements have been made to the PSCToolkit library itself to facilitate its integration with external libraries (such as deal.II), including:
-        \begin{itemize}
-            \item Fine control and tuning of compile definitions to simplify the detection of the library and its components, including support for external libraries, ensuring compatibility at linking time with deal.II and its dependencies;
-            \item Adding support for CMake to streamline integration with external libraries;
-            \item Exporting the library's macro definitions in a dedicated header file to simplify detection of the library and its components, regardless of the build system used;
-            \item Adding PSBLAS to the Spack package manager to simplify the installation of the library and its dependencies.
-        \end{itemize}
+Many “small” issues had to be tackled, including: 
+Converting the error codes;
+Changing the interlanguage (c/c++/Fortran) of complex data;
+Making certain configuration parameters available to deal.II code;
+Ensuring a complete CMake build could be achieved cleanly;
+Defining some additional computational kernels;
+Some preliminary testing of the PSCToolkit interface has already taken place.
+We are now in a position to start building and testing in the context of the entire application.
+The updates have been included in the release candidates for the PSCToolkit component PSBLAS 3.9.0-rc3 and AMG4PSBLAS 1.2.0-rc3.
 
-        \subsection{Challenges and Future Plans}
 
-        The integration of PSCToolkit into deal.II is still in its early stages, requiring careful planning to ensure compatibility and performance. The primary challenge lies in ensuring that the interface between PSCToolkit and deal.II is robust, efficient, and seamlessly communicates with existing deal.II data structures without introducing additional ones. This challenge stems from the proliferation of slightly incompatible data structures in existing external linear algebra packages integrated with deal.II, which has led to significant maintenance efforts and user confusion. Addressing this issue is a key focus to ensure a streamlined and user-friendly integration.
 
 \section{Integration of MUMPS Solver into deal.II (WP1.5)}
     \subsection{Objectives and Planned Activities}
@@ -449,27 +339,9 @@ Before integration into the deal.II library, additional testing and generalizati
     \end{itemize}
 
     \subsection{Progress and Current Status}
-    A preliminary interface for MUMPS was present in the deal.II library until
-    version 9.2. Such interface had been removed, in favor of using MUMPS
-    through external linear algebra packages such as PETSc and Trilinos.
-    
-    A careful planning of the interface between deal.II and MUMPS is currently
-    ongoing, with the goal of ensuring that the interface is robust and efficient,
-    and that it seamlessly communicates with existing deal.II data structures, extending, integrating, and modernizing the former MUMPS interface in deal.II. An initial pull request
-    has been opened in the deal.II repository to support detection and linkage
-    with the MUMPS library, reverting the removal of the MUMPS interface in deal.II, and re-introducing the original MUMPS interface, including some simple tests to ensure that the interface is working correctly. The pull request is available at
-    \url{https://github.com/dealii/dealii/pull/18255}.
-    
-    \subsection{Challenges and Future Plans}
-
-    The integration of MUMPS into deal.II is currently working only with the
-    serial version of the deal.II data structures, and it is still in its early
-    stages, requiring careful planning to ensure compatibility and performance.
-    Similarly to what has been discussed with the PSBLAS library, the primary
-    challenge lies in ensuring that the interface between MUMPS and deal.II is
-    robust, efficient, and seamlessly communicates with existing deal.II data
-    structures. Ensuring compatibility and avoiding redundant data structures is
-    crucial to streamline integration and reduce maintenance efforts.
+  In the last semester our activity was focused towards the integration of the MUMPS solver within the deal.II software. The deal.II package used to support a direct MUMPS integration in the past. This support was subsequently removed in favor of an indirect use of MUMPS through the PETSc library. As a first step towards the objectives of WP1 of the dealii-X
+project, this support was reverted and improved. The MUMPS interface in deal.ii was extended to support distributed memory parallelism through the use of distributed matrix and vector datatypes as defined in the deal.ii PETSc and Trilinos wrappers. This allows for a completely parallel initialization of the MUMPS data structure (that includes the system matrix and the right-hand sides) prior to the symbolic analysis, numerical factorization and forward/backward substitution. This ultimately allows for the solution of problems of a much larger size. Setting-up MUMPS internal configuration parameters was not possible in original
+deal.II MUMPS interface which, therefore, had to be extended to enable the use of the more advanced features of the MUMPS solver; these include the Block Low-Rank approximations, the GPU support and numerous other parameters that allow for fine-tuning both the performance and the numerical robustness of the solver. The full details of this work and the corresponding software documentation are reported in deliverable D1.1.
 
 \bibliographystyle{abbrv}
 %\bibliography{../common/bibliography.bib}
