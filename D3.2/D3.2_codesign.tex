@@ -288,7 +288,7 @@ func @sum_factorization(%basis0: memref<f32x3x4>,
 As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. 
 The kernel shown above achieved 10 GDoF/s on the Intel Ponte Vecchio GPU, roughly one quarter of the performance we observed using OpenMP. 
 One of several optimizations possible is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. 
-For instance in step 1 (the \texttt{j1}-loop), the loop over GEMMs can be rewritten as a single GEMM by fusing dimensions (Listing \ref{lst:tincytc_fuse}).
+For instance in step 1 (the \texttt{j1}-loop), the loop over GEMMs can be rewritten as a single GEMM by fusing dimensions (Listing \ref{lst:tinytc_fuse}).
 
 \begin{lstlisting}[language=TensorIR,caption={BK1 using Tensor IR},basicstyle=\ttfamily\small,
                    label={lst:tinytc_fuse}]
@@ -417,5 +417,7 @@ FIXME: cite Salvatore's work, energy-meter
 
 \bibliographystyle{plain}  % or abbrv, unsrt, alpha, etc.
 \bibliography{refs}        % refs.bib in the same folder
+
+\label{MyLastPage}
 
 \end{document}
