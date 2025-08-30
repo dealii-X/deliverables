@@ -49,12 +49,13 @@
 \begin{documentControl}
     \addVersion{0.1}{August 10, 2025}{Andrea Cangiani}{Initial draft}
     \addVersion{0.2}{August 26, 2025}{Andrea Cangiani}{Gathered information from all partners}
-    \addVersion{1.0}{August 29, 2025}{Andrea Cangiani}{Final adjustments between partners}
+    \addVersion{0.3}{August 29, 2025}{Andrea Cangiani}{Final adjustments between partners}
+    \addVersion{1.0}{August 30, 2025}{Luca Heltai}{Small fixes to UNIPI contribution}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
 Approved by: M. Kronbichler \\
-Approval Date: August 29, 2025
+Approval Date: August 30, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -181,7 +182,7 @@ The second finding is that Kokkos achieves approximately 90\% of the performance
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{BK1_1}
-\caption{BK1 performance results on Nvidia H100 GPU with CUDA programming model. Various polynomial orders are tested, and saturation of hardware resources is visible after $10^6$ degrees of freedom. Polynomial order 1 performs the worst due to under-occupation of the single warp.\label{fig:BK1_1}
+\caption{BK1 performance results on Nvidia H100 GPU with CUDA programming model. Various polynomial orders are tested, and saturation of hardware resources is visible after $10^6$ degrees of freedom. Polynomial order 1 performs the worst due to under-occupation of the single warp.}\label{fig:BK1_1}
 \end{figure}
 \begin{figure}
 \centering
@@ -221,10 +222,55 @@ making it an even more robust and efficient library for a wide range of
 scientific and engineering applications aiming for the use of exascale
 computers.
 
-
 \subsection{Progress and Current Status}
 
+Since D1.2, WP1.2 has moved from exploratory implementation to consolidation and
+integration across the target pre-exascale modules. The current status is:
 
+\paragraph{Gmsh API for large-scale distributed meshes.}
+A new reader for \emph{partitioned} Gmsh meshes into
+\texttt{parallel::fullydistributed::Triangulation} is under final review
+(\texttt{PR \#18759}). The interface supports 1D/2D/3D meshes produced with
+Gmsh's built-in partitioner (\verb|-part N -part_ghosts -part_split|) and
+automates vertex/cell connectivity and ghost handling across MPI ranks. This
+removes costly re-partitioning inside deal.II and enables streamlined
+large-scale workflows for realistic organ geometries. The contribution is
+feature-complete and expected to enter the next release cycle.
+
+\paragraph{Generalized interface for coupling operators.}
+The interface has been stabilized and exercised on non-matching couplings and
+fictitious-domain settings, with Lagrange-multiplier enforcement used as a
+working reference. The implementation underpins new solver technology (see
+below) and supports both conforming and non-conforming constraints, preparing
+the ground for robust multiphysics coupling in organ-scale models.
+
+\paragraph{Block preconditioners for coupled problems.}
+A family of augmented-Lagrangian block preconditioners has been developed and
+analyzed for interface-constrained Poisson/Stokes problems arising from
+non-matching and fictitious-domain discretizations. Theory provides mesh-size
+independent spectral bounds; numerics confirm low, essentially constant FGMRES
+iteration counts without exact block inverses (loose inner tolerances suffice).
+A distributed-memory implementation based on deal.II is maintained publicly, and
+a preprint is available on arXiv. Ongoing extensions target (i) elliptic
+interfaces with strong coefficient contrasts and (ii) fluid–structure
+interaction (see D1.4).
+
+\paragraph{Low-rank and hierarchical techniques via external solvers.}
+deal.II~9.7 integrates MUMPS as a first-class backend, exposing block low-rank
+compression and mixed-precision options relevant to exascale factorization.
+This provides a robust path for coarse-grid and ill-conditioned subproblems in
+multilevel solvers, complementing matrix-free fine-scale kernels. In parallel,
+hooks for PSCToolkit/PSBLAS have been added to enable scalable AMG-based
+coarse solvers and GPU-capable sparse BLAS, aligning with hybrid matrix-free /
+matrix-based workflows.
+
+\paragraph{Data pathways and ROM-enabling plumbing.}
+A lightweight VTK interoperability layer (\texttt{vtk\_utils.h}) has been
+prototyped to import unstructured meshes and multi-field data, infer suitable
+finite element layouts (vertex/cell, scalar/vector), and shuttle data between
+serial and distributed DoF vectors. While not a ROM algorithm per se, this
+infrastructure closes critical gaps in data ingestion and feature extraction
+pipelines needed by ROM and data-driven components (see D1.4).
 
 \section{Polygonal Discretization Methods}
 
@@ -342,11 +388,11 @@ The updates have been included in the release candidates for the PSCToolkit comp
 project, this support was reverted and improved. The MUMPS interface in deal.ii was extended to support distributed memory parallelism through the use of distributed matrix and vector datatypes as defined in the deal.ii PETSc and Trilinos wrappers. This allows for a completely parallel initialization of the MUMPS data structure (that includes the system matrix and the right-hand sides) prior to the symbolic analysis, numerical factorization and forward/backward substitution. This ultimately allows for the solution of problems of a much larger size. Setting-up MUMPS internal configuration parameters was not possible in original
 deal.II MUMPS interface which, therefore, had to be extended to enable the use of the more advanced features of the MUMPS solver; these include the Block Low-Rank approximations, the GPU support and numerous other parameters that allow for fine-tuning both the performance and the numerical robustness of the solver. The full details of this work and the corresponding software documentation are reported in deliverable D1.1.
 
-\bibliographystyle{abbrv}
+\bibliographystyle{plainnat}
 %\bibliography{../common/bibliography.bib}
 \bibliography{bibliography.bib}
     
-%\label{MyLastPage}
+\label{MyLastPage}
 
 
 \end{document}
