@@ -179,6 +179,43 @@ The upcoming work will focus on the generation of realistic vasculatures using p
 
 \subsection{Mechanobiology (UNIBS)}
 
+This section presents recent advancements in mechanobiology, led by the University of Brescia (UNIBS), focusing on the development of advanced computational models to simulate cell motility. Understanding—and ultimately controlling—cell motility is a scientific challenge of the highest order, which underpins metastasis, embryogenesis, and hemostasis. They all rely on non-exiting force-bearing networks, which are purposefully assembled and dismantled in response to physiological demands. Central to this research is the mechanobiological interplay between actin cytoskeleton dynamics and receptor-mediated interactions between the cell membrane and the extracellular matrix. Traditional continuum theories, such as those proposed by Larché and Cahn and Mixture Theories, fall short in capturing the complex coupling of mechanical, chemical, and transport phenomena that govern cytoskeletal reorganization, as they lack the ability to describe the dynamic creation and disassembly of networks. The mathematical foundations of our approach—including the underlying kinematics and balance equations—are detailed in an upcoming publication \cite{salvadori2025chemo}. The computational model is implemented in dealii-X and employs staggered algorithms to solve the coupled PDE system involving chemo-transport and mechanics. Manufactured solutions have been tested in parallel computing environments utilizing multiple processors and distributed memory architectures.
+
+\begin{figure}
+  \centering
+
+  \includegraphics[width=0.75\textwidth]{unibs-load-bearing-networks-1.png}
+
+  \caption{The dealii-X simulation of the formation of load-bearing networks.}
+  \label{fig:unibs-load-bearing-networks-1}
+\end{figure}
+
+This deliverable focuses on a Lagrangian approach, adopting both global and adaptive local mesh refinement strategies, with the latter guided by the KellyErrorEstimator in deal.II to estimate cell-wise error and improve solution accuracy. Simulations show the ability of the code to generate force-bearing domains upon polymerization of monomers. These simulations apply well in hemostasis, where the growing domain simulates the development of fibrin networks from activated platelets with real data.
+
+\begin{figure}
+  \centering
+
+  \includegraphics[width=\textwidth]{unibs-load-bearing-networks-2.png}
+
+  \caption{The dealii-X simulation of the formation of load-bearing networks.}
+  \label{fig:unibs-load-bearing-networks-2}
+\end{figure}
+
+Figure \ref{fig:unibs-load-bearing-networks-1}A shows the initial location of platelets, experimentally identified, surrounded by thrombin that catalyzes the clot formation. Figure \ref{fig:unibs-load-bearing-networks-1}B shows the dealii-X simulation of the load-bearing fibrin network at the end of the simulation, to be compared with the experimental data collected Figure \ref{fig:unibs-load-bearing-networks-1}C. A case study simulation moved from an initial tessellation made of \num{432} quadrilateral elements, distributed across \num{8} processors using parallel memory architectures. Adaptive mesh refinements were applied every \num{150} seconds during a virtual experiment lasting \num{10} minutes. The number of elements increased progressively from \num{432} to \num{6249} by $t = \SI{600}{\second}$, passing through \num{819} ($t = \SI{150}{\second}$), \num{1506} ($t = \SI{300}{\second}$), and \num{3264} ($t = \SI{450}{\second}$). Upon polymerization, the volume of the force-bearing network increases with time. Constraining displacements at the platelet boundary, the volumetric expansion of the fibrin network in the current configuration of the domain at five different time instants ($t = \num{0}, \num{150}, \num{300}, \num{450}$, and $\SI{600}{\second}$) is plotted in Figure \ref{fig:unibs-load-bearing-networks-2}.
+
+The network concentration is reported in Figure \ref{fig:unibs-network-concentration}. Since the activation signal is applied within a fixed region surrounding the platelet in the current configuration, we observe a higher fibrin concentration near the platelet, with decreasing concentrations farther from the activation region.
+
+A Eulerian framework for solids suits well the goal of the dynamic creation and disassembly of networks. The Eulerian perspective is particularly effective in cellular motility, where signaling occurs in localized zones naturally described in the current configuration. Future work will focus on extending the current code, providing realistic mechanisms for the generation and development of the actin cytoskeleton using parameters specific to fibroblasts and potentially other cell types.
+
+\begin{figure}
+  \centering
+
+  \includegraphics[width=0.75\textwidth]{unibs-network-concentration.png}
+
+  \caption{The dealii-X simulation of the formation of load-bearing networks.}
+  \label{fig:unibs-network-concentration}
+\end{figure}
+
 \subsection{Dualistic/eXact-Lab}
 
 \subsubsection{Introduction}
