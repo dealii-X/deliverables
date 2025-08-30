@@ -31,7 +31,7 @@
     \tableEntry{Deliverable number}{D1.3}
     \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{August 31, 2025}
-    \tableEntry{Actual date of delivery}{August 28, 2025}
+    \tableEntry{Actual date of delivery}{August 30, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -40,7 +40,7 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This report details the progress made during the second semester (Months 7--12) of the dealii-X project in enhancing the deal.II finite element library. The focus is on enhancements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as polygonal discretization (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the project's work packages during this period.}
+    \tableEntry{Abstract}{This report details the progress made during the second semester (Months 7--11) of the dealii-X project in enhancing the deal.II finite element library. The focus is on enhancements for exascale readiness, specifically in high-performance matrix assembly, matrix-free GPU integration, as well as polygonal discretization (to be integrated in the library). Furthermore, this report outlines other relevant enhancements to deal.II undertaken within the work packages of the project during this period.}
     \tableEntry{Keywords}{deal.II library; finite element method; Krylov subspace methods; sparse direct solver; matrix-free algorithms; mesh generation; polygonal discretization; CUDA; Kokkos}
 \end{deliverableTable}
 
@@ -50,11 +50,13 @@
     \addVersion{0.1}{August 10, 2025}{Andrea Cangiani}{Initial draft}
     \addVersion{0.2}{August 26, 2025}{Andrea Cangiani}{Gathered information from all partners}
     \addVersion{0.3}{August 29, 2025}{Andrea Cangiani}{Final adjustments between partners}
-    \addVersion{1.0}{August 30, 2025}{Luca Heltai}{Small fixes to UNIPI contribution}
+    \addVersion{0.4}{August 30, 2025}{Luca Heltai}{Small fixes to UNIPI contribution}
+    \addVersion{0.5}{August 30, 2025}{Martin Kronbichler}{Small fixes to RUB contribution}
+    \addVersion{1.0}{August 30, 2025}{Martin Kronbichler}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: M. Kronbichler \\
+Approved by: Martin Kronbichler \\
 Approval Date: August 30, 2025
 
 \subsection*{{Distribution List}}
@@ -79,7 +81,7 @@ Approval Date: August 30, 2025
     \subsection{Overview of the dealii-X Project and Objectives}
 
 The dealii-X project is a pioneering initiative dedicated to developing a
-high-performance and scalable computational platform based on the deal.II finite
+high-perfor\-mance and scalable computational platform based on the deal.II finite
 element library. The project directly addresses the
 HORIZON-EUROHPC-JU-2023-COE-03-01 topic, specifically focusing on the
 ``Personalised Medicine / Digital twin of the human body'' as an Exascale
@@ -123,9 +125,9 @@ In summary, WP1 is dedicated to developing and integrating fundamental software 
 
 \subsection{Purpose and Scope of this Report (Deliverable D1.3)}
 
-The purpose of this second report on Work Package 1 is to present an updated and detailed account of the progress achieved during the six months following the initial reporting period of the dealii-X project. Building upon the foundational activities and strategies outlined in the first report (D1.2), this document focuses on the continued development and refinement of the deal.II library to address the requirements of exascale computing and to further enable the creation of advanced digital twins of human organs.
+The purpose of this second report on Work Package 1 is to present an updated and detailed account of the progress achieved during the five months following the initial reporting period of the dealii-X project. Building upon the foundational activities and strategies outlined in the first report (D1.2), this document focuses on the continued development and refinement of the deal.II library to address the requirements of exascale computing and to further enable the creation of advanced digital twins of human organs.
 
-The scope of this report includes the assessment of technical developments within WP1, with particular emphasis on the optimization and scaling of computational methods, the deepening integration of key external libraries, and the maturation of novel discretization techniques explored during the early stages. It also covers the collaborative efforts across the sub-work packages, highlighting how initial prototypes and concepts have progressed towards more robust and deployable solutions.
+The scope of this report includes the assessment of technical developments within WP1, with particular emphasis on the optimization and scaling of computational methods, a deeper integration of key external libraries, and the maturation of novel discretization techniques explored during the early stages. It also covers the collaborative efforts across the sub-work packages, highlighting how initial prototypes and concepts have progressed towards more robust and deployable solutions.
 
 The report will document significant milestones reached, pointing to specific related deliverables such as D1.5, challenges encountered in this intermediate phase, and the strategies adopted to overcome them. It will provide a mid-term perspective on the trajectory of WP1 towards its objectives, demonstrating its growing contribution to the overarching goals of the dealii-X project.
 
@@ -139,19 +141,23 @@ techniques and multigrid methods are the core scientific components.
 
 \subsection{Objectives and Planned Activities (Task WP1.1.1)}
 
-The primary objective of WP1.1, led by RUB, is to extend the capabilities of deal.II’s matrix-free implementations for modern graphics cards. To test and evaluate the performance of these accelerators, CEED benchmarks \cite{Kolev2021} were implemented. 
+The primary objective of WP1.1, led by RUB, is to extend the capabilities of matrix-free implementations for modern graphics cards in deal.II. To test and evaluate the performance of these accelerators, CEED benchmarks \citep{Kolev2021} were implemented. 
 
 \subsection{Progress and Current Status}
 
 The current status of the implementation focuses on element-wise communication-free algorithms such as mass and stiffness matrix operators. 
 
-Implementations are available in the \url{https://github.com/dealii-X/benchmarks} repository. A brief overview of the kernels is provided below:
+Implementations are available in the \url{https://github.com/dealii-X/benchmarks} repository. A brief overview of the kernels, see the definition in \cite{Fischer2020}, is provided below:
 \begin{itemize}
-\item Bake-off Kernel 1 (BK1) for mass-matrix operator on Gauss-Lobatto quadrature points.
-\item Bake-off Kernel 5 (BK5) for stiffness-matrix operator on Gauss-Lobatto-Legendre quadrature points.
+\item Bake-off Kernel 1 (BK1) for mass-matrix operator with a Gauss--Legendre quadrature formula involving $p+2$ points per coordinate direction for polynomial degree $p$.
+\item Bake-off Kernel 5 (BK5) for the stiffness-matrix operator on Gauss--Lobatto--Legendre quadrature points, utilizing the collocation of nodal points of the unlderlying Lagrange basis with the points of quadrature.
 \end{itemize}
 
-The main challenge in implementing benchmarks on cutting-edge accelerators is the growing number of GPU vendors such as Nvidia, AMD, and Intel, whose non-standard programming models bring an additional burden on developers. To address this, this subproject also aims to ensure portability across different GPUs by employing the Kokkos library~\cite{Trott2022}, which supports multiple back-ends. Accordingly, current implementations evaluate the portability and performance of Kokkos by comparing it with CUDA kernels.
+The main challenge in implementing benchmarks on cutting-edge accelerators is the growing number of GPU vendors such as Nvidia, AMD, and Intel, whose non-standard programming models bring an additional burden on developers. To address this challenge, this subproject also aims to ensure portability across different GPUs by employing the Kokkos library \citep{Trott2022}, which supports multiple back-ends. Accordingly, current implementations evaluate the portability and performance of Kokkos by comparing it with CUDA kernels.
+Further activities have also considered Intel GPUs and ARM CPUs; these results
+are in a preliminary state due to the ongoing collaboration between the RUB
+and LRZ partners. Preliminary results are given in the report for deliverable
+D3.2.
 
 
 \subsection{Implementation Details}
@@ -165,7 +171,7 @@ All implemented GPU kernels follow a common sequence for matrix-free evaluations
 \item[5] Element-wise solution vectors are copied back from shared memory to global memory.
 \end{itemize}
 
-Certain optimization strategies and algorithmic design choices are partially motivated by the findings of the research~\cite{Swiry2019} in our implementations. Our optimization techniques can be classified based on the four categories;
+Certain optimization strategies and algorithmic design choices are partially motivated by the findings of the research by \cite{Swiry2019} in our implementations. Our optimization techniques can be classified based on the four categories;
 \begin{itemize}
 \item[1] Thread Granularity (block-centric and warp-centric)
 \item [2] Thread-level Data Mapping (strided fashion, simple map)
@@ -176,7 +182,7 @@ Certain optimization strategies and algorithmic design choices are partially mot
 \subsection{Preliminary Results}
 
 {\bf BK1.} Early performance results for the different test cases are shown in Figures~\ref{fig:BK1_1} and~\ref{fig:BK1_2}, evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: Figure 1 presents the results obtained with CUDA, while Figure 2 shows those from the Kokkos library.
-The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block. This leads to under-utilization of the warp (size 32) on the target hardware.
+The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior can be explained by a first-order polynomial degree basis integrated with 27 quadrature points, configured for evaluation with 27 threads per block, see also the benchmark description by \cite{Fischer2020}. This leads to under-utilization of the warp (size 32) on the target hardware.
 The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead.
 
 \begin{figure}
@@ -191,7 +197,7 @@ The second finding is that Kokkos achieves approximately 90\% of the performance
 \label{fig:BK1_2}
 \end{figure}
 
-{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
+{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3), with the number of quadrature points specified at compile time through templates in the C++ programming language. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations such as loop unrolling. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
 
 Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute. In these measurements, both CUDA and Kokkos executions completed in 0.71 ms, showing identical performance. Nsight Compute reported an arithmetic intensity of 1.97 FLOP/byte, which places these kernels in the memory-bound region of the roofline model for the H100 GPU. The achieved performance was 5.7 TFLOPs, compared to the hardware limit of 6.6 TFLOPs at this arithmetic intensity. This corresponds to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor.
 
@@ -233,7 +239,7 @@ A new reader for \emph{partitioned} Gmsh meshes into
 (\texttt{PR \#18759}). The interface supports 1D/2D/3D meshes produced with
 Gmsh's built-in partitioner (\verb|-part N -part_ghosts -part_split|) and
 automates vertex/cell connectivity and ghost handling across MPI ranks. This
-removes costly re-partitioning inside deal.II and enables streamlined
+removes costly re-partition\-ing inside deal.II and enables streamlined
 large-scale workflows for realistic organ geometries. The contribution is
 feature-complete and expected to enter the next release cycle.
 
@@ -252,8 +258,8 @@ independent spectral bounds; numerics confirm low, essentially constant FGMRES
 iteration counts without exact block inverses (loose inner tolerances suffice).
 A distributed-memory implementation based on deal.II is maintained publicly, and
 a preprint is available on arXiv. Ongoing extensions target (i) elliptic
-interfaces with strong coefficient contrasts and (ii) fluid–structure
-interaction (see D1.4).
+interfaces with strong coefficient contrasts and (ii) fluid–struc\-ture
+interaction (see the report for deliverable D1.4).
 
 \paragraph{Low-rank and hierarchical techniques via external solvers.}
 deal.II~9.7 integrates MUMPS as a first-class backend, exposing block low-rank
@@ -270,7 +276,8 @@ prototyped to import unstructured meshes and multi-field data, infer suitable
 finite element layouts (vertex/cell, scalar/vector), and shuttle data between
 serial and distributed DoF vectors. While not a ROM algorithm per se, this
 infrastructure closes critical gaps in data ingestion and feature extraction
-pipelines needed by ROM and data-driven components (see D1.4).
+pipelines needed by ROM and data-driven components (see report for deliverable
+D1.4).
 
 \section{Polygonal Discretization Methods}
 
@@ -283,7 +290,7 @@ deal.II library with the capability to perform efficiently polygonal discretizat
 The deal.II library currently
 supports a wide range of finite element methods, defined on standard simplicial
 and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes.
-The primary objective of WP1 is the development of a polygonal
+The primary objective of WP1.3 is the development of a polygonal
 discretization module within the deal.II library. The module is designed to be integrated into the deal.II library, and its integration is expected to be completed by the end of the project.
 
 This task requires the development of the basic data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes and the exploitation of such data structure for the implementation of polygonal discretizations.
@@ -291,16 +298,16 @@ This task requires the development of the basic data structure for polytopic mes
 
  \subsection{Progress and Current Status}
 
-The preliminary version of the polygonal discretization module developed within the first six months of the project was made available at https://github.com/fdrmrc/Polydeal.
+The preliminary version of the polygonal discretization module developed within the first six months of the project was made available at \url{https://github.com/fdrmrc/Polydeal}.
 The module has since been extensively tested and parallelised. 
-Milestone M5 has been reached and deployed as deliverable D1.5 (cf. the specific report for more details). The milestone was set to establish the parallel implementation of polygonal discretization methods. The deliverable provides a tutorial program on polygonal discretizations, showcasing the implementation of these methods for the solution of a basic model problem. Aside from the tutorial, a series of problems and tests have been run, confirming the validity and robustness of the approach for the solution of problems in the dimension-independent setting. In particular, the polytopic discontinuous Galerkin methods have been implemented for the solution of a series of benchmark problems, including fluid mechanics and electrophysiology.
+Milestone M5 has been reached and deployed as deliverable D1.5 (cf. the specific report for more details). The milestone was set to establish the parallel implementation of polygonal discretization methods. The deliverable provides a tutorial program on polygonal discretizations, showcasing the implementation of these methods for the solution of a basic model problem. Aside from the tutorial, a series of problems and tests have been run, confirming the validity and robustness of the approach for the solution of problems in a dimension-independent setting. In particular, the polytopic discontinuous Galerkin methods have been implemented for the solution of a series of benchmark problems, including fluid mechanics and electrophysiology.
 
 
 {\bf Fluid mechanics.}
 The polytopic discontinuous Galerkin method has been extended to the solution of fluid mechanics boundary value problems with the analysis of the method for the solution of the Oseen problem. This required a new analysis which has been carried out for the $hp$-version of the method, hence permitting arbitrarily high-order implementations. Both stabilised equal order $(\mathcal{P}_k,\mathcal{P}_{k})$ and pressure lower-order $(\mathcal{P}_k,\mathcal{P}_{k-1})$ versions have been analysed. 
 New working examples implementing the new method have been committed by the SISSA team within the examples suits of the {\em polydeal} repository \url{https://github.com/fdrmrc/Polydeal}.
 % https://github.com/fdrmrc/Polydeal/blob/main/examples/darcy_stokes.cc
-Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is achieving the optimal convergence rate when applied to the Oseen problem. Using the \emph{polydeal} data structure, a sequence of polygonal meshes obtained by agglomeration of a single fine quadrilateral mesh has been created, see Figure~\ref{fig:metis}. The corresponding results shown in Table~\ref{tab:meshes} display the corresponding convergence rate achieved by the polyDG method solving a model problem for the Oseen equation with variable coefficients.
+Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is achieving the optimal convergence rate when applied to the Oseen problem. Using the \emph{polydeal} data structure, a sequence of polygonal meshes obtained by agglomeration of a single fine quadrilateral mesh has been created, see Figure~\ref{fig:meshes}. The corresponding results shown in Table~\ref{tab:meshes} display the corresponding convergence rate achieved by the polyDG method solving a model problem for the Oseen equation with variable coefficients.
 \begin{figure}[!htb]
 \centering
 \includegraphics[height=0.3\linewidth]{metis_level3}
@@ -311,7 +318,7 @@ Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is a
 \end{figure}
 \begin{table}[!ht]\centering
 \caption{Energy-norm errors and convergence orders for an Oseen test problem with variable coefficients and $Re=1$ in function of the agglomeration level for the meshes sampled in Figure~\ref{fig:meshes}.}
-\label{tb1}
+\label{tab:meshes}
 {\small
 \begin{tabular}[c]{cc|cc}\hline\hline%\cline{3-8}
 &{Level}&energy-norm error&order\\ \hline
@@ -353,9 +360,9 @@ Before integration into the deal.II library, additional testing and generalizati
  
 The activities at UNITOV have centered around the integration of PSCToolkit solvers into the deal.II framework; our work has been conducted with close coordination with UNIPI. 
 To interface PSCToolkit we have had to 
-Redefine some interfacing machinery on PSCToolkit side:
+redefine some interfacing machinery on PSCToolkit side:
 \begin{itemize}
-\item Complete CMAKE build support:
+\item Complete CMAKE build support;
 \item Upgrading the SUNDIALS interface.
 \end{itemize}
 The use of PSCToolkit into deal.II is planned through the availability of a SUNDIALS/KINSOL interface: deal.II makes calls into KINSOL/SUNDIALS, which in turn calls into PSCToolkit. Previous releases of PSCToolkit had already been interfaced with SUNDIALS, but we had to tackle the upgrades needed for using a new version towards which the entire infrastructure is transitioning. 
@@ -368,24 +375,24 @@ Ensuring a complete CMake build could be achieved cleanly;
 Defining some additional computational kernels;
 Some preliminary testing of the PSCToolkit interface has already taken place.
 We are now in a position to start building and testing in the context of the entire application.
-The updates have been included in the release candidates for the PSCToolkit component PSBLAS 3.9.0-rc3 and AMG4PSBLAS 1.2.0-rc3.
+The updates have been included in the release candidates for the PSCToolkit component PSBLAS 3.9.0-rc3 and AMG4PSBLAS 1.2.0-rc3. Further details can be found in the report on deliverable D1.1.
 
 
 
 \section{Integration of MUMPS Solver into deal.II (WP1.5)}
     \subsection{Objectives and Planned Activities}
-    WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
+    WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-pre\-ci\-sion computations to enhance solver efficiency.
 
     Planned activities include:
     \begin{itemize}
         \item Developing a direct interface between deal.II and MUMPS;
-        \item Implementing low-rank approximation techniques to reduce computational costs;
+        \item Implementing low-rank approximation techniques to reduce the computational costs;
         \item Exploring mixed-precision strategies to optimize performance on modern hardware.
     \end{itemize}
 
     \subsection{Progress and Current Status}
   In the last semester our activity was focused towards the integration of the MUMPS solver within the deal.II software. The deal.II package used to support a direct MUMPS integration in the past. This support was subsequently removed in favor of an indirect use of MUMPS through the PETSc library. As a first step towards the objectives of WP1 of the dealii-X
-project, this support was reverted and improved. The MUMPS interface in deal.ii was extended to support distributed memory parallelism through the use of distributed matrix and vector datatypes as defined in the deal.ii PETSc and Trilinos wrappers. This allows for a completely parallel initialization of the MUMPS data structure (that includes the system matrix and the right-hand sides) prior to the symbolic analysis, numerical factorization and forward/backward substitution. This ultimately allows for the solution of problems of a much larger size. Setting-up MUMPS internal configuration parameters was not possible in original
+project, this support was reverted and improved. The MUMPS interface in deal.II was extended to support distributed memory parallelism through the use of distributed matrix and vector datatypes as defined in the deal.II PETSc and Trilinos wrappers. This allows for a completely parallel initialization of the MUMPS data structure (that includes the system matrix and the right-hand sides) prior to the symbolic analysis, numerical factorization and forward/backward substitution. This ultimately allows for the solution of problems of a much larger size. Setting up MUMPS internal configuration parameters was not possible in original
 deal.II MUMPS interface which, therefore, had to be extended to enable the use of the more advanced features of the MUMPS solver; these include the Block Low-Rank approximations, the GPU support and numerous other parameters that allow for fine-tuning both the performance and the numerical robustness of the solver. The full details of this work and the corresponding software documentation are reported in deliverable D1.1.
 
 \bibliographystyle{plainnat}
