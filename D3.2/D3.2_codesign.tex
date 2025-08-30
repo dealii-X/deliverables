@@ -121,7 +121,7 @@ The efficient implementation of these kernels is paramount to obtain good perfor
 
 The benchmark kernels are based on a numerical quadrature approach to evaluate the finite-element integrals and exploit algebraic sum factorization techniques \citep{Deville02} to achieve an affordable evaluation of high-order finite element operators in comparison to the naive nested sum algorithm or dense interpolation matrices. This type of technique has been popularized in recent years by several groups, including the deal.II authors~\citep{Kronbichler12,Kronbichler19,Arndt21}. The translation of these techniques to modern GPU architectures, see also the work by~\cite{Swirydowicz19}, remains an open challenge at both software and hardware level due to the heterogeneity of both devices (CPUs, GPUs and other accelerators) and parallel programming frameworks provided by different vendors.
 
-The Streaming Kernels \citep[Table 1]{chalmers20} capture a second group of low intensity operations, where memory movement is dominant.
+The Streaming Kernels \citep[Table 1]{Chalmers20} capture a second group of low intensity operations, where memory movement is dominant.
 The kernels generally take one or two long vectors as arguments. 
 The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). 
 The fifth kernel is the fused conjugate gradient update that involves the combination of a scaled sum and norm of a residual vector in a single sweep.    
@@ -415,26 +415,45 @@ Despite these initial challenges, the use of a specialized tensor DSL offers num
 
 Iterative linear system solvers make heavy use of low arithmetic intensity operations, so called streaming operations.
 When matrix-free high-order FEM schemes are combined with iterative solvers. 
-As shown previously by Kronbichler et al. \cite{kronbichler2023enhancing} on the case of the conjugate gradient method, above a certain problem size the streaming operations contribute a significant chunk of the run-time.
+As shown previously by \citet{kronbichler2023enhancing} on the case of the conjugate gradient method, above a certain problem size the streaming operations contribute a significant chunk of the solver run-time.
 
-In this section we present some preliminary results on the performance and portability of
-streaming operations implemented using different frameworks on CPU and GPU architectures.
+\citealt{Chalmers20} proposed a suite of streaming kernels to focus on the distinct operations requite by iterative solvers. 
+As an initial step toward the performance characterization and modelling of streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. 
+We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS \footnote{BLIS, \url{https://github.com/flame/blis}}.
+In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
 
+Figures \ref{fig:streaming_omp_grace} and \ref{fig:streaming_omp_sapphirerapids} show preliminary bandwidth scaling plots with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU.
+On Grace, the benchmark driver was compiled using `gfortran' from GCC version 11.4.0.
+On Intel Sapphire Rapids (SPR), the benchmark driver was compiled using `ifx` from Intel OneAPI version 2024.2.1. 
+For both runs we enabled `-O3`, host-machine specific microarchitectural optimizations (`-mcpu=native', `-xHOST') and OpenMP.
+To stress the main memory bus, the vector length was set to four-times the L3 cache size (117 MB in Nvidia Grace, 105 MB on Sapphire Rapids).
+In both cases we also employed OpenMP thread placement and pinning.
+As the Sapphire Rapids Xeon server was a dual-socket system, we limit the thread placement to one socket (56 cores).
+
+
+On figure \ref{fig:streaming_omp_grace} we observe the expected saturating behavior. The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s). The BS3 kernel reached almost 450 GB/s, a value close to the maximum memory bandwidth of 467 GB/s measured by \citet{Laukemann2024}. In case of BS2 and BS5 the saturated regime was reached with only 20 out 72 cores.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{omp_grace} % replace with your filename
-  \caption{Streaming kernel results on Nvidia Grace using OpenMP-annotated do-loops. All kernels achieve over 60\% of the peak bandwidth.}
+  \caption{Streaming kernel results on Nvidia Grace for vectors of size \mbox{N = 61341696} (468 MB).}
   \label{fig:streaming_omp_grace}
 \end{figure}
+
+On figure \ref{fig:streaming_omp_sapphirerapids} we observe similar saturating behavior from the Intel Sapphire Rapids, with bandwidths in the range of 250-350 GB/s, close to the peak bandwidth.
+A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation.
+This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs \citep{Hager2021}.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.8\textwidth]{omp_intel_SPR} % replace with your filename
-  \caption{Streaming kernel results on Intel Xeon Platinum 8480+ using OpenMP-annotated do-loops. All kernels achieve over 60\% of the peak bandwidth.}
+  \caption{Streaming kernel results on Intel Sapphire Rapids for vectors of size \mbox{N = 55050240} (420 MB).}
   \label{fig:streaming_omp_sapphirerapids}
 \end{figure}
 
+Overall, our initial results confirm that the proposed streaming kernels are able to expose memory bandwidth behavior consistently across different architectures, demonstrating their usefulness as a lightweight proxy for iterative solver workloads. 
+The observed saturation patterns highlight the importance of systematic performance characterization.  
+In the next stage, we aim to extend the benchmarking to a broader set of CPUs and GPUs and integrate the results into predictive performance models for matrix-free iterative solvers.
 
 \section{Energy Efficiency}
 
