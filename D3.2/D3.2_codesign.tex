@@ -500,6 +500,30 @@ In the remaining period of this work package, we plan to adopt this strategy to 
     \end{table}
 \end{center}
 
+\begin{center}
+\begin{table}[ht]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\caption{CPU Hardware Systems use for evaluation}\medskip
+\begin{tabular}{lcc}
+\hline
+\textbf{Feature} & \textbf{Intel Sapphire Rapids} & \textbf{NVIDIA Grace Hopper Superchip} \\
+\hline
+TDP & 350 W  & 500 W \\
+Core Count & 56 cores & 72 cores \\
+Memory Type & DDR5-4800 & LPDDR5X \\
+Base Frequency & 2.0 GHz & 3.1 GHz \\
+SIMD Width / Extension & AVX-512 (512-bit) & SVE2 (4 × 128-bit) \\
+Last-Level Cache (L3) & 105 MB & 117 MB \\
+Memory Bandwidth & ~307 GB/s & 546 GB/s \\
+\hline
+\end{tabular}
+\label{tab:simplified_SR_vs_Grace}
+\end{table}
+\end{center}
+
+
 \bibliographystyle{plainnat}
 \bibliography{refs}        % refs.bib in the same folder
 
