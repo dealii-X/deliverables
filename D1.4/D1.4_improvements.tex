@@ -30,8 +30,8 @@
     \tableEntry{Deliverable title}{Enhancements in Pre-Exascale Modules}
     \tableEntry{Deliverable number}{D1.4}
     \tableEntry{Deliverable version}{1.0}
-    \tableEntry{Date of delivery}{31 August 2025}
-    \tableEntry{Actual date of delivery}{31 August 2025}
+    \tableEntry{Date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 31, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -57,10 +57,11 @@
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{1 August 2025}{Luca Heltai}{Initial draft}
-    \addVersion{0.2}{27 August 2025}{Luca Heltai}{Collection of contributions}
-    \addVersion{0.3}{28 August 2025}{Marco Feder}{Add preconditioner section}
-    \addVersion{1.0}{31 August 2025}{Luca Heltai}{Final version}
+    \addVersion{0.1}{01/08/2025}{Luca Heltai}{Initial draft}
+    \addVersion{0.2}{27/08/2025}{Luca Heltai}{Collection of contributions}
+    \addVersion{0.3}{28/08/2025}{Marco Feder}{Add preconditioner section}
+    \addVersion{0.4}{29/08/2025}{Marco Feder}{Add preconditioner section}
+    \addVersion{1.0}{31/08/2025}{Luca Heltai}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -103,7 +104,7 @@ Key advances concern the matrix-free infrastructure, which was extended with:
 
 \begin{itemize}
   \item Support for multi-component and vector-valued finite elements in the
-        matrix-free evaluation routines. This substantially broadens the class
+        matrix-free evaluation routines for the Kokkos-based portable branch. This substantially broadens the class
         of multiphysics applications (e.g.\ poromechanics in brain and liver)
         that can be ported to GPUs efficiently.
   \item Portability layer \texttt{Portable::MatrixFree} built on top of
@@ -118,11 +119,19 @@ Key advances concern the matrix-free infrastructure, which was extended with:
         to $10^{11}$-$10^{12}$ DoFs on EuroHPC machines.
 \end{itemize}
 
-In addition, new coarse-level solver strategies were enabled by the\\
-\texttt{TensorProductMatrixCreator} for diagonalization-based inverses.  
+In addition, new solver strategies were enabled by the\\
+\texttt{TensorProductMatrixCreator} for diagonalization-based inverses,
+applicable in the context of multigrid smoothers and coarse solvers.
 These improvements directly support the objective of saturating node-level
 bandwidth on GPUs and minimizing data transfer overheads, as required for
 exascale digital twin workloads.
+
+Ongoing developments for the matrix-free kernels, in particular node-level
+experiments for various GPU vendors, optimization of Kokkos-based and
+CUDA-based algorithms as well as energy efficiency improvements have also been
+made in the past few months. These contributions are described in more detail,
+along with an extensive evaluation of performance, in the report on
+deliverable D3.2: ``Co-Design AMD Energien Efficiency Report I''.
 
 
 \section{Improvement of pre-exascale modules of the deal.II library (WP1.2)}
@@ -173,7 +182,7 @@ leads to the solution of large (and multiple) saddle point linear systems, for w
 efficient preconditioners is still a challenge.
 
 We started our investigations with Poisson and Stokes interface problems, where the interface conditions are enforced
-using Lagrange multipliers. In particular, our preconditioning strategy is based on augmented Lagrangian ideas~\cite{BenziAL}, where the original saddle point system is recasted
+using Lagrange multipliers. In particular, our preconditioning strategy is based on augmented Lagrangian ideas~\citep{BenziAL}, where the original saddle point system is recast
 as an equivalent one, which provides better spectral properties. The resulting linear systems are solved using a Krylov subspace method such as (flexible) GMRES.
 
 A thorough theoretical analysis of the preconditioner has been carried out, providing lower and upper bounds for the spectrum of
@@ -182,11 +191,11 @@ in order to validate the theoretical findings and to assess the performance of t
 preconditioner on a vector does not require exact inversion of diagonal blocks, but cheaper inexact solves with loose internal tolerances are enough to guarantee
 low and constant iteration counts. To give a concrete example, we report in Table~\ref{tab:stokes_3D_torus} the number of
 outer FGMRES iterations required to solve a three dimensional Stokes problem with a toroidal immersed surface over which we impose a constraint on the
-velocity field $\mathbf{u}$. We denote with $V_h$ and $Q_h$ a classical stable finite element spaces for the velocity and the pressure, respectively, while
+velocity field~$\mathbf{u}$. We denote by $V_h$ and $Q_h$ a classical stable finite element spaces for the velocity and the pressure, respectively, while
 $\Lambda_h$ is the Lagrange multiplier space, defined on the immersed surface.
 
-The associated work has been submitted and is currently under revision, while a preprint is available on
-arXiv~\cite{ALprec}. The memory-distributed implementation of this methodology is based on \texttt{deal.II}
+The associated work has been submitted and is currently under revision, while our preprint by \cite{ALprec} is available on
+arXiv. The memory-distributed implementation of this methodology is based on \texttt{deal.II}
 and can be found at the following maintained GitHub
 repository \url{https://github.com/fdrmrc/fictitious_domain_AL_preconditioners}.
 
@@ -225,9 +234,9 @@ Preliminary results indicate that the preconditioner maintains its robustness an
 challenging settings.
 
 \begin{thebibliography}{10}
-    \bibitem{BenziAL} M. Benzi, and M. Olshanskii "An Augmented Lagrangian-Based Approach to the Oseen Problem", SIAM Journal on Scientific
+    \bibitem[Benzi and Olshanskii, 2006]{BenziAL} M. Benzi, and M. Olshanskii "An Augmented Lagrangian-Based Approach to the Oseen Problem", SIAM Journal on Scientific
 Computing, vol. 28, no. 6, pp. 2095-2113, 2006.
-    \bibitem{ALprec} M. Benzi, M. Feder, L. Heltai, and F. Mugnaioni "Scalable augmented Lagrangian preconditioners for fictitious domain problems," \url{https://arxiv.org/abs/2504.11339}, 2025.
+    \bibitem[Benzi et al., 2025]{ALprec} M. Benzi, M. Feder, L. Heltai, and F. Mugnaioni "Scalable augmented Lagrangian preconditioners for fictitious domain problems," \url{https://arxiv.org/abs/2504.11339}, 2025.
 \end{thebibliography}
 
 
@@ -267,7 +276,7 @@ VTK files and deal.II data structures (guarded by \texttt{DEAL\_II\_WITH\_VTK}).
 
 \paragraph{Data plumbing into DoFs (serial and distributed).}
 \begin{itemize}
-  \item \texttt{read\_vtk(vtk\_filename, DoFHandler\&, Vector<double>\&, std::vector<std::string>\&):}
+  \item {\footnotesize \texttt{read\_vtk(vtk\_filename, DoFHandler\&, Vector<double>\&, std::vector<std::string>\&):}}
         end-to-end routine that reads the mesh, builds the FE (as above),
         distributes DoFs block-wise, and fills a single data vector with all
         fields; also returns field names.
