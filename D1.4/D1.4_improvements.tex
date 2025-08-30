@@ -31,7 +31,7 @@
     \tableEntry{Deliverable number}{D1.4}
     \tableEntry{Deliverable version}{1.0}
     \tableEntry{Date of delivery}{August 31, 2025}
-    \tableEntry{Actual date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 30, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -40,7 +40,7 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{ This report documents the progress achieved during
+    \tableEntry{Abstract}{This report documents the progress achieved during
         the second semester of the dealii-X project (Months 7-11) in enhancing the
         deal.II finite element library towards exascale readiness. Building upon
         the foundations laid in D1.2, this deliverable focuses on the
@@ -60,13 +60,14 @@
     \addVersion{0.1}{01/08/2025}{Luca Heltai}{Initial draft}
     \addVersion{0.2}{27/08/2025}{Luca Heltai}{Collection of contributions}
     \addVersion{0.3}{28/08/2025}{Marco Feder}{Add preconditioner section}
-    \addVersion{0.4}{29/08/2025}{Marco Feder}{Add preconditioner section}
-    \addVersion{1.0}{31/08/2025}{Luca Heltai}{Final version}
+    \addVersion{0.4}{29/08/2025}{Marco Feder}{Improve preconditioner section}
+    \addVersion{0.5}{29/08/2025}{Martin Kronbichler}{Minor cleanups in various places}
+    \addVersion{1.0}{30/08/2025}{Luca Heltai}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
 Approved by: Martin Kronbichler \\
-Approval Date: 31 August 2025
+Approval Date: 30 August 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -350,14 +351,16 @@ robust direct solvers are available when iterative approaches are insufficient.
 This is particularly relevant for coarse-grid solvers in multigrid hierarchies,
 and for nonlinear inversion tasks common in digital twin calibration.
 
-\subsection{Challenges and Future Plans}
+\section{Challenges and Future Plans}
 
 Despite these advances, several challenges remain:
 
 \begin{itemize}
-  \item Ensuring uniform GPU performance across NVIDIA, AMD, and Intel hardware
-        remains a priority; AMD/Intel kernels are not yet tuned to the same
-        level as CUDA-based ones.
+\item Ensuring uniform GPU performance across NVIDIA, AMD, and Intel hardware
+  remains a priority; AMD/Intel kernels are not yet tuned to the same level as
+  CUDA-based ones, in particular for the matrix-free kernels of deal.II (see
+  also the report to deliverable D3.2 for the current state on Intel Ponte
+  Vecchio GPUs) and the MUMPS package.
   \item Minimization of data movement between CPU and GPU during assembly phases
         is ongoing, as deal.II assembly is still CPU-only in most workflows.
   \item Interoperability between polygonal discretizations, PSCToolkit AMG
