@@ -429,7 +429,7 @@ For both runs we enabled `-O3`, host-machine specific microarchitectural optimiz
 To stress the main memory bus, the vector length was set to four-times the L3 cache size (117 MB in Nvidia Grace, 105 MB on Sapphire Rapids).
 In both cases we also employed OpenMP thread placement and pinning.
 As the Sapphire Rapids Xeon server was a dual-socket system, we limit the thread placement to one socket (56 cores).
-
+Further technical details of the CPUs can be found in Table \ref{tab:simplified_SR_vs_Grace}.
 
 On figure \ref{fig:streaming_omp_grace} we observe the expected saturating behavior. The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s). The BS3 kernel reached almost 450 GB/s, a value close to the maximum memory bandwidth of 467 GB/s measured by \citet{Laukemann2024}. In case of BS2 and BS5 the saturated regime was reached with only 20 out 72 cores.
 
@@ -480,21 +480,21 @@ In the remaining period of this work package, we plan to adopt this strategy to 
 
 \begin{center}
     \begin{table}[h!]
+    \centering
     \small
     \caption{GPUs used for evaluation}\medskip
-    \label{tab:example_table}
-
-    \centering
-    \renewcommand{\arraystretch}{1.25}
-    \begin{tabular}{|l|l|l|c|}
+    \label{tab:gpu_comparison}
+    \medskip
+    \begin{tabular}{lcc}
     \hline
-    \textbf{Column 1} & \textbf{Ampere} & \textbf{Hopper} & \textbf{Ponte Vecchio} \\
+    \textbf{Feature} & \textbf{NVIDIA Grace Hopper GPU (H100)} & \textbf{Intel Ponte Vecchio (GPU Max)} \\
     \hline
-    execution units & Description & Category & Value \\
-    base frequency & Description & Category & Value \\
-    SIMT/SIMD width & Description & Category & Value \\
-    last level cache & Description & Category & Value \\
-    memory bandwidth & Description & Category & Value \\
+    TDP & 900 W (CPU + GPU + memory) & ~450 W (capped) \\
+    SM/EU count &  & 128 \\
+    Memory Type & HBM3 / HBM3e & HBM2e \\
+    Base Frequency & ~1.1 GHz & ~900 MHz \\
+    Memory &  & 128 GB \\
+    Memory Bandwidth & ~3–4 TB/s (HBM3) & ~1.2 TB/s (HBM2e) \\
     \hline
     \end{tabular}
     \end{table}
@@ -515,7 +515,7 @@ Core Count & 56 cores & 72 cores \\
 Memory Type & DDR5-4800 & LPDDR5X \\
 Base Frequency & 2.0 GHz & 3.1 GHz \\
 SIMD Width / Extension & AVX-512 (512-bit) & SVE2 (4 × 128-bit) \\
-Last-Level Cache (L3) & 105 MB & 117 MB \\
+Last-Level Cache (L3) & 105 MB & 114 MB \\
 Memory Bandwidth & ~307 GB/s & 546 GB/s \\
 \hline
 \end{tabular}
