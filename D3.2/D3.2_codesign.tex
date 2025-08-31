@@ -41,7 +41,7 @@
     \tableEntry{Deliverable number}{D3.2}
     \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{August 31, 2025}
-    \tableEntry{Actual date of delivery}{August 29, 2025}
+    \tableEntry{Actual date of delivery}{August 31, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP3}
@@ -50,8 +50,12 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{\lipsum[1][1-5]}
-    \tableEntry{Keywords}{performance; benchmarks; gpu-programming; Keyword 4; Keyword 5}
+  \tableEntry{Abstract}{This report details the progress made during the first
+    11 months of the dealii-X project concerning high-performance kernels for
+    finite element problems. The focus is on benchmarking of algorithms,
+    porting to different GPU architectures and analysis of energy efficiency.}
+  \tableEntry{Keywords}{performance; benchmarks; GPU programming; Kokkos;
+    matrix-free finite elements}
 \end{deliverableTable}
 
 \newpage
@@ -60,12 +64,12 @@
     \addVersion{0.1}{22/08/2025}{Ivan Pribec}{Initial draft}
     \addVersion{0.2}{25/08/2025}{Enes Mustafa Soydan}{Added results of RUB group}
     \addVersion{0.3}{29/08/2025}{Martin Kronbichler}{Review}
-    \addVersion{1.0}{29/08/2025}{Ivan Pribec}{Final version}
+    \addVersion{1.0}{31/08/2025}{Ivan Pribec}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
 Approved by: Martin Kronbichler \\
-Approval Date: August 29, 2025
+Approval Date: August 31, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -417,7 +421,7 @@ Iterative linear system solvers make heavy use of low arithmetic intensity opera
 When matrix-free high-order FEM schemes are combined with iterative solvers. 
 As shown previously by \citet{kronbichler2023enhancing} on the case of the conjugate gradient method, above a certain problem size the streaming operations contribute a significant chunk of the solver run-time.
 
-\citealt{Chalmers20} proposed a suite of streaming kernels to focus on the distinct operations requite by iterative solvers. 
+\cite{Chalmers20} proposed a suite of streaming kernels to focus on the distinct operations requite by iterative solvers. 
 As an initial step toward the performance characterization and modelling of streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. 
 We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS \footnote{BLIS, \url{https://github.com/flame/blis}}.
 In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
@@ -440,7 +444,7 @@ On figure \ref{fig:streaming_omp_grace} we observe the expected saturating behav
   \label{fig:streaming_omp_grace}
 \end{figure}
 
-On figure \ref{fig:streaming_omp_sapphirerapids} we observe similar saturating behavior from the Intel Sapphire Rapids, with bandwidths in the range of 250-350 GB/s, close to the peak bandwidth.
+On figure \ref{fig:streaming_omp_sapphirerapids} we observe similar saturating behavior from the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth.
 A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation.
 This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs \citep{Hager2021}.
 
@@ -465,18 +469,38 @@ To this end, \cite{Cielo25} proposed a process-based approach in which applicati
 
 In the remaining period of this work package, we plan to adopt this strategy to measure the energy usage of the core algorithmic kernels and gain an overview of their power behavior. Although we have not yet carried out such experiments, we take inspiration from a recent presentation by S. Cielo (LRZ), who demonstrated the benefits of these techniques, and we intend to implement them as part of our future performance and energy-efficiency evaluations.
 
-\section{Algorithmic development}
+\section{Algorithmic development and next steps}
 
+The two main ongoing efforts in terms of dealii-X project are the integration
+of the optimized kernels into the deal.II finite element library. As has been
+described in the report for the deliverable D1.3, several improvements were
+integrated into the deal.II library release 9.7, which was released on July
+22, 2025.
 
-\section{Next steps}
+An important future step is to enhance the algorithms by using matrix
+instructions (e.g., tensor cores). The abstractions described above will be
+developed further to assess the various options and performance
+possibilities. One step is to work on TinyTC kernel optimization using fusion
+and cross-element vectorization, picking up what worked well for CPUs in
+\cite{Kronbichler19} and adapting the methods to GPUs. Especially on Intel
+GPUs, we believe that further advances can be made.
 
+The second ongoing effort is to extend the methods from the pure operator
+evaluation of the BK1, BK3 and BK5 kernels to the full solver chain available
+in deal.II, including
 \begin{itemize}
-    \item TinyTC kernel optimization using fusion and cross-element vectoritation
-    \item Use of advanced multigrid solvers and preconditioners
+\item preconditioned conjugate gradient and GMRES solvers,
+\item advanced multigrid solvers, which include polynomial multigrid and
+  geometric multigrid, as well as
+\item combination of the solvers with other activities in dealii-X, such as
+  the advanced algebraic multigrid methods and incomplete factorizations
+  developed in PSCToolkit and sparse direct solvers of MUMPS.
 \end{itemize}
 
 
 \section{Hardware systems}
+
+The experiments in the previous sections are based on the following hardware.
 
 \begin{center}
     \begin{table}[h!]
