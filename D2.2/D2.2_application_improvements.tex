@@ -24,9 +24,9 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Report on application improvements - II semester}
     \tableEntry{Deliverable number}{D2.2}
-    \tableEntry{Deliverable version}{0.1}
-    \tableEntry{Date of delivery}{[Planned date]}
-    \tableEntry{Actual date of delivery}{[Actual date]}
+    \tableEntry{Deliverable version}{v1}
+    \tableEntry{Date of delivery}{August 31, 2025}
+    \tableEntry{Actual date of delivery}{August 31, 2025}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP2}
@@ -42,12 +42,15 @@
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{28.08.2025}{Michele Bucelli (POLIMI)}{Initial draft with info of all partners}
+    \addVersion{0.1}{28/08/2025}{Michele Bucelli (POLIMI)}{Initial draft with info of all partners}
+    \addVersion{0.2}{30/08/2025}{Michele Bucelli (POLIMI)}{Improvements in various places}
+    \addVersion{0.3}{31/08/2025}{Martin Kronbichler}{Minor improvements}
+    \addVersion{1.0}{31/08/2025}{Michele Bucelli (POLIMI)}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: August 31, 2025
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -69,7 +72,7 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-In this document, we report on the satus of the exascale human applications part of the dealii-X project:
+In this document, we report on the status of the exascale human applications part of the dealii-X project:
 \begin{itemize}
     \item Lungs (TUM)
     \item Heart (POLIMI)
@@ -95,7 +98,7 @@ This report collects the updates from the project partners (TUM, POLIMI, FAU, FV
 
 \subsection{Lungs (TUM)}
 
-This section reports on the progress of the lung application. The lung application is built on the high-performance library ExaDG, which itself relies heavily on the deal.II matrix-free framework as its engine. ExaDG implements discontinuous Galerkin as well as continuous Galerkin solvers for engineering problems. Although the main focus of ExaDG has been computational fluid dynamics (also successfully applied previously in respiratory mechanics) with discontinuous, hypercube-shaped elements, more recent developments and improvements \cite{schussnig2025matrixfree} have enabled solving structural problems with continuous, simplex-shaped elements, which is more typical and appropriate for the partial differential equations underlying elastodynamics.
+This section reports on the progress of the lung application. The lung application is built on the high-performance library ExaDG, which itself relies heavily on the deal.II matrix-free framework as its engine. ExaDG implements discontinuous Galerkin as well as continuous Galerkin solvers for engineering problems. Although the main focus of ExaDG has been computational fluid dynamics (also successfully applied previously in respiratory mechanics) with discontinuous, hypercube-shaped elements, more recent developments and improvements \citep{schussnig2025matrixfree} have enabled solving structural problems with continuous, simplex-shaped elements, which is more typical and appropriate for the partial differential equations underlying elastodynamics.
 
 In accordance with our goal of simulating the elastodynamic processes in the very fine alveolar structures of the lung parenchyma and understanding how these fine structures behave under the influence of surface tension effects, we are conducting initial simulations with an alveolar geometry using ExaDG. In Figure \ref{fig:alveolar-structure}, a mesh of a smaller alveolar geometry that we have available is visible. The figure also shows an exemplary displacement field under axial tension. For such complex, thin-walled geometries, the construction of linear solver and preconditioner combinations constitutes an essential part of the development process. We have been experimenting with different setups to find the best solution. So far, multigrid preconditioning is the most promising approach.
 
@@ -114,13 +117,13 @@ Parallel to our work on using the alveolar geometry for ExaDG simulations, we ha
 
 This section reports on updates on the heart modeling library lifex, which relies on deal.II to build a comprehensive multiphysics tool for the simulation of the cardiac function.
 
-As mentioned in Deliverable 2.1, prior to the start of the dealii-X project lifex relied on conventional matrix-based solvers for all the physical models involved. The solution of linear systems constituted a major bottleneck for performance and parallel scalability \cite{africa2023lifexep,africa2024lifexcfd}, posing a limitation to the scale of problems that could be effectively solved with the library.
+As mentioned in Deliverable 2.1, prior to the start of the dealii-X project lifex relied on conventional matrix-based solvers for all the physical models involved. The solution of linear systems constituted a major bottleneck for performance and parallel scalability \citep{africa2023lifexep,africa2024lifexcfd}, posing a limitation to the scale of problems that could be effectively solved with the library.
 
-Therefore, the POLIMI team is working on migrating the lifex solvers to deal.II's matrix-free infrastructure, and is extensively refactoring the code organization towards this goal. In the new implementation, each concrete PDE model (such as cardiac electrophysiology, muscular mechanics or myocardial perfusion) builds upon the same abstract software components (i.e. is derived from the same classes), as opposed to the old implementation, where different models would often reimplement common tasks (such as the initialization of finite element spaces or linear system assembly). Besides significantly improving the code organization and its maintainability, this centralized structure significantly facilitates the implementation of new physical models and their improvement, and overall provides a structured scaffolding for the future library developments.
+Therefore, the POLIMI team is working on migrating the lifex solvers to deal.II's matrix-free infrastructure, and is extensively refactoring the code organization towards this goal. In the new implementation, each concrete PDE model (such as cardiac electrophysiology, muscular mechanics or myocardial perfusion) builds upon the same abstract software components (i.e., it is derived from the same classes), as opposed to the old implementation, where different models would often reimplement common tasks (such as the initialization of finite element spaces or linear system assembly). Besides significantly improving the code organization and its maintainability, this centralized structure significantly facilitates the implementation of new physical models and their improvement, and overall provides a structured scaffolding for the future library developments.
 
 The abstract physical model classes at the core of this new implementation leverage deal.II's facilities to support many solver configurations in a flexible way: they allow for scalar- and vector-valued problems, linear and nonlinear, steady and unsteady, on hexahedral and tetrahedral meshes, and support both matrix-based and matrix-free solvers. Finite element evaluation tasks are carried out with the \texttt{dealii::FEEvaluation} class, instead of \texttt{dealii::FEValues} as done in the previous implementation. This enables a significant performance improvement already in the matrix-based solvers, thanks to the use of sum factorization, SIMD vectorization, and to improved cache friendliness.
 
-The solver for the monodomain problem of cardiac electrophysiology has been implemented on top of the new infrastructure, and its parallel performance has been compared to the one of the old code by running a strong scalability test based on the Niederer benchmark \cite{niederer2011verification}. The results (see Figure \ref{fig:lifex-scalability-ep}) show a pronounced improvement in both absolute wall times and parallel scalability, with wall times reduced by a factor 1.5-30, depending on mesh type and number of parallel cores. We note in particular that the vectorization of the ionic solver has lead to a much clearer scalability. This is even more noticeable when observing that the cost of solving ionic models often dominates electrophysiology simulations \cite{africa2023lifexep}.
+The solver for the monodomain problem of cardiac electrophysiology has been implemented on top of the new infrastructure, and its parallel performance has been compared to the one of the old code by running a strong scalability test based on the Niederer benchmark \citep{niederer2011verification}. The results (see Figure \ref{fig:lifex-scalability-ep}) show a pronounced improvement in both absolute wall times and parallel scalability, with wall times reduced by a factor 1.5--30, depending on mesh type and number of parallel cores. We note in particular that the vectorization of the ionic solver has lead to a much clearer scalability. This is even more noticeable when observing that the cost of solving ionic models often dominates electrophysiology simulations \citep{africa2023lifexep}.
 
 \begin{figure}
   \centering
@@ -131,15 +134,15 @@ The solver for the monodomain problem of cardiac electrophysiology has been impl
   \label{fig:lifex-scalability-ep}
 \end{figure}
 
-Additionally, we have migrated to the new implementation of the multicompartment Darcy solver for myocardial perfusion \cite{zingaro2023comprehensive}, and the solver for generating rule-based cardiac fiber architectures \cite{piersanti2021modeling}. Finally, we are in the process of extending this new framework to the cardiac mechanics solver \cite{fedele2023comprehensive}, as well as coupling the latter to the Darcy model to simulate the behavior of a porous medium subjected to fluid flow.
+Additionally, we have migrated to the new implementation of the multicompartment Darcy solver for myocardial perfusion \citep{zingaro2023comprehensive}, and the solver for generating rule-based cardiac fiber architectures \citep{piersanti2021modeling}. Finally, we are in the process of extending this new framework to the cardiac mechanics solver \citep{fedele2023comprehensive}, as well as coupling the latter to the Darcy model to simulate the behavior of a porous medium subjected to fluid flow.
 
-The upcoming work will follow along these lines, by progressively extending the new infrastructure to additional models (e.g. active force generation for muscular contraction) and introducing coupling between the existing models to build multiphysics simulations (e.g. electromechanics or poromechanics for myocardial perfusion). Complementary to this, we will proceed by expanding the set of numerical methods supported by the core solvers. Most notably, the code currently supports only black-box preconditioning methods (AMG, ILU, etc.), which are not well suited for the matrix-free solvers. Since preconditioning is crucial for the robustness and efficiency of cardiac mechanics solvers, this will be addressed shortly, by integrating a multigrid method within the new code \cite{schussnig2025matrixfree}.
+The upcoming work will follow along these lines, by progressively extending the new infrastructure to additional models (e.g. active force generation for muscular contraction) and introducing coupling between the existing models to build multiphysics simulations (e.g. electromechanics or poromechanics for myocardial perfusion). Complementary to this, we will proceed by expanding the set of numerical methods supported by the core solvers. Most notably, the code currently supports only black-box preconditioning methods (AMG, ILU, etc.), which are not well suited for the matrix-free solvers. Since preconditioning is crucial for the robustness and efficiency of cardiac mechanics solvers, this will be addressed shortly, by integrating a multigrid method within the new code \citep{schussnig2025matrixfree}.
 
 \subsection{Brain (FAU)}
 
 Here, we report on the progress within the ExaBrain library which is developed to facilitate high resolution full human brain finite element simulations using a complex nonlinear poro-viscoelastic material model.
 
-On the one hand, we transferred our code to the National High Performance Computing Center (NHR@FAU) at FAU in Erlangen. This allowed us to perform first benchmarks on the code performance and scalability in an HPC environment which will also serve as the baseline for upcoming developments. Overall, we compared the performance for several system sizes and two different direct solvers. Figure \ref{fig:fau-solver-performance} exemplarily shows the results for the -- so far -- largest system consisting of 24576 hexahedral Q2P1 (quadratic in displacements, linear in pore pressure) elements and 644916 degrees of freedom. The simulations were run on HPC system ``Fritz'' with our baseline parallel direct solver SuperLU-dist and a newly available MUMPS direct solver which was incorporated into deal.II through our project partners at University of Pisa. The new MUMPS solver decreases the memory requirement by approximately \SI{50}{\percent} to \SI{75}{\percent}, depending on the number of parallel processes (Figure \ref{fig:fau-solver-performance}, left). A crucial improvement towards larger systems required for the full human brain. The system assembly does not depend on the solver and scales perfectly with the number of processes (Figure \ref{fig:fau-solver-performance}, middle). While the new MUMPS solver is significantly faster than SuperLU-dist, it does not show good scalability through parallelization (Figure \ref{fig:fau-solver-performance}, right). (The system could not be solved using the SuperLU-dist solver with 64 MPI ranks as this combination exceeded the memory capacity of 256 GB of one compute node at ``Fritz''.)
+On the one hand, we transferred our code to the National High Performance Computing Center (NHR@FAU) at FAU in Erlangen. This allowed us to perform first benchmarks on the code performance and scalability in an HPC environment which will also serve as the baseline for upcoming developments. Overall, we compared the performance for several system sizes and two different direct solvers. Figure \ref{fig:fau-solver-performance} exemplarily shows the results for the -- so far -- largest system consisting of 24,576 hexahedral Q2P1 (quadratic in displacements, linear in pore pressure) elements and 644,916 degrees of freedom. The simulations were run on HPC system ``Fritz'' with our baseline parallel direct solver SuperLU-dist and a newly available MUMPS direct solver, which was incorporated into deal.II through our project partners at University of Pisa and the work of the MUMPS team at INPT. The new MUMPS solver decreases the memory requirement by approximately \SI{50}{\percent} to \SI{75}{\percent}, depending on the number of parallel processes (Figure \ref{fig:fau-solver-performance}, left). A crucial improvement towards larger systems required for the full human brain. The system assembly does not depend on the solver and scales perfectly with the number of processes (Figure \ref{fig:fau-solver-performance}, middle). While the new MUMPS solver is significantly faster than SuperLU-dist, it does not show good scalability through parallelization (Figure \ref{fig:fau-solver-performance}, right). (The system could not be solved using the SuperLU-dist solver with 64 MPI ranks as this combination exceeded the memory capacity of 256 GB of one compute node at ``Fritz''.)
 
 \begin{figure}
   \centering
@@ -150,7 +153,7 @@ On the one hand, we transferred our code to the National High Performance Comput
   \label{fig:fau-solver-performance}
 \end{figure}
 
-Further improvements on the solve phase of the linearized system can be achieved by employing iterative solvers. We report some first comparisons between the direct solvers previously mentioned and GMRES as an iterative solver in Figure \ref{fig:fau-wall-times}. The simulations were run on the University of Pisa HPC system “Toeplitz”. GMRES is preconditioned with the MUMPS solver using the mixed precision Block Low Rank feature. Multiple strategies can be employed to precondition GMRES with BLR: the same preconditioner can be reused to precondition multiple executions of the GMRES solver reducing the number of times the preconditioner has to be evaluated and thus reducing the overall time spent in the linear solver. In Figure \ref{fig:fau-wall-times} we show the differences between evaluating the preconditioner every time we have to solve a linear system (i. e. at each Newton-Raphson step), evaluating the preconditioner once at the beginning of each Newton-Raphson iteration, and updating the preconditioner only if the GMRES iterative solver fails to converge. Ongoing work is focusing on optimizing the number of times the preconditioner must be evaluated in relation to the time required for the convergence of GMRES to further increase the speed of the solve phase.
+Further improvements for the solver phase of the linearized system are possible by employing iterative solvers. We report some first comparisons between the direct solvers previously mentioned and GMRES as an iterative solver in Figure \ref{fig:fau-wall-times}. The simulations were run on the University of Pisa HPC system “Toeplitz”. GMRES is preconditioned with the MUMPS solver using the mixed precision Block Low Rank feature. Multiple strategies can be employed to precondition GMRES with BLR: the same preconditioner can be reused to precondition multiple executions of the GMRES solver reducing the number of times the preconditioner has to be evaluated and thus reducing the overall time spent in the linear solver. In Figure \ref{fig:fau-wall-times} we show the differences between evaluating the preconditioner every time we have to solve a linear system (i.e., at each Newton-Raphson step), evaluating the preconditioner once at the beginning of each Newton-Raphson iteration, and updating the preconditioner only if the GMRES iterative solver fails to converge. Ongoing work is focusing on optimizing the number of times the preconditioner must be evaluated in relation to the time required for the convergence of GMRES to further increase the speed of the solve phase.
 
 \begin{figure}
   \centering
@@ -178,7 +181,7 @@ For our poro-viscoelastic human brain model, the number of unknown model paramet
 
 This section reports on the liver application. The computational model is built on deal.ii and on the implementation of reduced Lagrange multipliers for multidimensional PDEs. An efficient approach for handling the multiple scales of the problem (fluid flow in the vasculature and elastodynamics in the tissue) is necessary to handle large scale problems.
 
-The reduced Lagrange multipliers approach \cite{heltai2023reduced} formulates the weak coupled (fluid-structure) problem in a weak Lagrange multiplier fashion, applying then a model order reduction based on the properties of the relevant physics (i.e., the approximation that flow can be described by one-dimensional Navier-Stokes equations). The work in WP2.4 focused on the application of this framework to multiscale elasticity.
+The reduced Lagrange multipliers approach \citep{heltai2023reduced} formulates the weak coupled (fluid-structure) problem in a weak Lagrange multiplier fashion, applying then a model order reduction based on the properties of the relevant physics (i.e., the approximation that flow can be described by one-dimensional Navier-Stokes equations). The work in WP2.4 focused on the application of this framework to multiscale elasticity.
 
 The reduced Lagrange multiplier  model extends the previous multiscale model proposed in \cite{heltai2019multiscale} to the case of Dirichlet boundary conditions enforced at the vessel-tissue boundaries. This condition is necessary to handle the coupling with pulsatile vasculature. To this purpose, a non-standard interface condition has been considered, which removes macroscopic motion (translational and rotational) and only enforces the coupling at the level of local normal displacement of the vessel. The mathematical framework of \cite{heltai2023reduced} provides the right structure for selecting the proper reduced-order space, and extending these results we proved well-posedness at the continuous level of the new formulation. The model has been used to perform in silico experiments relating the properties of the microstructure to the effective elastic parameters of a tissue sample. These experiments represent the first step towards the formulation of an inverse problem for the parametrization of effective liver samples. Results have been submitted for publication to the International Journal of Numerical Method for Biomedical Engineering.
 
@@ -188,7 +191,7 @@ The upcoming work will focus on the generation of realistic vasculatures using p
 
 \subsection{Mechanobiology (UNIBS)}
 
-This section presents recent advancements in mechanobiology, led by the University of Brescia (UNIBS), focusing on the development of advanced computational models to simulate cell motility. Understanding—and ultimately controlling—cell motility is a scientific challenge of the highest order, which underpins metastasis, embryogenesis, and hemostasis. They all rely on non-exiting force-bearing networks, which are purposefully assembled and dismantled in response to physiological demands. Central to this research is the mechanobiological interplay between actin cytoskeleton dynamics and receptor-mediated interactions between the cell membrane and the extracellular matrix. Traditional continuum theories, such as those proposed by Larché and Cahn and Mixture Theories, fall short in capturing the complex coupling of mechanical, chemical, and transport phenomena that govern cytoskeletal reorganization, as they lack the ability to describe the dynamic creation and disassembly of networks. The mathematical foundations of our approach—including the underlying kinematics and balance equations—are detailed in an upcoming publication \cite{salvadori2025chemo}. The computational model is implemented in dealii-X and employs staggered algorithms to solve the coupled PDE system involving chemo-transport and mechanics. Manufactured solutions have been tested in parallel computing environments utilizing multiple processors and distributed memory architectures.
+This section presents recent advancements in mechanobiology, led by the University of Brescia (UNIBS), focusing on the development of advanced computational models to simulate cell motility. Understanding—and ultimately controlling—cell motility is a scientific challenge of the highest order, which underpins metastasis, embryogenesis, and hemostasis. They all rely on non-exiting force-bearing networks, which are purposefully assembled and dismantled in response to physiological demands. Central to this research is the mechanobiological interplay between actin cytoskeleton dynamics and receptor-mediated interactions between the cell membrane and the extracellular matrix. Traditional continuum theories, such as those proposed by Larché and Cahn and Mixture Theories, fall short in capturing the complex coupling of mechanical, chemical, and transport phenomena that govern cytoskeletal reorganization, as they lack the ability to describe the dynamic creation and disassembly of networks. The mathematical foundations of our approach—including the underlying kinematics and balance equations—are detailed in an upcoming publication \citep{salvadori2025chemo}. The computational model is implemented in dealii-X and employs staggered algorithms to solve the coupled PDE system involving chemo-transport and mechanics. Manufactured solutions have been tested in parallel computing environments utilizing multiple processors and distributed memory architectures.
 
 \begin{figure}
   \centering
@@ -255,7 +258,7 @@ The client application provides a no-code graphical interface able to build an e
   \item Enhanced security. Users are clearly identified and sensitive data is locally handled, which may be also a requirement for research institutions and other actors.
 \end{itemize}
 
-\paragraph{Technologies}
+\paragraph{Technologies.}
 Electron is used to provide native and cross-platform capabilities to the client app. It provides native functionalities from the operating system together with a chromium based environment where any web technology can be used. In particular Svelte and Svelte Flow have been chosen to build the graphical interface, including the canvas from which the graph with nodes and edges is displayed and edited.
 
 Right now a first basic version can be distributed for MacOS and Linux systems or tested in development mode. Core functionalities already available are:
@@ -341,7 +344,7 @@ The approach based on graph representation embedded into taskflow allows automat
 
 In this document, we have reported the progress made in the digital twin applications of the deal.II-X project.
 
-\bibliographystyle{abbrv}
+\bibliographystyle{plainnat}
 \bibliography{../common/bibliography.bib}
 
 \label{MyLastPage}
