@@ -563,6 +563,9 @@ We have set up a prototype implementation based on deal.II.
 Specifically, we began implementing the complex mechanics of biological tissue, including a surfactant-based surface energy formulation.
 Once this initial implementation has been verified, we will integrate it into our established open-source HPC framework ExaDG.
 
+Furthermore, the necessary infrastructure to tackle many-query applications like uncertainty quantification, machine learning, inverse problem analysis and model order reduction was created and first tests were conceded. This lead to a related study~\citep{bosnjak2025Synthaorta} being published based on ExaDG focusing on the impact of geometric variations of tubular structures (blood vessels in that case) on the clinically relevant biomarkers in aortic blood flow such as flow rate, pressure, or time-averaged wall shear stress. The related dataset was publicly released in a public repository hosted by Graz University o Technology\footnote{to be found at \href{https://repository.tugraz.at/records/f31ph-37h03}{https://repository.tugraz.at/records/f31ph-37h03}} to foster exchange within the community and to enable easy downstream application.
+
+A further strand of improvements focuses on the specific applications and related fluid models aimed at in the future being blood flow in larger arteries. The solver capabilities of ExaDG were extended towards generalized Newtonian fluids, leading to a recent preprint~\citep{schussnig2025genNewtonian}. Within this work, we develop a suitable projection solver for the incompressible Navier--Stokes equations yielding higher-order accuracy based on an $L^2$-conforming discontinuous Galerkin discretization in space and further compare throughput of various linearization variants and a monolithic scheme.
 
 \noindent\textbf{Key achievements}
 
