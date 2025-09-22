@@ -207,8 +207,7 @@ Implementations are available in the \url{https://github.com/dealii-X/benchmarks
 \end{itemize}
 
 The main challenge in implementing benchmarks on cutting-edge accelerators is the growing number of GPU vendors such as Nvidia, AMD, and Intel, whose non-standard programming models bring an additional burden on developers. To address this challenge, this subproject also aims to ensure portability across different GPUs by employing the Kokkos library, which supports multiple back-ends. Accordingly, current implementations evaluate the portability and performance of Kokkos by comparing it with CUDA kernels.
-Further activities have also considered Intel GPUs and ARM CPUs; these results
-are in a preliminary state due to the ongoing collaboration between the RUB
+Further activities have also considered Intel GPUs and ARM CPUs; these results are in a preliminary state due to the ongoing collaboration between the RUB
 and LRZ partners. More detailed preliminary results and implementation details are given in the reports for deliverables D1.2, D1.3 and D3.2.
 
 \noindent\textbf{Raviart--Thomas finite elements}
@@ -670,7 +669,7 @@ An efficient and robust numerical handling of the scales will therefore also pro
 
 \noindent\textbf{Preliminary steps}
 
-As the first step, in collaboration among project partners, a new mathematical model that accounts, in a multiscale fashion, has been proposed for the effect of a thin (one-dimensional) fluid vessel in a three-dimensional elastic matrix.
+As the first step, in collaboration among project partners, a new mathematical model that accounts, in a multiscale fashion, for the effect of a thin (one-dimensional) fluid vessel in a three-dimensional elastic matrix has been proposed.
 This model can be efficiently used to represent different realizations of vascular structures, as well as the coupling with corresponding flow models.
 Pre-exascale-enabled simulations will allow to extend the capabilities of the multiscale model and handle liver scale simulations of effective tissues, both for forward mechanics and inverse problems related, e.g., to the identification of effective parameters from MRE measurements.
 The current multiscale model has been implemented in deal.II and it will be extended with automatic generation of physiological microvasculature, considering different physical models for the solid matrix.
@@ -678,7 +677,7 @@ The resulting model is being integrated into the open-source HPC dealii-X framew
 
 \noindent\textbf{Key achievements}
 
-The computational model is built on deal.II, and on the implementation of reduced Lagrange multipliers for multidimensional PDEs. An efficient approach for handling the multiple scales of the problem (fluid flow in the vasculature and elastodynamics in the tissue) is necessary to handle large-scale problems.
+The computational model is built on deal.II, and on the implementation of reduced Lagrange multipliers for multidimensional PDEs. An efficient approach for handling the multiple scales of the problem --- fluid flow in the vasculature and elastodynamics in the tissue --- is necessary to handle large-scale problems.
 
 The reduced Lagrange multipliers approach formulates the weak coupled (fluid-structure) problem in a weak Lagrange multiplier fashion, applying then a model order reduction based on the properties of the relevant physics (i.e., the approximation that flow can be described by one-dimensional Navier-Stokes equations). The work in WP2.4 focused on the application of this framework to multiscale elasticity.
 
@@ -714,9 +713,9 @@ Applications of this novel code will include the relocation of receptors on adve
 
 \noindent\textbf{Key achievements}
 
-Traditional continuum theories, such as those proposed by Larché and Cahn and Mixture Theories, fall short in capturing the complex coupling of mechanical, chemical, and transport phenomena that govern cytoskeletal reorganization, as they lack the ability to describe the dynamic creation and disassembly of networks. The mathematical foundations of our approach—including the underlying kinematics and balance equations—are detailed in an upcoming publication \citep{salvadori2025chemo}. The computational model is implemented in dealii-X and employs staggered algorithms to solve the coupled PDE system involving chemo-transport and mechanics. Manufactured solutions have been tested in parallel computing environments utilizing multiple processors and distributed memory architectures.
+Traditional continuum theories, such as those proposed by Larché and Cahn and Mixture Theories, fall short in capturing the complex coupling of mechanical, chemical, and transport phenomena that govern cytoskeletal reorganization, as they lack the ability to describe the dynamic creation and disassembly of networks. The mathematical foundations of our approach—including the underlying kinematics and balance equations—are detailed in an upcoming publication \citep{salvadori2025chemo}. The computational model is implemented in deal.II and employs staggered algorithms to solve the coupled PDE system involving chemo-transport and mechanics. Manufactured solutions have been tested in parallel computing environments utilizing multiple processors and distributed memory architectures.
 
-The main work was focused on a Lagrangian approach, adopting both global and adaptive local mesh refinement strategies, with the latter guided by the KellyErrorEstimator in deal.II to estimate cell-wise error and improve solution accuracy. Simulations show the ability of the code to generate force-bearing domains upon polymerization of monomers. These simulations apply well in hemostasis, where the growing domain simulates the development of fibrin networks from activated platelets with real data.
+The main work was focused on a Lagrangian approach, adopting both global and adaptive local mesh refinement strategies, with the latter guided by the \textit{KellyErrorEstimator} in deal.II to estimate cell-wise error and improve solution accuracy. Simulations show the ability of the code to generate force-bearing domains upon polymerization of monomers. These simulations apply well in hemostasis, where the growing domain simulates the development of fibrin networks from activated platelets with real data.
 
 The simulations started from an experimentally informed initial configuration of platelets surrounded by thrombin, which drives clot formation. Using adaptive mesh refinement on a parallel computing architecture, the model captured the progressive development of the fibrin network over time. As polymerization proceeded, the load-bearing structure of the network expanded, while the highest fibrin concentrations consistently appeared near the platelet regions where the activation signal was applied, gradually decreasing with distance.
 
@@ -726,7 +725,7 @@ An Eulerian framework for solids suits well the goal of the dynamic creation and
 
 
 \begin{thebibliography}{10}
-\bibitem{salvadori2025chemo} A. Salvadori, M. Serpelloni, R.~M. McMeeking: ``Chemo-thermo-mechanics for mixtures of solids generated by a chemical reaction within a liquid.''. \emph{to be submitted to: Journal of the Mechanics and Physics of
+\bibitem{salvadori2025chemo} A. Salvadori, M. Serpelloni, R.~M. McMeeking: ``Chemo-thermo-mechanics for mixtures of solids generated by a chemical reaction within a liquid''. \emph{to be submitted to Journal of the Mechanics and Physics of
 Solids}, 2025.
 \end{thebibliography}
 
@@ -747,15 +746,15 @@ Currently, the typical workflow for a user of the dealii-X libraries to run a si
 \end{itemize} 
 The flow described above is rather complex, and generally not suitable for a non-expert user. The goal of the PoC platform is to allow a user to perform all these steps in a single environment, while retaing the possibility of deep customization.
 
-In view of these diverse use cases, we created a list of requirements that the dealii-X PoC platform should sport.
+In view of these diverse use cases, we created a list of requirements that the dealii-X PoC platform should sport:
 \begin{itemize}
-\item A collaborative space, in which professionals with different needs can contribute
-\item A modular design, to allow components to be easily added
-\item An interaction that allows deep customization without requiring specific coding skills
-\item A transparent usage of computational resources, ranging from local machines to HPC clusters
+\item A collaborative space, in which professionals with different needs can contribute;
+\item A modular design, to allow components to be easily added;
+\item An interaction that allows deep customization without requiring specific coding skills;
+\item A transparent usage of computational resources, ranging from local machines to HPC clusters.
 \end{itemize}
 
-Those requirements naturally bring into play the programming approach that goes under the name of "Low-code/No-code".
+Those requirements naturally bring into play the programming approach that goes under the name of ``Low-code/No-code''.
 
 
 \noindent\textbf{Low-code approach to deal.II programming}
@@ -764,17 +763,17 @@ In the present section, we present some details of the design of a node-based lo
 
 A minimal set of entities and a control loop that allow the creation of an object-oriented, Turing-complete language is the following:
 \begin{itemize}
-\item Variables and instances of objects
-\item Functions and member functions
-\item Loops
-\item Conditionals
+\item Variables and instances of objects,
+\item Functions and member functions,
+\item Loops,
+\item Conditionals.
 \end{itemize}
 
 Each of these entities can be represented as a node in a graph, with inputs and outputs. The graph is then traversed in a way that is consistent with the logic of the programming language. To specify the order of the operation, special connectors on the node are used, and special edges are displayed to distinguish instruction flow from arguments. The object works in the same way, but member function nodes can be attached to the object instance node, and the output of the function can then be passed to other nodes.
 
-The power of node-based programming is twofold: on one side, it allows for creating complex operations without knowing the details of a specific programming language. On the other side, it allows for encapsulating a collection of nodes into a single node that can be reused in other parts of the program. These hierarchical features unleash the possibility of creating high-level entities that can be used by non-expert users. The latter is the key feature that links the low-code and no-code approach, allowing the creation of a single environment that can be used by both expert and non-expert users.
+The power of node-based programming is two--fold. On one side, it allows for creating complex operations without knowing the details of a specific programming language. On the other side, it allows for encapsulating a collection of nodes into a single node that can be reused in other parts of the program. These hierarchical features unleash the possibility of creating high-level entities that can be used by non-expert users. The latter is the key feature that links the low-code and no-code approach, allowing the creation of a single environment that can be used by both expert and non-expert users.
 
-Moreover, the node-based approach naturally leads to the definition of a computational graph that can be used to optimize the execution of the program: by analyzing the graph, it is possible to determine which parts of it can be executed concurrently, which allows a potential second layer of parallelization on top of the one that is already present in the libraries. Operatively, we are currently investigating the use of the \href{https://github.com/taskflow/taskflow}{taskflow} library to implement graph analysis and node scheduling.   
+Moreover, the node-based approach naturally leads to the definition of a computational graph that can be used to optimize the execution of the program: By analyzing the graph, it is possible to determine which parts of it can be executed concurrently, which allows a potential second layer of parallelization on top of the one that is already present in the libraries. Operatively, we are currently investigating the use of the taskflow library (\href{https://github.com/taskflow/taskflow}{https://github.com/taskflow/taskflow/}) to implement graph analysis and node scheduling.   
 
 
 \noindent\textbf{dealii-X Low-code/No-code interface}
@@ -787,14 +786,14 @@ This subsection reports the progress on the Low-code/No-code interface as well a
 \end{itemize}
 
 
-The client acts as a starting point for every new project. Every new computational graph is created or loaded into the client, choosing from a list of available computational nodes. The client will upload each computational graph to the HPC cluster and send the command to start the computation. The state of the computation will be displayed in the client. The client will also save the graph to the remote server, and the work will be sharable with other users. The HPC cluster and the cloud will never communicate directly, but always through the client. The detailed description of each component is available in Deliverable 2.2 ``Report on application improvements - II semester''.
+The client acts as a starting point for every new project. Every new computational graph is created or loaded into the client, choosing from a list of available computational nodes. The client will upload each computational graph to the HPC cluster and send the command to start the computation. The state of the computation will be displayed in the client. The client will be also able to save the graph to the remote server, and make the work sharable with other users. The HPC cluster and the cloud will never communicate directly, but always through the client. The detailed description of each component is available in Deliverable 2.2 ``Report on application improvements - II semester''.
 
 
 \subsection{Next Steps} %(M13–M27)
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Advance ExaDG simulations of alveolar geometries to study elastodynamics under surface tension, integrate surfactant formulations, and develop efficient multigrid-based solvers for thin-walled structures.
 
-\item Continue transition from matrix-based to matrix-free methods, enabling high-order discretizations and GPU acceleration; introduce tailored multigrid preconditioners; and progressively extend the infrastructure to multiphysics models such as muscular contraction, electromechanics, and poromechanics.
+\item Continue transition of life-x from matrix-based to matrix-free methods, enabling high-order discretizations and GPU acceleration; introduce tailored multigrid preconditioners; and progressively extend the infrastructure to multiphysics models such as muscular contraction, electromechanics, and poromechanics.
 
 \item Develop exascale-ready simulations of brain mechanics, supporting high-resolution modeling of complex geometries for clinical and research applications.
 
