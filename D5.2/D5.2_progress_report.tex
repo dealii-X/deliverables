@@ -812,7 +812,7 @@ The client acts as a starting point for every new project. Every new computation
 
 \subsection{Objectives}
 
-WP3 focuses on advancing co-design, technology exploitation, and energy efficiency within the dealii--X project. The objectives are:
+WP3 focuses on advancing co-design, technology exploitation, and energy efficiency within the dealii-X project. The objectives are:
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing to achieve optimal performance
@@ -871,7 +871,7 @@ Similar to other GPU programming models, OpenMP offers fine-grained control over
 
 The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by Intel for efficient execution of tensor computations on CPUs and GPUs. TinyTC compiles programs written in a domain-specific tensor language into OpenCL-C or SPIR-V, supporting runtime environments such as OpenCL, Level Zero, and SYCL. C and C++ APIs are available. TinyTC assumes a batched execution model, where each kernel is executed by a work-group with concurrent work-items, and the compiler maps tensor operations to efficient GPU instructions, including cooperative GEMMs and subgroup vectorization.
 
-Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language, we present the BK1 kernel using an algorithm, where each tensor product is implemented using the loop over GEMM approach. For simplicity, the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage. As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. The kernel shown above achieved 10 GDoF/s on the Intel Ponte Vecchio GPU, roughly one quarter of the performance we observed using OpenMP. One of several optimizations possible is fusing dimensions, to obtain larger GEMMs with a more favourable operation count. 
+Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language, we present the BK1 kernel using an algorithm, where each tensor product is implemented using the loop over GEMM approach. For simplicity, the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage. As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. The kernel shown above achieved 10 GDoF/s on the Intel Ponte Vecchio GPU, roughly one quarter of the performance we observed using OpenMP. One of several possible optimizations to obtain larger GEMMs with a more favourable operation count is fusing dimensions.
 
 Other GEMM steps can be fused in a similar manner, however this only delivered a few percent improvement. Upon consultation with the TinyTC author it became apparent a different strategy would be needed to obtain performant execution and optimal SIMD utilization of the PVC architecture.
 In collaboration with Intel, we are currently investigating the application of index fusion, batch vectorization and memory layout transformations to guarantee optimal register and SIMD usage.
@@ -879,15 +879,16 @@ In collaboration with Intel, we are currently investigating the application of i
 
 \subsubsection*{Streaming kernels}
 
-Iterative linear system solvers make heavy use of low arithmetic intensity operations, so--called streaming operations.
-When matrix-free high-order FEM schemes are combined with iterative solvers. Previous research in the case of the conjugate gradient method shows that above a certain problem size, the streaming operations contribute a significant chunk of the solver run-time.
+Iterative linear system solvers make heavy use of low arithmetic intensity operations --- the so-called streaming operations.
+%When matrix-free high-order FEM schemes are combined with iterative solvers. 
+Previous research in the case of the conjugate gradient method shows that above a certain problem size, the streaming operations contribute a significant chunk of the solver run-time.
 
 Streaming kernels capture a second important group of low-intensity operations, where memory movement is dominant.
 The kernels generally take one or two long vectors as arguments. The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). The fifth kernel is the fused conjugate gradient update that involves the combination of a scaled sum and norm of a residual vector in a single sweep. The last two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom associated with a given finite element mesh into a linear vector. The gather and scatter kernels are tied to a particular mesh and finite element space, requiring more extensive driver setup, and they are planned for future work. 
 
 As an initial step toward the performance characterization and modelling of streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS \footnote{BLIS, \url{https://github.com/flame/blis}}. In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
 
-Our pleminary work has been concerned about studying the bandwidth scaling with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU. We observed the expected saturating behavior. The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s). The BS3 kernel reached almost 450 GB/s, a value close to the maximum memory bandwidth of 467 GB/s. In the case of BS2 and BS5, the saturated regime was reached with only 20 out of 72 cores. Similar saturating behavior was observed for the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth. A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation. This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs.
+Our pleminary work has been concerned about studying the bandwidth scaling with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU. We observed the expected saturating behavior: The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s), while the BS3 kernel was able to reach almost 450 GB/s --- a value close to the maximum memory bandwidth (467 GB/s). In the case of BS2 and BS5, the saturated regime was reached with only 20 out of 72 cores. Similar saturating behavior was observed for the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth. A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation. This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs.
 
 Overall, our initial results confirm that the proposed streaming kernels are able to expose memory bandwidth behavior consistently across different architectures, demonstrating their usefulness as a lightweight proxy for iterative solver workloads.  The observed saturation patterns highlight the importance of systematic performance characterization. In the next stage, we aim to extend the benchmarking to a broader set of CPUs and GPUs and integrate the results into predictive performance models for matrix-free iterative solvers.
 
@@ -943,7 +944,7 @@ To strengthen knowledge transfer and community engagement, dealii-X will partici
 
 \subsection{Objectives}
 
-The objective of WP4 is to ensure that the results of dealii--X are communicated, disseminated, and exploited effectively to achieve maximum impact. Specifically, WP4 aims to:
+The objective of WP4 is to ensure that the results of the dealii-X CoE are communicated, disseminated, and exploited effectively to achieve maximum impact. Specifically, WP4 aims to:
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
 \item Build awareness of the project among industry, academia, clinicians, regulators, policymakers, patients, and the general public.
 \item Promote project outcomes to the HPC, scientific, and healthcare communities.
@@ -967,7 +968,7 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item A comprehensive Communication and Dissemination Strategy was developed and approved in M4.
-\item Stakeholder mapping was carried out, identifying six primary target groups (clinicians, ICT researchers, industry, regulators, patients, policymakers/public).
+\item Stakeholder mapping was carried out, identifying six primary target groups: clinicians, ICT researchers, industry, regulators, patients, policymakers/public.
 \item A full visual identity was created, including project logo, templates, infographics, and EU acknowledgement banner.
 \item Communication channels established:
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
@@ -981,7 +982,10 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 \noindent\textbf{WP4.3: Dissemination activities}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Project Partners started disseminating the project at conferences/workshops they were attending. The events were also disseminated via project social media channels. 
+\item There has been a strong presence of the project partners at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
+\item deal.II was presented by the dealii-X consortium as the “Code of the Month” by CASTIEL2, highlighting its impact and relevance within the European HPC ecosystem. 
+\item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
+\item The dissemination events partecipated by the dealii-X consortium were promoted via project's social media channels. 
 \item Dissemination was supported via VPH and partner institutional channels (websites, newsletters, social media).
 \end{itemize}
 
@@ -999,7 +1003,7 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 
 \noindent\textbf{WP4.5: Exploitation}
 
-The first step toward systematic exploitation was the preparation and submission of Deliverable D4.4 (Table of Exploitable Results) in M6, coordinated by RUB with contributions from all partners. This deliverable established an initial inventory of project outputs with potential for exploitation, including software, workflows, training resources, and integration pathways into partner tools.  
+The first step toward systematic exploitation was the preparation and submission of Deliverable D4.4 ``Table of Exploitable Results'' in M6, coordinated by RUB with contributions from all partners. This deliverable established an initial inventory of project outputs with potential for exploitation, including software, workflows, training resources, and integration pathways into partner tools.  
 
 The exploitation framework is designed to ensure that results are captured early and monitored throughout the project lifetime. Key measures include:  
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
@@ -1019,7 +1023,7 @@ Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the
 \item Social media growth: $\sim$200 followers on LinkedIn; reach of $\sim$25,000 impressions to date, with steady monthly growth.
 \item Data management: Data Management Plan submitted (M6); 100\% of partners consulted in its preparation. Initial data formats and repositories aligned with FAIR principles.
 \item Exploitation: Initial Table of Exploitable Results submitted (M6), with 20 identified results covering software, workflows, and training resources.
-\item The 2025 SIAM/ACM Prize in Computational Science and Engineering was awarded to the principal authors (among whom are dealii-X PCs M. Kronbichler and L. Heltai) of the deal.II Project in recognition of their contributions to finite element calculations.
+\item The 2025 SIAM/ACM Prize in Computational Science and Engineering was awarded to the principal authors (among whom are the dealii-X PCs M. Kronbichler and L. Heltai) of the deal.II Project in recognition of their contributions to finite element calculations.
 \item deal.II was presented by the dealii-X consortium as the “Code of the Month” by CASTIEL2, highlighting its impact and relevance within the European HPC ecosystem. 
 \item Dissemination: Strong presence at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
 \end{itemize}
@@ -1029,7 +1033,7 @@ Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Strengthen communication campaigns and widen dissemination to additional HPC and clinical communities, with targeted communication material and enhanced social media presence.
-\item Organise the first project workshop (dealii--X Research School in Trieste in December 2025), providing hands-on training and fostering early user engagement.
+\item Organise the first project workshop: \textit{dealii-X Research School} in Trieste in December 2025, providing hands-on training and fostering early user engagement.
 \item Launch structured stakeholder engagement activities (focus groups, surveys, interviews) targeting regulators, clinicians, and patients to collect feedback on project outputs.
 \item Update the Data Management Plan to reflect new data types generated in WPs 2–3, and refine strategies for long-term preservation and reuse.
 \item Develop a detailed exploitation roadmap, including sustainability measures for software maintenance, data curation, and training materials reuse.
@@ -1049,7 +1053,7 @@ Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the
 
 \subsection{Objectives}
 
-WP5 is devoted to project management and administrative tasks. The main objective is to facilitate technical work, encourage synergy among partners, ensure consistency across tasks, and guarantee that expected results are achieved on time, of high quality, and compliant with the Ethics Requirements. Specifically, WP5 aims to:
+WP5 is devoted to project management and administrative tasks. The main objective is to facilitate technical work, encourage synergy among partners, ensure consistency across tasks, and guarantee that expected results are achieved on time, of high quality, and compliant with the ethics requirements. Specifically, WP5 aims to:
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Target- and result-oriented management of the project, including risk, conflict, and IP management.
@@ -1107,7 +1111,7 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 
 \subsection{Summary}  
 
-WP5 has established a robust management framework that ensures the smooth operation of the dealii--X project. Through regular consortium meetings, structured decision-making, and effective internal and external communication, the consortium maintains alignment across work packages and partners. Quality control procedures, including internal reviews of deliverables and monitoring of critical risks, support the timely and high-quality production of project outputs. Together, these measures foster synergy among partners, mitigate potential delays, and contribute to achieving the project’s objectives efficiently and in compliance with all ethical and contractual requirements.
+WP5 has established a robust management framework that ensures the smooth operation of the dealii-X project. Through regular consortium meetings, structured decision-making, and effective internal and external communication, the consortium maintains alignment across work packages and partners. Quality control procedures, including internal reviews of deliverables and monitoring of critical risks, support the timely and high-quality production of project outputs. Together, these measures foster synergy among partners, mitigate potential delays, and contribute to achieving the project’s objectives efficiently and in compliance with all ethical and contractual requirements.
 
 
 
