@@ -217,7 +217,7 @@ The current status of the implementation focuses on element--wise communication-
 Implementations are available in the
 \url{https://github.com/dealii-X/benchmarks} repository, which are based on
 benchmark definitions from the US Center of Efficient Exascale Discretizations
-(CEED)\footnote{\url{https://ceed.exascaleproject.org/bps/}} and previous work by Kronbichler and co-workers. A brief overview of
+(CEED)\footnote{\url{https://ceed.exascaleproject.org/bps/}, retrieved on 30 Sept 2025.} and previous work by Kronbichler and co-workers. A brief overview of
 the kernels is provided below:
 \begin{itemize}
 	\item Bake-off Kernel 1 (BK1) for mass-matrix operator with a Gauss--Legendre quadrature formula involving $p+2$ points per coordinate direction for polynomial degree $p$.
@@ -552,8 +552,8 @@ The key applications of WP2 include:
 \item Exascale simulations of the respiratory system;
 \item Exascale simulations in cardiac computational medicine;
 \item Exascale simulations of brain tissue mechanics;
-\item Development of a digital twin for the human Liver;
-\item Development of a digital twin for cellular Interactions;
+\item Development of a digital twin for the human liver;
+\item Development of a digital twin for cellular interactions;
 \item Low-code platform for human organ digital twin creation.
 \end{itemize}
 
@@ -561,14 +561,14 @@ Specifically, the sub-work packages aim to:
 \begin{itemize}
 \item \textbf{WP2.1 (Lead TUM)}: Develop exascale-ready solvers for respiratory flow and transport, with advanced time
 stepping, mixed meshes, and fluid–structure interaction, extending later to other biomedical flows;
-\item \textbf{WP2.2 (Lead POLIMI)}: Enhance \texttt{lifex} for exascale cardiac simulations, including GPU-enabled solvers, high-order FEM, multiphysics integration, and multiscale models of healthy and pathological conditions;
+\item \textbf{WP2.2 (Lead POLIMI)}: Enhance the \texttt{lifex} software for exascale cardiac simulations, including GPU-enabled solvers, high-order FEM, multiphysics integration, and multiscale models of healthy and pathological conditions;
 \item \textbf{WP2.3 (Lead FAU)}: Optimize an HPC brain solver with parallelization, GPU acceleration, and nonlinear routines, enabling high-fidelity, patient-specific brain simulations;
 \item \textbf{WP2.4 (Lead FVB-WIAS)}: Build and validate a liver simulator prototype with enhanced poro-visco-elastic models, realistic geometries, and coupling with cardiovascular flows;
 \item \textbf{WP2.5 (Lead UNIBS)}: Develop cell-scale digital twins using novel space–time FEM and coupling of receptor dynamics with flow, validated against in vitro data;
 \item \textbf{WP2.6 (Lead EXACT LAB)}: Deliver a low-code platform and meta-scheduler to simplify digital twin construction and execution across HPC resources.
 \end{itemize}
 
-Together, WP2 subprojects aim to push the boundaries of computational simulations for major human organs, leveraging and integrating the advancements in exascale computing and the deal.II software library produced in WP1.
+Together, the WP2 subprojects aim to push the boundaries of computational simulations for major human organs, leveraging and integrating the advancements in exascale computing and the deal.II software library produced in WP1.
 
 \subsection{Progress Achieved in Year 1}
 
@@ -582,7 +582,7 @@ For illustration, hundreds of millions of alveoli have a size in the two to thre
 The overall lung, on the other hand, has a size of four to six liters.
 To bridge these scales, the trachea, with a diameter of roughly 2.5 cm, bifurcates for up to 24 generations into the parenchyma.
 The terminal bronchioles, the smallest conducting airways found in the 16th generation of this bronchial tree, are already tens of thousands in number, each being responsible for the supply of air to tens of thousands of alveoli.
-It is clear from these numbers that a fully resolved simulation of a lung incorporating the important effects on all length scales is not possible.
+It is clear from these numbers that a fully resolved simulation of a lung incorporating the important effects on all length scales as a three-dimensional continuum is not possible.
 Although simplified, generally reduced order or homogenized models of lungs exist in the literature, these models fail to incorporate some of the critical aspects of respiratory mechanics.
 With our decade-long expertise in lung modeling, we have identified surfactant dysfunction as one such aspect.
 Despite the evident clinical relevance — manifesting itself, for example, as the infant respiratory distress syndrome in newborns — large-scale simulations of the human lungs incorporating dynamic surfactant (and surfactant deficiency) effects have not been possible due to the high interfacial resolution that would be necessary to capture the surfactant effects on the alveolar walls.
@@ -598,61 +598,65 @@ We have set up a prototype implementation based on deal.II.
 Specifically, we began implementing the complex mechanics of biological tissue, including a surfactant-based surface energy formulation.
 Once this initial implementation has been verified, we will integrate it into our established open-source HPC framework ExaDG.
 
-Furthermore, the necessary infrastructure to tackle many-query applications like uncertainty quantification, machine learning, inverse problem analysis and model order reduction was created and first tests were conceded. This lead to a related study~\citep{bosnjak2025Synthaorta} being published based on ExaDG focusing on the impact of geometric variations of tubular structures (blood vessels in that case) on the clinically relevant biomarkers in aortic blood flow such as flow rate, pressure, or time-averaged wall shear stress. The related dataset was publicly released in a public repository hosted by Graz University o Technology\footnote{to be found at \href{https://repository.tugraz.at/records/f31ph-37h03}{https://repository.tugraz.at/records/f31ph-37h03}} to foster exchange within the community and to enable easy downstream application.
+Furthermore, the necessary infrastructure to tackle many-query applications like uncertainty quantification, machine learning, inverse problem analysis and model order reduction was created and first tests were conceded. This lead to a related study~\citep{bosnjak2025Synthaorta} being published based on ExaDG focusing on the impact of geometric variations of tubular structures (blood vessels in that case) on the clinically relevant biomarkers in aortic blood flow such as flow rate, pressure, or time-averaged wall shear stress. The related dataset was publicly released in a repository hosted by Graz University of Technology\footnote{\url{https://repository.tugraz.at/records/f31ph-37h03}, retrieved on 30 Sept 2025.} to foster exchange within the community and to enable easy downstream application.
 
 A further strand of improvements focuses on the specific applications and related fluid models aimed at in the future being blood flow in larger arteries. The solver capabilities of ExaDG were extended towards generalized Newtonian fluids, leading to a recent preprint~\citep{schussnig2025genNewtonian}. Within this work, we develop a suitable projection solver for the incompressible Navier--Stokes equations yielding higher-order accuracy based on an $L^2$-conforming discontinuous Galerkin discretization in space and further compare throughput of various linearization variants and a monolithic scheme.
 
 \noindent\textbf{Key achievements}
 
-The lung application is built on the high-performance library ExaDG, which itself relies heavily on the deal.II matrix-free framework as its engine. ExaDG implements discontinuous Galerkin as well as continuous Galerkin solvers for engineering problems. Although the main focus of ExaDG has been computational fluid dynamics (also successfully applied previously in respiratory mechanics) with discontinuous, hypercube-shaped elements, more recent developments and improvements \citep{schussnig2025matrixfree} have enabled solving structural problems with continuous, simplex-shaped elements, which is more typical and appropriate for the partial differential equations underlying elastodynamics.
+The lung application is built on the high-performance library ExaDG, which itself relies heavily on the deal.II matrix-free framework as its engine. ExaDG implements discontinuous Galerkin as well as continuous Galerkin solvers for engineering problems. Although the main focus of ExaDG has been computational fluid dynamics (also successfully applied previously in respiratory mechanics) with discontinuous, hypercube-shaped elements, more recent developments and improvements~\citep{schussnig2025matrixfree,still2025matrixfree} have enabled solving structural problems with continuous, simplex-shaped elements, which is more typical and appropriate for the partial differential equations underlying elastodynamics.
 
 In accordance with our goal of simulating the elastodynamic processes in the very fine alveolar structures of the lung parenchyma and understanding how these fine structures behave under the influence of surface tension effects, we are conducting initial simulations with an alveolar geometry using ExaDG. A mesh of a smaller alveolar geometry that is able to show an exemplary displacement field under axial tension has been successfully generated. For such complex, thin-walled geometries, the construction of linear solver and preconditioner combinations constitutes an essential part of the development process. We have been experimenting with different setups to find the best solution. So far, multigrid preconditioning is the most promising approach.
 
 Parallel to our work on using the alveolar geometry for ExaDG simulations, we have also been evaluating the applicability and implementing the enhanced-surface finite element formulation for the surfactant, which we had reported in deliverables D2.1 and D2.2. We expect this formulation to be incorporated into ExaDG in the very short term.
 
 \begin{thebibliography}{10}
-	\bibitem{bosnjak2025Synthaorta} D. Bošnjak, G. M. Melito, R. Schussnig, K. Ellermann, and T.-P.Fries.: ``SynthAorta: A 3D Mesh Dataset of Parametrized Physiological Healthy Aortas''. \emph{IEEE Transactions on Medical Imaging},
+	\bibitem{bosnjak2025Synthaorta} D. Bošnjak, G. M. Melito, R. Schussnig, K. Ellermann, and T.-P. Fries: ``SynthAorta: A 3D Mesh Dataset of Parametrized Physiological Healthy Aortas''. \emph{IEEE Transactions on Medical Imaging}, 2025,
 	\href{https://doi.org/10.1109/TMI.2025.3599937}{https://doi.org/10.1109/TMI.2025.3599937}, [in press].
 	%
-	\bibitem{schussnig2025genNewtonian} R. Schussnig, N. Fehn, D. R. Q. Pacheco, and M. Kronbichler.: ``Higher-Oder Splitting Schemes for Fluids with Variable Viscosity''. \emph{arXiv Preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2506.14424}{arXiv:2506.14424}.
+	\bibitem{schussnig2025genNewtonian} R. Schussnig, N. Fehn, D. R. Q. Pacheco, and M. Kronbichler: ``Higher-Oder Splitting Schemes for Fluids with Variable Viscosity''. \emph{arXiv Preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2506.14424}{arXiv:2506.14424}.
 	%
-\bibitem{schussnig2025matrixfree} R. Schussnig, N. Fehn, P. Munch, and M. Kronbichler.: ``Matrix-free higher-order finite element methods for hyperelasticity''. \emph{Computer Methods in Applied Mechanics and Engineering}, 2025, 435,
-pp.1-23, \href{https://doi.org/10.1016/j.cma.2024.117600}{doi:10.1016/j.cma.2024.117600}.
+\bibitem{schussnig2025matrixfree} R. Schussnig, N. Fehn, P. Munch, and M. Kronbichler: ``Matrix-free higher-order finite element methods for hyperelasticity''. \emph{Computer Methods in Applied Mechanics and Engineering}, 2025, 435,
+  117600, \href{https://doi.org/10.1016/j.cma.2024.117600}{doi:10.1016/j.cma.2024.117600}.
+
+  \bibitem{still2025matrixfree} D. Still, N. Fehn, W. A. Wall, and M. Kronbichler: ``Matrix-free evaluation strategies for continuous and discontinuous Galerkin discretizations on unstructured tetrahedral grids''. \emph{arXiv preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2509.10226}{arXiv:2509.10226}.
 \end{thebibliography}
 
 \subsubsection*{WP2.2 Heart: Exascale Simulations in Cardiac Computational Medicine}
 
 \noindent\textbf{Application description and relevance}
 
-Computational models are increasingly used in cardiology to understand the heart's pathophysiology and assess the effectiveness of treatment strategies of therapeutical devices.
-Notably, numerical simulations have great potential in enabling in-silico clinical trials, complementing and augmenting more traditional population-based studies.
+Computational models are increasingly used in cardiology to understand the pathophysiology of the heart and assess the effectiveness of treatment strategies of therapeutical devices.
+Notably, numerical simulations have great potential in enabling in-silico clinical trials, complementing and augmenting more traditional popu\-lation-based studies.
 To this end, cardiac models must account for the different physical processes underlying the heartbeat.
 These include electrophysiology, muscular force generation and mechanics, fluid dynamics of the blood, valvular dynamics, myocardial perfusion, as well as the numerous interactions and feedback effects between them.
 Depending on the specific application, some of these may be neglected or reduced in complexity.
 Nonetheless, a comprehensive framework for cardiac simulation will inevitably lead to a multiphysics coupled model, entailing particularly challenging numerical problems and calling for high-performance computing techniques tailored to large--scale computations.
 
+\pagebreak
+
 \noindent\textbf{Preliminary steps}
 
-Pre--exascale and exascale simulation software are key in allowing large simulations in sufficiently large number to support in-silico clinical trials. In this respect, previous studies on cardiac simulations with the lifex software have highlighted how the performance bottleneck is currently associated to the efficiency and parallel scalability of linear solvers and preconditioners.
+Pre--exascale and exascale simulation software are key in allowing large simulations in sufficiently large number to support in-silico clinical trials. In this respect, previous studies on cardiac simulations with the \texttt{lifex} software have highlighted how the performance bottleneck is currently associated to the efficiency and parallel scalability of linear solvers and preconditioners.
 Therefore, the initial phase of the project will be devoted to migrating from traditional, matrix-based implementations to matrix-free methods, and carefully evaluating the performance in biophysically detailed test cases, comparing with the current state of the simulation software.
-If successful, this will provide support for exploring high-order discretizations, which particularly benefit from matrix-free implementations, as well as GPU-based computing strategies
+If successful, this will provide support for exploring high-order discretizations, which particularly benefit from matrix-free implementations, as well as GPU-based computing strategies.
 
 \noindent\textbf{Key achievements}
 
-The POLIMI team is working on migrating the lifex~\cite{lifex2.0} solvers to deal.II's matrix-free infrastructure, and is extensively refactoring the code organization towards this goal. In the new implementation, each concrete PDE model (such as cardiac electrophysiology, muscular mechanics or myocardial perfusion) builds upon the same abstract software components (i.e., it is derived from the same classes), as opposed to the old implementation, where different models would often reimplement common tasks (such as the initialization of finite element spaces or linear system assembly). Besides significantly improving the code organization and its maintainability, this centralized structure significantly facilitates the implementation of new physical models and their improvement, and overall provides a structured scaffolding for the future library developments.
+The POLIMI team is working on migrating the \texttt{lifex}~\cite{lifex2.0} solvers to deal.II's matrix-free infrastructure, and is extensively refactoring the code organization towards this goal. In the new implementation, each concrete PDE model (such as cardiac electrophysiology, muscular mechanics or myocardial perfusion) builds upon the same abstract software components (i.e., it is derived from the same classes), as opposed to the old implementation, where different models would often reimplement common tasks such as the initialization of finite element spaces or linear system assembly. Besides significantly improving the code organization and its maintainability, this centralized structure significantly facilitates the implementation of new physical models and their improvement, and overall provides a structured scaffolding for the future library developments.
 
 The abstract physical model classes at the core of this new implementation leverage deal.II's facilities to support many solver configurations in a flexible way: they allow for scalar- and vector-valued problems, linear and nonlinear, steady and unsteady, on hexahedral and tetrahedral meshes, and support both matrix-based and matrix-free solvers. Finite element evaluation tasks are carried out with the \texttt{dealii::FEEvaluation} class, instead of \texttt{dealii::FEValues} as done in the previous implementation. This enables a significant performance improvement already in the matrix-based solvers, thanks to the use of sum factorization, SIMD vectorization, and improved cache friendliness.
 
-The solver for the monodomain problem of cardiac electrophysiology has been implemented on top of the new infrastructure, and its parallel performance has been compared to the one of the old code by running a strong scalability test based on the Niederer benchmark. The results show a pronounced improvement in both absolute wall times and parallel scalability, with wall times reduced by a factor 1.5--30, depending on mesh type and number of parallel cores. We note in particular that the vectorization of the ionic solver has lead to a much clearer scalability. This is even more noticeable when observing that the cost of solving ionic models often dominates electrophysiology simulations.
+The solver for the monodomain problem of cardiac electrophysiology has been implemented on top of the new infrastructure, and its parallel performance has been compared to the one of the old code by running a strong scalability test based on the Niederer benchmark. The results show a pronounced improvement in both absolute wall times and parallel scalability, with wall times reduced by a factor 1.5--30, depending on mesh type and number of parallel cores. We note in particular that the SIMD vectorization of the ionic solver has lead to a much clearer scalability. This is even more noticeable when observing that the cost of solving ionic models often dominates electrophysiology simulations.
 
 Additionally, we have migrated to the new implementation of the multicompartment Darcy solver for myocardial perfusion, and the solver for generating rule-based cardiac fiber architectures. Finally, we are in the process of extending this new framework to the cardiac mechanics solver, as well as coupling the latter to the Darcy model to simulate the behavior of a porous medium subjected to fluid flow.
 
-The upcoming work will follow along these lines, by progressively extending the new infrastructure to additional models (e.g. active force generation for muscular contraction) and introducing coupling between the existing models to build multiphysics simulations (e.g. electromechanics or poromechanics for myocardial perfusion). Complementary to this, we will proceed by expanding the set of numerical methods supported by the core solvers. Most notably, the code currently supports only black-box preconditioning methods (AMG, ILU, etc.), which are not well suited for the matrix-free solvers. Since preconditioning is crucial for the robustness and efficiency of cardiac mechanics solvers, this will be addressed shortly, by integrating a multigrid method within the new code. In addition, articles~\cite{bucelli2025, fumagalli2025} has been finalized in the course of this work package.
+The upcoming work will follow along these lines, by progressively extending the new infrastructure to additional models (e.g., active force generation for muscular contraction) and introducing coupling between the existing models to build multiphysics simulations (e.g., electromechanics or poromechanics for myocardial perfusion). Complementary to this, we will proceed by expanding the set of numerical methods supported by the core solvers. Most notably, the code currently supports only black-box preconditioning methods (AMG, ILU, etc.), which are not well suited for the matrix-free solvers. Since preconditioning is crucial for the robustness and efficiency of cardiac mechanics solvers, this will be addressed shortly, by integrating a multigrid method within the new code. In addition, articles~\cite{bucelli2025, fumagalli2025} has been finalized in the course of this work package.
 
 \begin{thebibliography}{10}
-	\bibitem{lifex2.0} M. Bucelli: ``The lifex library version 2.0''. \emph{Association for Computing Machinery (accepted)}, 2025, \href{https://doi.org/10.1145/3748817}{doi:10.1145/3748817}
-	\bibitem{bucelli2025} M. Bucelli, L. Ded\`e: ``Coupling models of resistive valves to muscle mechanics in cardiac fluid-structure interaction simulations''. \emph{arXiv Preprint}, 2025, \href{https://https://arxiv.org/abs/2506.03869}{arXiv:2506.03869}
-	\bibitem{fumagalli2025} I. Fumagalli, L. Ded\`e, A. Quarteroni: ``A reduced 3D-0D fluid–structure interaction model of the aortic valve that includes leaflet curvature''. \emph{Biomechanics and Modeling in Mechanobiology}, 2025, 24, pp. 1169-1189 \href{https://doi.org/10.1007/s10237-025-01960-9}{doi:10.1007/s10237-025-01960-9}
+	\bibitem{lifex2.0} M. Bucelli: ``The lifex library version 2.0''. \emph{ACM Transactions on Mathematical Software}, 2025, \href{https://doi.org/10.1145/3748817}{doi:10.1145/3748817} [in press].
+	\bibitem{bucelli2025} M. Bucelli, L. Ded\`e: ``Coupling models of resistive valves to muscle mechanics in cardiac fluid-structure interaction simulations''. \emph{arXiv Preprint}, 2025, \href{https://arxiv.org/abs/2506.03869}{arXiv:2506.03869}.
+	\bibitem{fumagalli2025} I. Fumagalli, L. Ded\`e, A. Quarteroni: ``A reduced 3D-0D fluid–structure interaction model of the aortic valve that includes leaflet curvature''. \emph{Biomechanics and Modeling in Mechanobiology}, 2025, 24, pp. 1169--1189 \href{https://doi.org/10.1007/s10237-025-01960-9}{doi:10.1007/s10237-025-01960-9}.
 \end{thebibliography}
 
 
@@ -661,7 +665,7 @@ The upcoming work will follow along these lines, by progressively extending the 
 \noindent\textbf{Application description and relevance}
 
 Despite decades of research, the human brain still poses exciting challenges for researchers from various fields.
-More recently, there is increasing interest in the role of mechanical signals for brain development, injury, and disease.
+More recently, there has been increasing interest in the role of mechanical signals for brain development, injury, and disease.
 Modeling based on the theory of nonlinear continuum mechanics proves a valuable tool to computationally test hypotheses that complement experimental findings, to understand processes in the brain under physiological and pathological conditions, and to assist diagnosis and treatment of neurological disorders through personalized predictions.
 Depending on the application, mechanical models for human brain tissue need to cover a wide range of time and length scales.
 Its highly heterogeneous, region-dependent microstructure relates to viscoelastic and poroelastic effects that cannot be neglected for predictions on the organ scale.
@@ -677,26 +681,28 @@ As the various brain regions show distinct mechanical properties and as it is vi
 In this context, the underlying, computationally demanding multiphysics problem needs to be solved hundreds to thousands of times to identify a reliable set of material model parameters for the entire human brain.
 Therefore, ongoing work focuses on the transfer of our existing code to an HPC environment.
 Once successful, we will proceed with the parameter identification whilst also setting a first benchmark to identify potential for computational improvements with our project partners within dealii-X.
-As simulations of the full human brain require very fine resolution due to its complex geometry, exascale-enabled software will be the key to improve our understanding on mechanical mechanisms within the brain and to take advantage of the modeling capabilities, e.g., in clinical applications.
+As simulations of the full human brain require very fine resolution due to its complex geometry, exascale-capable software will be the key to improve our understanding on mechanical mechanisms within the brain and to take advantage of the modeling capabilities, e.g., in clinical applications.
 
 \noindent\textbf{Key achievements}
 
-Main activities were directed towards the progress within the ExaBrain library, which is developed to facilitate high-resolution full human brain finite element simulations using a complex nonlinear poro-viscoelastic material model.
+The main activities of the project team were directed towards the progress within the ExaBrain library, which is developed to facilitate high-resolution finite element simulations of the full human brain using a complex nonlinear poro-viscoelastic material model.
 
-On the one hand, we transferred our code to the National High Performance Computing Center (NHR@FAU) at FAU in Erlangen. This allowed us to perform first benchmarks on the code performance and scalability in an HPC environment which will also serve as the baseline for upcoming developments. Overall, we compared the performance for several system sizes and two different direct solvers. Preliminary results were carried out for the -- so far -- largest system consisting of 24,576 hexahedral Q2P1 (quadratic in displacements, linear in pore pressure) elements and 644,916 degrees of freedom. The simulations were run on HPC system ``Fritz'' with our baseline parallel direct solver SuperLU-dist and a newly available MUMPS direct solver, which was incorporated into deal.II through our project partners at University of Pisa and the work of the MUMPS team at INPT. The new MUMPS solver decreases the memory requirement by approximately \SI{50}{\percent} to \SI{75}{\percent}, depending on the number of parallel processes, while the system assembly is independent of the solver and scales perfectly with the number of processes.  While the new MUMPS solver is significantly faster than SuperLU-dist, it does not show good scalability through parallelization, and a crucial improvement towards larger systems is required for the full human brain.
+On the one hand, we transferred our code to the National High Performance Computing Center (NHR@FAU) at FAU in Erlangen. This allowed us to perform first benchmarks on the code performance and scalability in an HPC environment, which will also serve as the baseline for upcoming developments. Overall, we compared the performance for several system sizes and two different direct solvers. Preliminary results were carried out for the -- so far -- largest system consisting of 24,576 hexahedral Q2P1 (quadratic in displacements, linear in pore pressure) elements and 644,916 degrees of freedom. The simulations were run on HPC system ``Fritz'' with our baseline parallel direct solver SuperLU-dist and a newly available MUMPS direct solver, which was incorporated into deal.II through our project partners at University of Pisa and the work of the MUMPS team at INPT. The new MUMPS solver decreases the memory requirement by approximately \SI{50}{\percent} to \SI{75}{\percent}, depending on the number of parallel processes, while the system assembly is independent of the solver and scales perfectly with the number of processes.  While the new MUMPS solver is significantly faster than SuperLU-dist, it does not show good scalability through parallelization, and a crucial improvement towards larger systems is required for the full human brain.
 
-Further improvements for the solver phase of the linearized system are possible by employing iterative solvers. Some first comparisons between the direct solvers previously mentioned and GMRES as an iterative solver are availablee. The simulations were run on the University of Pisa HPC system ``Toeplitz''. GMRES is preconditioned with the MUMPS solver using the mixed precision Block Low Rank feature. Multiple strategies can be employed to precondition GMRES with BLR: the same preconditioner can be reused to precondition multiple executions of the GMRES solver, reducing the number of times the preconditioner has to be evaluated and thus reducing the overall time spent in the linear solver. Ongoing work is focusing on optimizing the number of times the preconditioner must be evaluated in relation to the time required for the convergence of GMRES to further increase the speed of the solve phase.
+Further improvements for the solver phase of the linearized system are possible by employing iterative solvers. Some first comparisons between the direct solvers previously mentioned and GMRES as an iterative solver are available. The simulations were run on the HPC system ``Toeplitz'' at the University of Pisa. GMRES is preconditioned with the MUMPS solver using the mixed precision Block Low Rank feature. Multiple strategies can be employed to precondition GMRES with BLR: the same preconditioner can be reused to precondition multiple executions of the GMRES solver, reducing the number of times the preconditioner has to be evaluated and thus reducing the overall time spent in the linear solver. Ongoing work is focusing on optimizing the number of times the preconditioner must be evaluated in relation to the time required for the convergence of GMRES to further increase the speed of the solve phase.
 
-On the other hand, as full brain simulations require proper material parameters, FAU is working on the efficiency and reliability of the inverse parameter identification. Here, our new HPC possibilities allow us to perform numerical experiments that can then help to identify potential experimental and algorithmic improvements.  Starting with a known set of poroelastic parameters, we performed a relaxation experiment of a cylindrical specimen and evaluated the total nominal stress as well as the lateral displacement of a point on the lateral surface at half of the specimen height. This numerical ``experimental'' data was then used as an input for the inverse parameter identification with 16 different sets of initial parameters.In one case, the objective function included only the total nominal stress, while in another case it also incorporated the lateral displacement with equal weighting. Even for this simplified poroelastic example using ``perfect'' experimental data, the nominal stress response alone does not provide enough information to identify a unique parameter set. In fact, the correct parameter set was recovered only in 12 out of 16 cases. The situation improves significantly if we incorporate the lateral displacement as additional information.
+On the other hand, as full brain simulations require proper material parameters, FAU is working on the efficiency and reliability of the inverse parameter identification. Here, our new HPC possibilities allow us to perform numerical experiments that can then help to identify potential experimental and algorithmic improvements.  Starting with a known set of poroelastic parameters, we performed a relaxation experiment of a cylindrical specimen and evaluated the total nominal stress as well as the lateral displacement of a point on the lateral surface at half of the specimen height. This numerical ``experimental'' data was then used as an input for the inverse parameter identification with 16 different sets of initial parameters. In one case, the objective function included only the total nominal stress, while in another case it also incorporated the lateral displacement with equal weighting. Even for this simplified poroelastic example using ``perfect'' experimental data, the nominal stress response alone does not provide enough information to identify a unique parameter set. In fact, the correct parameter set was recovered only in 12 out of 16 cases. The situation improves significantly if we incorporate the lateral displacement as additional information.
 For our poro-viscoelastic human brain model, the number of unknown model parameters increases from four to seven strongly coupled material parameters. Therefore, numerical experiments evidence even more importance in understanding the model response and interpreting the results from inverse parameter identifications. With an increasing number of model parameters, we have to cover a significantly larger parameter space, where we will benefit substantially from our improvements on the linear solver and the inverse identification itself.
 
+
+\pagebreak
 
 \subsubsection*{WP2.4 Liver: Development of a Digital Twin for the Human Liver}
 
 \noindent\textbf{Application description and relevance}
 
 Computational modeling of liver tissues requires handling several spatial scales, as well as the interplay of both fluid and solid phases at various levels.
-However, numerical handling at the smallest scales is unfeasible due to the extreme computational costs associated with discretizations.
+However, applying traditional numerical methods at the smallest scales is unfeasible due to the extreme computational costs associated with discretizations.
 
 Effective (homogenized) tissue models can be successfully used to describe macroscale properties of the liver.
 However, in selected applications, understanding the tight coupling between fluid and solid components of a vascular tissue has relevant implications in the field of medical imaging and diagnosis.
@@ -715,17 +721,17 @@ The resulting model is being integrated into the open-source HPC dealii-X framew
 
 The computational model is built on deal.II, and on the implementation of reduced Lagrange multipliers for multidimensional PDEs. An efficient approach for handling the multiple scales of the problem --- fluid flow in the vasculature and elastodynamics in the tissue --- is necessary to handle large-scale problems.
 
-The reduced Lagrange multipliers approach formulates the weak coupled (fluid-structure) problem in a weak Lagrange multiplier fashion, applying then a model order reduction based on the properties of the relevant physics (i.e., the approximation that flow can be described by one-dimensional Navier-Stokes equations). The work in WP2.4 focused on the application of this framework to multiscale elasticity.
+The reduced Lagrange multipliers approach formulates the weakly coupled (fluid-structure interaction) problem in a weak Lagrange multiplier fashion, applying then a model order reduction based on the properties of the relevant physics (i.e., the approximation that flow can be described by one-dimensional Navier-Stokes equations). The work in WP2.4 focused on the application of this framework to multiscale elasticity.
 
-The reduced Lagrange multiplier model extends the previously state--of--the--art multiscale models to the case of Dirichlet boundary conditions enforced at the vessel-tissue boundaries. This condition is necessary to handle the coupling with pulsatile vasculature. To this purpose, a non-standard interface condition has been considered, which removes macroscopic motion (translational and rotational) and only enforces the coupling at the level of local normal displacement of the vessel. The mathematical framework of this model provides the right structure for selecting the proper reduced-order space, and extending these results, we proved well-posedness at the continuous level of the new formulation. The model has been used to perform in silico experiments relating the properties of the microstructure to the effective elastic parameters of a tissue sample. These experiments represent the first step towards the formulation of an inverse problem for the parametrization of effective liver samples. Results have been submitted for publication to the International Journal of Numerical Methods for Biomedical Engineering~\cite{belponer2025}.
+The reduced Lagrange multiplier model extends the previously state-of-the-art multiscale models to the case of Dirichlet boundary conditions enforced at the vessel-tissue boundaries. This condition is necessary to handle the coupling with pulsatile vasculature. For this purpose, a non-standard interface condition has been considered, which removes macroscopic motion (translational and rotational) and only enforces the coupling at the level of local normal displacement of the vessel. The mathematical framework of this model provides the right structure for selecting the proper reduced-order space, and extending these results, we proved well-posedness at the continuous level of the new formulation. The model has been used to perform in silico experiments relating the properties of the microstructure to the effective elastic parameters of a tissue sample. These experiments represent the first step towards the formulation of an inverse problem for the parametrization of effective liver samples. Results have been submitted for publication to the International Journal of Numerical Methods for Biomedical Engineering~\cite{belponer2025}.
 
-Following the development of the model, current work is considering the coupling with an active one-dimensional model for the blood flow, extending previous models. The coupling is implemented, representing the one-dimensional network (described by nodes and edges) within the three-dimensional domain as a discrete set of singular points, on which a normal displacement is imposed on the tissue, based on the vessel pulsation. The resulting tissue pressure is, in turn, considered as an external force in the blood flow model. The coupling was first implemented in a staggered fashion, performing preliminary investigations on the stability of the model. A monolithic implementation is under development.
+Following the development of the model, current work is considering the coupling with an active one-dimensional model for the blood flow, extending previous models. The one-dimensional network (described by nodes and edges) is represented within the three-dimensional domain as a discrete set of singular points, on which a normal displacement is imposed on the tissue, based on the vessel pulsation. The resulting tissue pressure is, in turn, considered as an external force in the blood flow model. The coupling was first implemented in a staggered fashion, performing preliminary investigations on the stability of the model. A monolithic implementation is under development.
 
 The upcoming work will focus on the generation of realistic vasculatures using physiological parameters specific for the liver, as well as the connection with data assimilation methods to integrate available data for model parametrization.
 
 
 \begin{thebibliography}{10}
-\bibitem{belponer2025} C. Belponer, A. Caiazzo, L. Heltai.: ``Mixed-dimensional modeling of vascular tissues with reduced Lagrange multipliers''. \emph{arXiv Preprint}, 2025, \href{https://arxiv.org/abs/2309.06797}{arXiv:2309.06797}
+\bibitem{belponer2025} C. Belponer, A. Caiazzo, L. Heltai: ``Mixed-dimensional modeling of vascular tissues with reduced Lagrange multipliers''. \emph{arXiv Preprint}, 2025, \href{https://arxiv.org/abs/2309.06797}{arXiv:2309.06797}
 \end{thebibliography}
 
 
@@ -757,7 +763,7 @@ The simulations started from an experimentally informed initial configuration of
 
 The network concentration reports the following result: Since the activation signal is applied within a fixed region surrounding the platelet in the current configuration, we observe a higher fibrin concentration near the platelet, with decreasing concentrations farther from the activation region.
 
-An Eulerian framework for solids suits well the goal of the dynamic creation and disassembly of networks. The Eulerian perspective is particularly effective in cellular motility, where signaling occurs in localized zones naturally described in the current configuration. Future work will focus on extending the current code, providing realistic mechanisms for the generation and development of the actin cytoskeleton using parameters specific to fibroblasts and potentially other cell types.
+An Eulerian framework for solids is a good fit for the goal of the dynamic creation and disassembly of networks. The Eulerian perspective is particularly effective in cellular motility, where signaling occurs in localized zones naturally described in the current configuration. Future work will focus on extending the current code, providing realistic mechanisms for the generation and development of the actin cytoskeleton using parameters specific to fibroblasts and potentially other cell types.
 
 
 \begin{thebibliography}{10}
@@ -773,12 +779,12 @@ One of the long-term goals of the dealii-X project is to develop key components 
 
 Currently, the typical workflow for a user of the dealii-X libraries to run a simulation starting from medical data involves the following steps:
 \begin{itemize}
-\item Convert a medical input data (e.g. MRI, X-ray scan, etc.) into a mesh using an appropriate software  
-\item Write a C++ program that models the physical process (the digital twin)
-\item Run the simulation on an HPC cluster
-\item Fetch the resulting data to a local machine
-\item Write/Use post-processing code to prepare the results for visualization
-\item Use an application to visualize the data
+\item Convert a medical input data (e.g. MRI, X-ray scan, etc.) into a mesh using an appropriate software;
+\item Write a C++ program that models the physical process (the digital twin);
+\item Run the simulation on an HPC cluster;
+\item Fetch the resulting data to a local machine;
+\item Write/Use post-processing code to prepare the results for visualization;
+\item Use an application to visualize the data.
 \end{itemize} 
 The flow described above is rather complex, and generally not suitable for a non-expert user. The goal of the PoC platform is to allow a user to perform all these steps in a single environment, while retaing the possibility of deep customization.
 
@@ -807,7 +813,7 @@ A minimal set of entities and a control loop that allow the creation of an objec
 
 Each of these entities can be represented as a node in a graph, with inputs and outputs. The graph is then traversed in a way that is consistent with the logic of the programming language. To specify the order of the operation, special connectors on the node are used, and special edges are displayed to distinguish instruction flow from arguments. The object works in the same way, but member function nodes can be attached to the object instance node, and the output of the function can then be passed to other nodes.
 
-The power of node-based programming is two--fold. On one side, it allows for creating complex operations without knowing the details of a specific programming language. On the other side, it allows for encapsulating a collection of nodes into a single node that can be reused in other parts of the program. These hierarchical features unleash the possibility of creating high-level entities that can be used by non-expert users. The latter is the key feature that links the low-code and no-code approach, allowing the creation of a single environment that can be used by both expert and non-expert users.
+The power of node-based programming is two-fold. On one side, it allows for creating complex operations without knowing the details of a specific programming language. On the other side, it allows for encapsulating a collection of nodes into a single node that can be reused in other parts of the program. These hierarchical features unleash the possibility of creating high-level entities that can be used by non-expert users. The latter is the key feature that links the low-code and no-code approach, allowing the creation of a single environment that can be used by both expert and non-expert users.
 
 Moreover, the node-based approach naturally leads to the definition of a computational graph that can be used to optimize the execution of the program: By analyzing the graph, it is possible to determine which parts of it can be executed concurrently, which allows a potential second layer of parallelization on top of the one that is already present in the libraries. Operatively, we are currently investigating the use of the taskflow library (\href{https://github.com/taskflow/taskflow}{https://github.com/taskflow/taskflow/}) to implement graph analysis and node scheduling.   
 
@@ -829,9 +835,9 @@ The client acts as a starting point for every new project. Every new computation
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Advance ExaDG simulations of alveolar geometries to study elastodynamics under surface tension, integrate surfactant formulations, and develop efficient multigrid-based solvers for thin-walled structures.
 
-\item Continue transition of life-x from matrix-based to matrix-free methods, enabling high-order discretizations and GPU acceleration; introduce tailored multigrid preconditioners; and progressively extend the infrastructure to multiphysics models such as muscular contraction, electromechanics, and poromechanics.
+\item Continue transition of \texttt{lifex} from matrix-based to matrix-free methods, enabling high-order discretizations and GPU acceleration; introduce tailored multigrid preconditioners; and progressively extend the infrastructure to multiphysics models such as muscular contraction, electromechanics, and poromechanics.
 
-\item Develop exascale-ready simulations of brain mechanics, supporting high-resolution modeling of complex geometries for clinical and research applications.
+\item Develop exascale-ready simulations of brain mechanics, supporting high-reso\-lution modeling of complex geometries for clinical and research applications.
 
 \item Generate physiologically realistic vasculature models, integrate data assimilation for parameterization, and explore the relationship between tissue mechanics and microscale vascular fluid dynamics.
 
@@ -843,7 +849,7 @@ The client acts as a starting point for every new project. Every new computation
 
 \newpage
 
-\section{{Co-Design, Technology Exploitation, and Energy Efficiency(WP3)}}
+\section{{Co-Design, Technology Exploitation, and Energy Efficiency (WP3)}}
 \label{sec:wp3_codesign}
 
 \subsection{Objectives}
@@ -873,23 +879,25 @@ The subset we have focused on so far are,
 \item BK3: scalar PCG with stiffness matrix, $q = p+1$
 \item BK5: scalar PCG with stiffness matrix, $q = p+2$
 \end{itemize}
-The benchmark kernels form the algorithm core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
+The benchmark kernels form the algorithmic core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
 
-The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}} and 3) using the CUDA Driver API. We note the deal.II library currently bases the portable kernels on Kokkos, and the investigations presented in this report have the objective of providing insight into the behavior of the methods on modern hardware. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e., the assignment of degrees-of-freedom and quadrature points to GPU threads.
+The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}, retrieved on 30 Sept 2025.} and 3) using the CUDA Driver API. We note that the deal.II library currently bases the portable kernels on Kokkos, and the investigations presented in this report have the objective of providing insight into the behavior of the methods on modern hardware. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e., the assignment of degrees-of-freedom and quadrature points to GPU threads and associated strategies for the use of shared memory on the GPU.
 
 In order to obtain a wider impression of GPU programming models available we have also created variants using OpenCL, OpenMP target offloading and a variant for the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
 
 Below, we briefly mention the architecture systems and performance results achieved, and refer to Deliverable D3.2 ``Co-Design and Energy Efficiency Report I'' for more details.
 
+\pagebreak
+
 \noindent\textbf{Kokkos and CUDA Performance Results}
 
 {\bf BK1.} Early performance results for the different test cases are evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: CUDA for testcase 1 and Kokkos for testcase 2. 
 
-The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior, rooted in a first-order polynomial, is configured with 27 threads per block. This leads to under-utilization of the warp (size 32) on the target hardware. The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead.
+The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior has a mathematical reason and an execution-related reason, both rooted in the first-order polynomial space with 8 degrees of freedom per element. Since the number of quadrature points is fixed at $p+2$, the resulting number of quadrature points 27 leads to a higher work when related to each unknown, compared to higher values of the degree $p$. Furthermore, the fact that the work is mapped to a GPU with 27 threads per block leads to under-utilization of the warp (size 32) on the target hardware. The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead with properly designed algorithms. Note that the Kokkos abstraction contained in deal.II release 9.7 (see above) uses additional abstractions, which also reduce the performance considerably below our measurements in the specific benchmark kernels. Therefore, the integration of new kernels into deal.II will carefully assess the performance ceilings established in this benchmark.
 
 {\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
 
-Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute, and, in these measurements, both CUDA and Kokkos executions showed identical performance. The corresponding arithmetic intensity was found to lead to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor.
+Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute, and, in these measurements, both CUDA and Kokkos executions showed identical performance. The corresponding arithmetic intensity was found to lead to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor besides the memory access.
 
 Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations deliver near-optimal performance on the H100, efficiently exploiting available memory bandwidth and achieving performance levels very close to the hardware limits.
 
@@ -901,7 +909,7 @@ For experimentation across a wider array of potential accelerator devices, the C
 
 Since its introduction in OpenMP 4.5, offloading has become an integral component of this directive-based parallel programming framework. Adding OpenMP directives for offloading to an existing code can be quite straightforward, assuming the right data structures and loop patterns are already in place. When using OpenMP for GPU offloading, it is important to distinguish between two categories of directives for memory movement and work sharing.
 
-Similar to other GPU programming models, OpenMP offers fine-grained control over the hierarchical parallelism in terms of teams and threads. These are reflected by the two directives, `omp teams' which replicates execution across a league of teams and `omp parallel' which replicates execution across threads of a team.  The two directives can also be used to program in a SPMD-like mode (also called ``me'' mode). Typically, however, the directives are combined with work-sharing constructs like `distribute' and `for' which control the parallelization of (nested) loops. A very useful work-sharing construct is the `[teams] loop` directive, which provides  a descriptive form of parallelism in contrast to other prescriptive directives. With the `target [teams] loop' directive, the precise distribution of the loop iteration space across teams and threads is left to the compiler. This kind of descriptiveness can provide superior performance portability, assuming the compiler succeeds in auto-parallelizing the loop well.
+Similar to other GPU programming models, OpenMP offers fine-grained control over the hierarchical parallelism in terms of teams and threads. These are reflected by the two directives, `\texttt{omp teams}' which replicates execution across a league of teams and `\texttt{omp parallel}' which replicates execution across threads of a team.  The two directives can also be used to program in a SPMD-like mode (also called ``me'' mode). Typically, however, the directives are combined with work-sharing constructs like `\texttt{distribute}' and `\texttt{for}' which control the parallelization of (nested) loops. A very useful work-sharing construct is the `\texttt{[teams] loop}` directive, which provides  a descriptive form of parallelism in contrast to other prescriptive directives. With the `\texttt{target [teams] loop}' directive, the precise distribution of the loop iteration space across teams and threads is left to the compiler. This kind of descriptiveness can provide superior performance portability, assuming the compiler succeeds in auto-parallelizing the loop well.
 
 \noindent\textbf{Tiny Tensor Compiler}
 
@@ -909,7 +917,7 @@ The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by
 
 Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language, we present the BK1 kernel using an algorithm, where each tensor product is implemented using the loop over GEMM approach. For simplicity, the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage. As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. The kernel shown above achieved 10 GDoF/s on the Intel Ponte Vecchio GPU, roughly one quarter of the performance we observed using OpenMP. One of several possible optimizations to obtain larger GEMMs with a more favourable operation count is fusing dimensions.
 
-Other GEMM steps can be fused in a similar manner, however this only delivered a few percent improvement. Upon consultation with the TinyTC author it became apparent a different strategy would be needed to obtain performant execution and optimal SIMD utilization of the PVC architecture.
+Other GEMM steps can be fused in a similar manner, however this only delivered a few percent improvement. Upon consultation with the TinyTC author it became apparent that a different strategy would be needed to obtain performant execution and optimal SIMD utilization of the PVC architecture.
 In collaboration with Intel, we are currently investigating the application of index fusion, batch vectorization and memory layout transformations to guarantee optimal register and SIMD usage.
 
 
@@ -922,9 +930,9 @@ Previous research in the case of the conjugate gradient method shows that above 
 Streaming kernels capture a second important group of low-intensity operations, where memory movement is dominant.
 The kernels generally take one or two long vectors as arguments. The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). The fifth kernel is the fused conjugate gradient update that involves the combination of a scaled sum and norm of a residual vector in a single sweep. The last two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom associated with a given finite element mesh into a linear vector. The gather and scatter kernels are tied to a particular mesh and finite element space, requiring more extensive driver setup, and they are planned for future work. 
 
-As an initial step toward the performance characterization and modelling of streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS \footnote{BLIS, \url{https://github.com/flame/blis}}. In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
+As an initial step toward the performance characterization and modelling of the relevant streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}, retrieved on 30 Sept 2025.} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS.\footnote{BLIS, \url{https://github.com/flame/blis}, retrieved on 30 Sept 2025.} In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
 
-Our pleminary work has been concerned about studying the bandwidth scaling with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU. We observed the expected saturating behavior: The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s), while the BS3 kernel was able to reach almost 450 GB/s --- a value close to the maximum memory bandwidth (467 GB/s). In the case of BS2 and BS5, the saturated regime was reached with only 20 out of 72 cores. Similar saturating behavior was observed for the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth. A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation. This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs.
+Our preleminary work has been concerned about studying the bandwidth scaling with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU. We observed the expected saturating behavior: The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s), while the BS3 kernel was able to reach almost 450 GB/s --- a value close to the maximum memory bandwidth (467 GB/s). In the case of BS2 and BS5, the saturated regime was reached with only 20 out of 72 cores. Similar saturating behavior was observed for the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth. A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation. This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs.
 
 Overall, our initial results confirm that the proposed streaming kernels are able to expose memory bandwidth behavior consistently across different architectures, demonstrating their usefulness as a lightweight proxy for iterative solver workloads.  The observed saturation patterns highlight the importance of systematic performance characterization. In the next stage, we aim to extend the benchmarking to a broader set of CPUs and GPUs and integrate the results into predictive performance models for matrix-free iterative solvers.
 
@@ -932,16 +940,16 @@ Overall, our initial results confirm that the proposed streaming kernels are abl
 
 \subsubsection*{Energy Efficiency}
 
-The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by \cite{Cielo25} in a case study of an astrophysical simulation, accelerators can deliver a 5–10× improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
+The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by \cite{Cielo25} in a case study of an astrophysical simulation, accelerators can deliver a 5–10$\times$ improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
 
 Maximizing these benefits requires energy-aware practices from both HPC practitioners and application developers. Since power and energy usage vary across devices, workloads, and runtime conditions, precise modeling is difficult, making empirical measurement essential. System-level monitoring frameworks such as Intel’s RAPL, AMD uProf, NVIDIA’s NVML, or Arm’s Streamline provide access to hardware counters, while job- and process-level tools such as the Energy Aware Runtime, perf, likwid-powermeter, and PAPI enable finer-grained insights. For kernel-level breakdowns, vendor tools like NVIDIA Nsight or Intel VTune are available, but they often involve heavy instrumentation and vendor lock-in. In practice, lightweight and portable solutions remain highly attractive.
 
-To this end, \cite{Cielo25} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
+To this end, our work \cite{Cielo25} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
 
 In the remaining period of this work package, we plan to adopt this strategy to measure the energy usage of the core algorithmic kernels and gain an overview of their power behavior. Although we have not yet carried out such experiments, we take inspiration from a recent presentation by S. Cielo (LRZ), who demonstrated the benefits of these techniques, and we intend to implement them as part of our future performance and energy-efficiency evaluations.
 
 \begin{thebibliography}{10}
-\bibitem{Cielo25} S. Cielo, A. P\"oppl, I. Pribec.: `` {SYCL} for energy-efficient numerical astrophysics: the case of {DPE}cho.''. \emph{arXiv Preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2508.14117}{arXiv:2508.14117}
+\bibitem{Cielo25} S. Cielo, A. P\"oppl, I. Pribec: `` {SYCL} for energy-efficient numerical astrophysics: the case of {DPE}cho.''. \emph{arXiv Preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2508.14117}{arXiv:2508.14117}
 \end{thebibliography}
 
 \subsection{Connection to Other CoEs}
@@ -950,7 +958,7 @@ The dealii-X project has actively engaged with CASTIEL2 to foster collaboration 
 
 The consortium has actively participated in PMT-CoE leader meetings, joint workshops, and Kokkos programming sessions to align strategies and share best practices across CoEs. Collaboration on continuous integration and deployment (CI/CD) has been initiated through the European Environment for Scientific Software Installations (EESSI), enabling multi-system deployment of dealii-X’s three core codes: deal.II, PSCToolkit, and MUMPS.
 
-To strengthen knowledge transfer and community engagement, dealii-X will participate in the NCC-CoE all-hands meeting in Tallinn, Estonia (September 2025) and has planned an online seminar series to showcase research outcomes and invite guest speakers from other CoEs. The first dealii-X Research School is scheduled for December 2025 in Trieste, focusing on hands-on HPC training, co-design methodologies, and accelerator programming. These activities ensure that dealii-X remains closely connected to the European HPC ecosystem and actively contributes to its development.
+To strengthen knowledge transfer and community engagement, dealii-X has participated in the NCC-CoE all-hands meeting in Tallinn, Estonia (September 2025) and has planned an online seminar series to showcase research outcomes and invite guest speakers from other CoEs. The first dealii-X Research School is scheduled for December 2025 in Trieste, focusing on hands-on HPC training, co-design methodologies, and accelerator programming. These activities ensure that dealii-X remains closely connected to the European HPC ecosystem and actively contributes to its development.
 
 
 \subsection{Next Steps} %(M13–M27)
@@ -1004,7 +1012,7 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item A comprehensive Communication and Dissemination Strategy was developed and approved in M4.
-\item Stakeholder mapping was carried out, identifying six primary target groups: clinicians, ICT researchers, industry, regulators, patients, policymakers/public.
+\item A stakeholder mapping was carried out, identifying six primary target groups: clinicians, ICT researchers, industry, regulators, patients, policymakers/public.
 \item A full visual identity was created, including project logo, templates, infographics, and EU acknowledgement banner.
 \item Communication channels established:
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
@@ -1020,7 +1028,7 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item There has been a strong presence of the project partners at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
 \item deal.II was presented by the dealii-X consortium as the “Code of the Month” by CASTIEL2, highlighting its impact and relevance within the European HPC ecosystem. 
-\item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
+\item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.~Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
 \item The dissemination events partecipated by the dealii-X consortium were promoted via project's social media channels. 
 \item Dissemination was supported via VPH and partner institutional channels (websites, newsletters, social media).
 \end{itemize}
@@ -1059,7 +1067,7 @@ Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the
 \item Social media growth: $\sim$200 followers on LinkedIn; reach of $\sim$25,000 impressions to date, with steady monthly growth.
 \item Data management: Data Management Plan submitted (M6); 100\% of partners consulted in its preparation. Initial data formats and repositories aligned with FAIR principles.
 \item Exploitation: Initial Table of Exploitable Results submitted (M6), with 20 identified results covering software, workflows, and training resources.
-\item The 2025 SIAM/ACM Prize in Computational Science and Engineering was awarded to the principal authors (among whom are the dealii-X PCs M. Kronbichler and L. Heltai) of the deal.II Project in recognition of their contributions to finite element calculations.
+\item The 2025 SIAM/ACM Prize in Computational Science and Engineering was awarded to the principal authors (among whom are the dealii-X PCs M. Kron\-bichler and L. Heltai) of the deal.II Project in recognition of their contributions to finite element calculations.
 \item deal.II was presented by the dealii-X consortium within CASTIEL2's series ``Code of the Month'', highlighting its impact and relevance within the European HPC ecosystem. 
 \item Dissemination: Strong presence at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
 \end{itemize}
@@ -1109,7 +1117,7 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 
 \paragraph{WP5.2: Communication} % (Lead: RUB)}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item PMT acts as the interface between the consortium and the EC, preparing periodic and midterm reports (M12, M22) for submission.
+\item The project management team (PMT) acts as the interface between the consortium and the EC, preparing periodic and midterm reports (M12, M22) for submission.
 \item Internal communication channels established, including mailing lists, collaborative platforms, and a secure workspace for sharing project information, deliverables, and meeting minutes.
 \item Coordination with WP4 to align communication and dissemination activities.
 \end{itemize}
