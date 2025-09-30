@@ -31,7 +31,7 @@
 		\tableEntry{Deliverable number}{D5.2}
 		\tableEntry{Deliverable version}{1.0}
 		\tableEntry{Date of delivery}{30 September 2025}
-		\tableEntry{Actual date of delivery}{[Actual date]}
+		\tableEntry{Actual date of delivery}{30 September 2025}
 		\tableEntry{Nature of deliverable}{Report}
 		\tableEntry{Dissemination level}{Public}
 		\tableEntry{Work Package}{WP5}
@@ -40,8 +40,8 @@
 	
 	% Abstract and Keywords Section
 	\begin{deliverableTable}
-		\tableEntry{Abstract}{This report summarizes M1–M12 project progress, highlighting advances in scalable numerical methods, multiphysics biomedical applications, and exascale computing, as well as key outcomes in project management, communication, and exploitation activities.}
-		\tableEntry{Keywords}{progress report; exascale computing; biomedical simulations;  management; dissemination; exploitation  }
+		\tableEntry{Abstract}{This report summarizes the project progress in M1--M12, highlighting advances in scalable numerical methods, multiphysics biomedical applications, and exascale computing, as well as key outcomes in project management, communication, and exploitation activities.}
+		\tableEntry{Keywords}{progress report; exascale computing; finite element method; biomedical simulations;  management; dissemination; exploitation  }
 	\end{deliverableTable}
 	
 	\newpage
@@ -50,14 +50,14 @@
 		\addVersion{0.1}{5.09.2025}{I. Prusak}{Initial draft}
 		\addVersion{0.2}{9.09.2025}{G. Stanic}{Communication and Dissemination sections}
 		\addVersion{0.3}{16.09.2025}{I. Prusak}{Integration of partners' contribution}
-		\addVersion{0.4}{18.09.205}{dealii-X Consortium}{Consortium revision} 
-		\addVersion{0.5}{22.09.205}{I. Prusak, R. Schussnig}{Revision adjustments} 
-		\addVersion{1.0}{[Date]}{[Author name]}{Final version}
+		\addVersion{0.4}{18.09.2025}{dealii-X Consortium}{Consortium revision} 
+		\addVersion{0.5}{22.09.2025}{I. Prusak, R. Schussnig}{Revision adjustments} 
+		\addVersion{1.0}{30.09.2025}{M. Kronbichler}{Final version}
 	\end{documentControl}
 	
 	\subsection*{{Approval Details}}
-	Approved by: [Name] \\
-	Approval Date: [Date]
+	Approved by: Martin Kronbichler \\
+	Approval Date: 30 September 2025
 	
 	\subsection*{{Distribution List}}
 	\begin{itemize}
@@ -82,13 +82,13 @@
 	
 	\subsection{Purpose of the Document}
 	
-	This document provides an overview of the project’s activities, achievements, and challenges during the reporting period M1–M12. Its main purpose is to give a clear and comprehensive account of the work carried out, highlighting both scientific and technical progress as well as management, communication, and exploitation efforts. 
+	This document provides an overview of the dealii-X project activities, achievements, and challenges during the reporting period M1–M12. Its main purpose is to give a clear and comprehensive account of the work carried out, highlighting both scientific and technical progress as well as management, communication, and exploitation efforts. 
 	
-	The report covers progress in developing an exascale framework for digital twins of the human body. It details advances in scalable numerical methods, high--perfor\-mance computing strategies, and multiphysics biomedical applications. These technical developments are accompanied by efforts to ensure the reliability, efficiency, and usability of the software, which form the foundation for future scientific and clinical applications.
+	The report covers progress in developing an exascale framework for digital twins of the human body. It details advances in scalable numerical methods, high-perfor\-mance computing strategies, and multiphysics biomedical applications. These technical developments are accompanied by efforts to ensure the reliability, efficiency, and usability of the software, which form the foundation for future scientific and clinical applications.
 	
-	In addition to the scientific and technical aspects, this document also reports on project management, communication, and exploitation activities. This includes coordination between partners, dissemination of results to the wider scientific community, and strategies to promote uptake and impact of the project’s outputs. By integrating these different dimensions, the report not only documents achievements but also provides context for planning the next steps and setting priorities for the upcoming phases of the project.
+	In addition to the scientific and technical aspects, this document also reports on project management, communication, and exploitation activities. This includes coordination between partners, dissemination of results to the wider scientific community, and strategies to promote uptake and impact of the outputs of the project. By integrating these different dimensions, the report not only documents achievements but also provides context for planning the next steps and setting priorities for the upcoming phases of the project.
 	
-	Overall, this report serves as both a record of past activities and a guide for future work, helping to maintain transparency, accountability, and alignment with the project’s overarching goals.
+	Overall, this report serves as both a record of past activities and a guide for future work, helping to maintain transparency, accountability, and alignment with the overarching project goals.
 	
 	
 	
@@ -97,7 +97,7 @@
 	\begin{itemize}
 		\item Section \ref{sec:wp1_dealii}: dealii-X exascale building blocks and support tools (WP1)
 		\item Section \ref{sec:wp2_applications}: dealii-X lighthouse Applications for Digital Twins of the Human Body (WP2)
-		\item Section \ref{sec:wp3_codesign}: Co-Design, Technology Exploitation, and Energy Efficiency(WP3)
+		\item Section \ref{sec:wp3_codesign}: Co-Design, Technology Exploitation, and Energy Efficiency (WP3)
 		\item Section \ref{sec:wp4_communication}: Dissemination, Communication, and Exploitation (WP4)
 		\item Section \ref{sec:wp5_management}: Project Management (WP5)
 	\end{itemize}
@@ -111,13 +111,14 @@
 	
 	The main objective of Work Package 1 (WP1) is to serve as the foundation
 	for the dealii-X Centre of Excellence by enhancing and expanding the
-	capabilities of the deal.II library to address the challenges of exascale
+	capabilities of the deal.II finite element library to address the challenges of exascale
 	computing and facilitate the creation of advanced digital twins of human
 	organs.
 	
 	The key steps of WP1 include:
 	\begin{itemize}
-		\item Extending and improving the exascale capabilities of deal.II;
+        \item Extending and improving the exascale capabilities for the main
+          algorithmic kernels of deal.II;
 		\item Improving pre-exascale modules of the deal.II library;
 		\item Developing an experimental polygonal discretization module for deal.II;
 		\item Integrating PSCToolkit within deal.II;
@@ -126,14 +127,16 @@
 	
 	Specifically, the sub-work packages aim to:
 	\begin{itemize}
-		\item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free computational methods optimized for GPU architectures and enhance the scalability of solvers;
+        \item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free algorithms for
+          finite element problems on complicated geometries optimized for GPU
+          architectures and enhance the scalability of solvers;
 		\item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators, enhance reduced order modeling capabilities, integrate low-rank approximation methods, and develop block preconditioners;
 		\item \textbf{WP1.3 (Lead SISSA)}: Introduce and parallelize polygonal discretization methods within deal.II and develop related multigrid techniques;
 		\item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into deal.II, leveraging GPU computing and developing efficient preconditioners for multiphysics problems;
 		\item \textbf{WP1.5 (Lead INPT)}: Integrate the MUMPS solver directly into deal.II for use in multigrid methods and explore low-rank and mixed-precision techniques;
 	\end{itemize}
 	
-	In summary, WP1 is dedicated to developing and integrating fundamental software components within the deal.II library and external libraries, with a strong emphasis on enabling exascale computation for the digital twin applications in WP2.
+	In summary, WP1 is dedicated to developing and integrating advanced algorithms and fundamental software components within the deal.II library and external libraries, with a strong emphasis on enabling exascale compute capabilities for the digital twin applications in WP2.
 	
 	\subsection{Progress Achieved in Year 1} %(M1–M12)
 	
@@ -141,7 +144,7 @@
 	
 	The 9.7 release of deal.II~\cite{deal.II.9.7} has introduced several improvements directly aligned
 	with WP1.1 on GPU-enabled matrix-free solvers and exascale readiness.  
-	Key advances concern the matrix-free infrastructure, which was extended with:
+	Key advances concern the matrix-free infrastructure, where several extensions were made:
 	
 	
 	\begin{itemize}
@@ -149,34 +152,42 @@
 		matrix-free evaluation routines for the Kokkos-based portable branch. This substantially broadens the class
 		of multiphysics applications (e.g.\ poromechanics in brain and liver)
 		that can be ported to GPUs efficiently.
-		\item Portability layer \texttt{Portable::MatrixFree} built on top of
+		\item Extensions to the hardware portability layer \texttt{Portable::MatrixFree} built on top of
 		\texttt{kokkos}, ensuring code can target NVIDIA, AMD, and Intel GPUs with the
 		same interface. The release consolidates temporary storage structures
 		into new \texttt{DeviceVector} and \texttt{DeviceBlockVector} classes,
 		simplifying GPU memory management.
-		\item Performance optimizations to sum factorization kernels, yielding
-		measurable speedups especially on NVIDIA A100/H100 hardware.
+              \item Performance optimizations to sum factorization kernels and
+                the quadrature point operations in matrix-free methods and
+                matrix assembly routines, yielding measurable speedups
+                especially on NVIDIA A100/H100 hardware.
 		\item Extended ghost cell handling and lexicographic patch smoothers for
 		geometric multigrid preconditioners, crucial to scaling implicit solvers
 		to $10^{11}$-$10^{12}$ DoFs on EuroHPC machines.
 	\end{itemize}
 	
-	In addition, new solver strategies were enabled by the\\
-	\texttt{TensorProductMatrixCreator} for diagonalization-based inverses,
+	In addition, the project consortium managed the development of new solver strategies enabled by the
+	\texttt{TensorProductMatrixCreator} for inverses based on the fast diagonalization method,
 	applicable in the context of multigrid smoothers and coarse solvers.
-	These improvements directly support the objective of saturating node-level
-	bandwidth on GPUs and minimizing data transfer overheads, as required for
+	These improvements directly support the objective of increased work load on the nodel level, such as saturating memory
+	bandwidth or higher arithmetic load, and thus minimize data transfer overheads, which is important to effective use GPU architectures as required for
 	exascale digital twin workloads.
 	
 	Ongoing developments for the matrix-free kernels, in particular node-level
 	experiments for various GPU vendors, optimization of Kokkos-based and
 	CUDA-based algorithms as well as energy efficiency improvements have also been
-	made in the past few months. These contributions are described in more detail,
+	made in the past months. These contributions are described in more detail,
 	along with an extensive evaluation of performance, in the report on
 	deliverable D3.2: ``Co-Design and Efficiency Report I''.
 	
 	\begin{thebibliography}{10}
-		\bibitem{deal.II.9.7} D. Arndt et al. ``The deal.II Library, Version 9.7'', \emph{Preprint}, 2025. \url{https://dealii.org/deal97-preprint.pdf}
+        \bibitem{deal.II.9.7} D. Arndt, W. Bangerth, M. Bergbauer, B. Blais,
+          M. Fehling, R. Gassmöller, T. Heister, L. Heltai, M. Kronbichler,
+          M. Maier, P. Munch, S. Scheuerman, B. Turcksin, S. Uzunbajakau,
+          D. Wells, M. Wichrowski: ``The deal.II Library, Version 9.7''.
+          \emph{Journal of Numerical Mathematics}, 2025.
+          \href{https://doi.org/10.1515/jnma-2025-0115}{doi:10.1515/jnma-2025-0115},
+          preprint: \url{https://dealii.org/deal97-preprint.pdf}
 	\end{thebibliography}
 	
 	
@@ -190,7 +201,9 @@ The activities of the group at RUB can be summarized as follows:
 \begin{itemize}
 	% \item Extension of matrix-free implementations for modern GPUs in deal.II, including testing and performance evaluation through CEED benchmarks.
 	\item Benchmarks to assess the current performance of the core components.
-	\item Exascale readiness of Raviart--Thomas finite element algorithms for high--performance computing.
+	\item Exascale readiness of matrix-free operator evaluation for
+          Raviart--Thomas finite element discretizations of incompressible
+          fluid flow (Darcy, Navier--Stokes) for high--performance computing.
 	\item Restart capabilities in application solver ExaDG.
 	\item Initial setup of a domain decomposition infrastructure in the deal.II library to establish additional solver paradigms for the exascale era.
 \end{itemize}
@@ -201,7 +214,11 @@ The activities of the group at RUB can be summarized as follows:
 
 The current status of the implementation focuses on element--wise communication--free algorithms such as mass and stiffness matrix operators. 
 
-Implementations are available in the \url{https://github.com/dealii-X/benchmarks} repository. A brief overview of the kernels is provided below:
+Implementations are available in the
+\url{https://github.com/dealii-X/benchmarks} repository, which are based on
+benchmark definitions from the US Center of Efficient Exascale Discretizations
+(CEED)\footnote{\url{https://ceed.exascaleproject.org/bps/}} and previous work by Kronbichler and co-workers. A brief overview of
+the kernels is provided below:
 \begin{itemize}
 	\item Bake-off Kernel 1 (BK1) for mass-matrix operator with a Gauss--Legendre quadrature formula involving $p+2$ points per coordinate direction for polynomial degree $p$.
 	\item Bake-off Kernel 5 (BK5) for the stiffness-matrix operator on Gauss--Lobatto--Legendre quadrature points, utilizing the collocation of nodal points of the unlderlying Lagrange basis with the points of quadrature.
@@ -213,13 +230,31 @@ and LRZ partners. More detailed preliminary results and implementation details a
 
 \noindent\textbf{Raviart--Thomas finite elements}
 
-Another string of activities is centered around the application-readiness of Raviart--Thomas elements, where future requirements and potential improvement opportunities are investigated with the ExaDG application code pioneering the use of Raviart-Thomas elements for high-Reynolds incompressible flow problems in a matrix-free setting based on deal.II.
+Another string of activities is centered around the application-readiness of
+Raviart--Thomas elements in the context of challenging flow problems. While
+the beneficial mathematical properties of these elements are well-established
+in the field of numerical analysis, efficient implementations on large scales
+have previously not been available. Future requirements and potential
+improvement opportunities are investigated with the ExaDG application code.
+Hence, the consortium takes a pioneering role for enabling the use of
+Raviart-Thomas elements for high-Reynolds incompressible flow problems in a
+matrix-free setting based on deal.II.
 
-This will also require some debugging in the deal.II implementation of the Raviart--Thomas elements, as these code paths are quite new and have not been extensively used by the community yet due to the fact that the use of Raviart--Thomas elements has significantly increased in the last years. Currently, the time integration and matrix-free solver capabilities in ExaDG have been extended, and further testing regarding the performance will be executed in the near future on the JUPITER system.
+This will also require some debugging in the deal.II implementation of the
+Raviart--Thomas elements. Since these code paths are relatively new and have
+not been extensively tested by the community yet, several improvements are
+currently being made in terms of grids with elements in non-standard
+orientation (requiring additional measures in the Piola
+transformation). Currently, the time integration and matrix-free solver
+capabilities in deal.II-based codes (both standard-alone applications and in
+ExaDG) have been extended. As upcoming steps, GPU algorithms and further
+testing regarding the performance will be executed in the near future on the
+JUPITER system.
 
 \noindent\textbf{Restart capabilities}
 
-To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal re-usability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the startup phase. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
+To reduce simulation costs for large-scale flow problems, the restarting capabilities of ExaDG have also been extended, while the general setup and software design have been kept general, solely based on deal.II data structures for maximal re-usability. The main goal here is to allow for matrix-free mesh-to-mesh projection, such that performance studies of various solver settings and performance tuning can start from a precursor run to face the target physics directly without the need for recomputing the phase that leads to fully generated turbulence in a statistical steady-state. This has been realized in a general setting, splitting off the grid-to-grid projection aspect and the changes with respect to the time integrators within ExaDG. Hence, this code can be easily transferred to other codes as the required routines are based solely on deal.II. This naturally allows considering arbitrary physics and discretizations, various finite elements (polynomial degree, cell type, continuity, etc.), or non-matching grids.
+As a follow-up step, we plan to also integrate matrix-free interpolation and projection techniques into the transfer facilities of the \texttt{SolutionTransfer} class in deal.II, which is used to transfer finite element solutions in the process of dynamic adaptivity.
 
 
 
@@ -227,7 +262,7 @@ To reduce simulation costs for large-scale flow problems, the restarting capabil
 
 Work package 1.2 focuses on enhancing the existing modules of the deal.II library to prepare them for the challenges of exascale computing. This includes several key activities: 
 \begin{itemize}
-\item Improving the gmsh API to support large-scale;
+\item Improving the gmsh API to support large-scale computations;
 \item Developing a generalized interface for coupling operators, which is fundamental for multiphysics and multiscale simulations, including methods for conforming and non-conforming grids and non-local coupling techniques;
 \item Enhancing the reduced-order modeling (ROM) capabilities of deal.II, implementing algorithms for data analysis and reduced-order geometric modeling;
 \item Integrating low-rank approximation methods within deal.II, including low-rank and hierarchical low-rank solvers and preconditioners to tackle large-scale computational problems;
@@ -242,9 +277,9 @@ computers.
 \noindent\textbf{Gmsh API for large-scale distributed meshes}
 
 A new reader for \emph{partitioned} Gmsh meshes into
-\texttt{parallel::fullydistributed::\\Triangulation} is under final review
-(\texttt{PR \#18759}). The interface supports 1D/2D/3D meshes produced with
-Gmsh's built-in partitioner and
+\texttt{parallel::fullydistributed::\\Triangulation} has been developed
+(\href{https://github.com/dealii/dealii/pull/18759}{\texttt{PR \#18759}}), with additional capabilities currently under final review (\href{https://github.com/dealii/dealii/pull/18874}{\texttt{PR \#18874}}). The interface supports 1D/2D/3D meshes produced with
+the built-in partitioner of Gmsh and
 automates vertex/cell connectivity and ghost handling across MPI ranks. This
 removes costly repartitioning inside deal.II and enables streamlined
 large-scale workflows for realistic organ geometries. The contribution is
@@ -258,9 +293,9 @@ The interface has been stabilized and exercised on non-matching couplings and fi
 
 A family of augmented-Lagrangian block preconditioners has been developed and
 analyzed for interface-constrained Poisson/Stokes problems arising from
-non-matching and fictitious-domain discretizations. Theory provides mesh-size
+non-matching and fictitious-domain discretizations. The mathematical theory provides mesh-size
 independent spectral bounds; numerics confirm low, essentially constant FGMRES
-iteration counts without exact block inverses (loose inner tolerances suffice).
+iteration counts without exact block inverses, where loose inner tolerances suffice.
 A distributed-memory implementation based on deal.II is maintained publicly, and
 a preprint is available on arXiv~\cite{ALprec}. Ongoing extensions target (i) elliptic
 interfaces with strong coefficient contrasts and (ii) fluid–struc\-ture
@@ -296,19 +331,19 @@ discretization module within the deal.II library. The deal.II library currently
 supports a wide range of finite element methods, defined on standard simplicial
 and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes.
 
-Planned activities include:
+The activities on this topic include:
 \begin{itemize}
-\item Develop data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes;
-\item Exploit  R-tree data structures for efficient generation of balanced and nested hierarchies of  polytopic meshes and test use of such hierarchies of  polytopic meshes to enhance multigrid solvers;
-\item Develop extensive library of examples of polytopic finite element methods for complex multiscale problems.  
+\item Develop a data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes;
+\item Exploit  R-tree data structures for efficient generation of balanced and nested hierarchies of  polytopic meshes and test the use of such hierarchies of  polytopic meshes to enhance multigrid solvers;
+\item Develop an extensive library of examples of polytopic finite element methods for complex multiscale problems.  
 \end{itemize}
 
 
-\noindent\textbf{Polydeal library}
+\noindent\textbf{The Polydeal library}
 
 The preliminary version of the polygonal discretization module developed within the first six months of the project was made available at \url{https://github.com/fdrmrc/Polydeal}.
-The module has since been extensively tested and parallelised. 
-Milestone M5 has been reached and deployed as deliverable D1.5 (cf. the specific report for more details). The milestone was set to establish the parallel implementation of polygonal discretization methods. The deliverable provides a tutorial program on polygonal discretizations, showcasing the implementation of these methods for the solution of a basic model problem. Aside from the tutorial, a series of problems and tests have been run, confirming the validity and robustness of the approach for the solution of problems in a dimension-independent setting. In particular, the polytopic discontinuous Galerkin methods have been implemented for the solution of a series of benchmark problems, including fluid mechanics and electrophysiology.
+The module has since been extensively tested and parallelized. 
+Milestone M5 has been reached and deployed as deliverable D1.5 (cf. the specific report for more details). The milestone was set to establish the parallel implementation of polygonal discretization methods. The deliverable provides a tutorial program on polygonal discretizations, showcasing the implementation of these methods for the solution of a basic model problem. Aside from the tutorial, a series of problems and tests have been run, confirming the validity and robustness of the approach for the solution of problems in a dimension-independent setting. In particular, polytopic discontinuous Galerkin methods have been implemented for the solution of a series of benchmark problems, including fluid mechanics and electrophysiology.
 
 \noindent\textbf{Data structure for efficient generation of balanced and nested hierarchies of  polytopic meshes}
 
@@ -327,7 +362,7 @@ and efficient agglomeration strategy with several key features:
 \item The process is fully automated, robust, and dimension-independent;
 \item It automatically generates a balanced and nested hierarchy of agglomerates. This is a crucial property for
 the subsequent application of multigrid methods;
-\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes and thus are characterized by good and easy to assess shape-regularity properties.
+\item The shape of the agglomerates is closely aligned with their axis-aligned bounding boxes. Thus, the method is characterized by good and easy-to-assess shape-regularity properties.
 \end{itemize}
 
 A fundamental aspect of this approach is the ability to automatically extract
@@ -336,14 +371,14 @@ multigrid solvers. This is particularly relevant for WP1.3, as one of its
 objectives is the development of agglomeration-based multigrid methods for
 single-physics problems. The R-tree based approach, named R3MG (R-tree based
 MultiGrid), is proposed as a multigrid preconditioning technique with
-Discontinuous Galerkin methods. The experiments presented in the article, based
-on polygonal Discontinuous Galerkin methods, confirm the effectiveness of the
+discontinuous Galerkin methods. The experiments presented in the article, based
+on polygonal discontinuous Galerkin methods, confirm the effectiveness of the
 approach in the context of complex three-dimensional geometries relevant to biomedical applications and in the
 design of geometric multigrid preconditioners, at least for model problems.
 
 Furthermore, the ``R3MG'' article highlights how the R-tree-based method preserves
 mesh quality and significantly reduces the computational cost associated with
-the agglomeration process, favorably comparing it with graph partitioning tools
+the agglomeration process, favorably comparing with graph partitioning tools
 like METIS. In particular, it is demonstrated that R-tree-based agglomeration
 preserves structured meshes, a property not shared by METIS. The ability to
 generate nested grid hierarchies through R-tree agglomeration simplifies the use
@@ -352,12 +387,12 @@ non-nested case. In summary, the ``R3MG'' article represents a significant
 contribution to the objective of WP1.3 to develop an experimental polygonal
 discretization module in deal.II, providing an efficient and automated
 methodology for generating R-tree based agglomerated polygonal grid hierarchies,
-specifically designed for application with Discontinuous Galerkin methods and
+specifically designed for application with discontinuous Galerkin methods and
 multigrid techniques.
 
 \noindent\textbf{Applications to fluid mechanics}
 
-The polytopic discontinuous Galerkin method has been extended to the solution of fluid mechanics boundary value problems with the analysis of the method for the solution of the Oseen problem. This required a new analysis which has been carried out for the $hp$-version of the method, hence permitting arbitrarily high-order implementations. Both stabilised equal order $(\mathcal{P}_k,\mathcal{P}_{k})$ and pressure lower-order $(\mathcal{P}_k,\mathcal{P}_{k-1})$ versions have been analysed. 
+The polytopic discontinuous Galerkin method has been extended to the solution of fluid mechanics boundary value problems with the analysis of the method for the solution of the Oseen problem. This required a new analysis which has been carried out for the $hp$-version of the method, hence permitting arbitrarily high-order implementations. Both stabilized equal order $(\mathcal{P}_k,\mathcal{P}_{k})$ and pressure lower-order $(\mathcal{P}_k,\mathcal{P}_{k-1})$ versions have been analyzed. 
 New working examples implementing the new method have been committed by the SISSA team within the examples suits of the {\em polydeal} repository \url{https://github.com/fdrmrc/Polydeal}. Preliminary results show that the polytopic discontinuous Galerkin (polyDG) is achieving the optimal convergence rate when applied to the Oseen problem. 
 
 A publication presenting both the new sharp a priori analysis of the discontinuous Galerkin method for the Oseen problem as well as numerical experiments validating the approach for the solution of the Oseen problem is under preparation. It will be submitted to a top numerical analysis journal within the next semester.
@@ -370,7 +405,7 @@ pp.1-23. \href{https://doi.org/10.1016/j.jcp.2025.113773}{doi:10.1016/j.jcp.2025
 
 \subsubsection*{WP1.4: Integration of PSCToolkit within deal.II} % (M1–M22, Lead: UNITOV)}
 
-The primary objective of WP1.4 is to integrate the PSCToolkit (Parallel Sparse Computing Toolkit) into the deal.II library. This integration aims to leverage GPU computing to enhance performance and develop efficient preconditioners for multiphysics problems. PSCToolkit provides advanced routines for sparse matrix operations optimized for GPU architectures, which are critical for large-scale simulations.
+The primary objective of WP1.4 is to integrate the PSCToolkit (Parallel Sparse Computing Toolkit) into the deal.II library and enhance the capability of PSCToolkit. This integration aims to leverage GPU computing to enhance performance and develop efficient preconditioners for multiphysics problems. PSCToolkit provides advanced routines for sparse matrix operations optimized for GPU architectures, which are critical for large-scale simulations.
 
 Planned activities include:
 \begin{itemize}
@@ -421,10 +456,10 @@ The interface is organized into four main namespaces: \textbf{Communicator} for 
 context management and descriptor operations, \textbf{Matrix} for sparse matrix creation and manipulation,
 \textbf{PSBVector} for vector operations and data distribution, and \textbf{Solvers} for preconditioners
 and Krylov solvers. The interface is conditionally compiled when \texttt{DEAL\_II\_WITH\_PSBLAS}
-is defined, ensuring compatibility only when PSBLAS is available. A more complete description of these namaspace and further information on the interface with deal.II is available in the deliverable D1.1 ``External libraries integration''. 
+is defined, ensuring compatibility only when PSBLAS is available. A more complete description of these namespace and further information on the interface with deal.II is available in the report for the deliverable D1.1 ``External libraries integration''. 
 
 \subsubsection*{WP1.5: Integration of MUMPS within deal.II} % (M1–M22, Lead: INTP)}
-WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
+WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II and improve the capabilities of the MUMPS solver. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
 
 Planned activities include:
 \begin{itemize}
@@ -435,12 +470,12 @@ Planned activities include:
 
 \noindent\textbf{Implemented improvements in the MUMPS support}
 
-The basic deal.II MUMPS interface did not include support for
+The basic MUMPS interface in deal.II did not include support for
 distributed-memory parallelism, which means that the system matrix and
 right-hand side(s) were entirely assembled on the master process where
 the subsequent phases (symbolic analysis, factorization and
-backward/forward substitution) take place; not only this might be
-infeasible due to memory limitations but it severely limits the
+backward/forward substitution) take place. This might not only be
+infeasible due to memory limitations but it also severely limits the
 performance of the sparse direct solver. The MUMPS integration in
 deal.II was extended to support distributed memory parallelism through
 the use of distributed matrix and vector datatypes as defined in the
@@ -460,8 +495,8 @@ to the constructor of the MUMPS solver class that takes the desired
 values for selected solver parameters, following the common design
 patterns of the deal.II library.
 
-The work related to above-mentioned extension is documented in pull
-request \#18497 (\url{https://github.com/dealii/dealii/pull/18497})
+The work related to above-mentioned extension is documented in \href{https://github.com/dealii/dealii/pull/18497}{the deal.II pull
+request \#18497},
 which was eventually merged in the master deal.II branch.
 
 Furthermore, the deal.II documentation was updated with a detailed description
@@ -996,7 +1031,7 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Initial contacts established with key stakeholder groups, including clinicians, patients, industry, regulatory bodies, HTA organisations, payers, citizens, and policymakers.
 \item Project objectives presented through direct exchanges and dissemination via VPH and partner channels.
-\item First links established with complementary EU initiatives to ensure alignment, coherence, and maximise impact.
+\item First links established with complementary EU initiatives to ensure alignment, coherence, and maximize impact.
 \item Preparation of structured engagement activities (focus groups, surveys, interviews) to be launched in the next reporting period.
 \end{itemize}
 
@@ -1009,7 +1044,7 @@ The first step toward systematic exploitation was the preparation and submission
 The exploitation framework is designed to ensure that results are captured early and monitored throughout the project lifetime. Key measures include:  
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Regularly updating the exploitable results table as new outputs emerge.  
-\item Supporting open--source releases under appropriate licenses, to maximise uptake and community impact.  
+\item Supporting open--source releases under appropriate licenses, to maximize uptake and community impact.  
 \item Facilitating integration of developed tools into existing partner platforms and software products.  
 \item Engaging with external stakeholders (academia, HPC centres, industry, and clinical users) to explore adoption and sustainability pathways.  
 \end{itemize}
@@ -1034,12 +1069,12 @@ Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Strengthen communication campaigns and widen dissemination to additional HPC and clinical communities, with targeted communication material and enhanced social media presence.
-\item Organise the first project workshop: \textit{dealii-X Research School} in Trieste in December 2025, providing hands-on training and fostering early user engagement.
+\item Organize the first project workshop: \textit{dealii-X Research School} in Trieste in December 2025, providing hands-on training and fostering early user engagement.
 \item Launch structured stakeholder engagement activities (focus groups, surveys, interviews) targeting regulators, clinicians, and patients to collect feedback on project outputs.
 \item Update the Data Management Plan to reflect new data types generated in WPs 2–3, and refine strategies for long-term preservation and reuse.
 \item Develop a detailed exploitation roadmap, including sustainability measures for software maintenance, data curation, and training materials reuse.
 % \item Monitor and expand the inventory of exploitable results % , including preparation for first open--source releases and identification of potential integration into partner tools.
-\item Deepen collaborations with EuroHPC JU and Virtual Human Twins initiatives to maximise impact and synergies with related European efforts.
+\item Deepen collaborations with EuroHPC JU and Virtual Human Twins initiatives to maximize impact and synergies with related European efforts.
 \end{itemize}
 
 
