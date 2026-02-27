@@ -95,7 +95,7 @@ The Bakeoff Problem (BP) based demonstrator solves the Poisson equation,
 $$
 \nabla^2 u = f
 $$
-in a 3-d box geometry, $ \Omega = \[0,1\]^3$ discretized with hexahedral elements using
+in a 3-d box geometry, $\Omega = [0,1]^3$ discretized with hexahedral elements using
 high order tensor-product polynomials.
 Essential boundary conditions, $u = 0$, are applied on the domain boundar $\partial \Omega$
 The degrees of freedom in the discretized system are the nodal basis values at the
@@ -159,8 +159,28 @@ Jannsen et al. observed one-dimensional thread indexing provided better performa
 
 We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
 
-\newpage
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Nvidia GH200 GPU with Kokkos programming model.}
+\label{fig:BK1_GH200}
+\end{figure}
 
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Intel Data Center GPU Max 1550 (``Ponte Vecchio'') with Kokkos programming model.}
+\label{fig:BK1_PVC}
+\end{figure}
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on AMD Instinct MI210 with Kokkos programming model.}
+\label{fig:BK1_AMD}
+\end{figure}
+
+\newpage
 \section{{Performance Analysis Tools}}
 \label{sec:section3}
 
