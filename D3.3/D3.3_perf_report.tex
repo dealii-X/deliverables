@@ -88,40 +88,117 @@ Approval Date: [Date]
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Poisson Solver Proxy App}}
 \label{sec:section2}
 
-\lipsum[4-5]
+The Bakeoff Problem (BP) based demonstrator solves the Poisson equation,
+$$
+\nabla^2 u = f
+$$
+in a 3-d box geometry, $ \Omega = \[0,1\]^3$ discretized with hexahedral elements using
+high order tensor-product polynomials.
+Essential boundary conditions, $u = 0$, are applied on the domain boundar $\partial \Omega$
+The degrees of freedom in the discretized system are the nodal basis values at the
+Gauss-Legendre-Lobatto (GLL) knots. For a given polynomial degree $p$,
+the nodal basis has $p+1$ points in each spatial dimension.
 
-\subsection{{[Subsection Title]}}
-\lipsum[6]
+The implementation assumes deformed elements, meaning that for the
+operator evaluation the metric terms (Jacobian) are used and no simplications
+which could arise from aligned cartesian meshes are exploited.
+This makes the proxy app more representative for scenarios with complex geometries.
 
-\subsection{{[Subsection Title]}}
-\lipsum[7]
+Given the adjointness of the Laplace operator, and the essential boundary conditions the conjugate gradient iterative solver is used to solve the linear system.
+The global system matrix is not assembled; only the operator action, i.e. the evaluation of the bilinear form is used.
+
+The demonstrator includes both non-preconditioned and preconditioned variants
+of the Poisson problem.
+
+The non-preconditioned variant, herein nicknamed BP3.5, is designed to be close
+to the CEED Bakeoff Problems. It's purpose is evaluation of the the accelerator software frameworks (Kokkos and vendor-provided frameworks), GPU kernel optimization of the bilinear form and performance analysis/estimation.
+
+The preconditioned variant is based on the multigrid approach (CITE...).
+For efficient solvers it is of critical importance to use suitable
+preconditioners.
+Multigrid-based preconditioners offer a very promising solution, as they are
+effective at propagating information at a faster rate compared to other iterative solvers.
+
+One of the scaling problems arising with multigrid methods is the
+communication latency of the coarse-grid solver at very high MPI rank counts.
+
+
+\subsection{{BP3.5 Problem}}
+
+The Bakeoff Problem 3 (BP3) acts as a proxy-app solving a Poisson equation,
+a common step in fluid mechanics and/or scalar transport models, both of which are highly relevant also to biological systems such as organs.
+
+While the geometry is a simple cube ("a brick"), we emphasize that all our
+tests have been performed using general irregular data structures, such that
+we do not expect significant deviations in the case of more general hexahedral grids.
+
+It is worth highlighting that the problem setup is very similar to the HPCG benchmark.
+The main differences are the choice of numerical discretization method, namely finite differences for HPCG and finite elements for BP.
+HPCG is primilary a hardware benchmark; the accuracy of the finite difference stencil is set in advance. The throughput in terms of floating points operations is measured for a fixed time or a fixed number of steps. Due to the memory intensive storage of
+the matrix, the HPCG problem is typically limited by the memory bandwidth.
+
+Other differences are the BP problems do not include any preconditioner.
+
+TODO: check if HPCG uses preconditioners.
+
+The Poisson solver step is often formulated implicitly, requiring the solution
+of a large system of linear equations.
+
+The proxy problem is a hybrid of the two problems BP3 and BP5, since
+it uses a different number of quadrature points.
+(Is this over-integration, or is it still exact?)
+
+\subsection{{Bakeoff Kernels}}
+
+In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
+number of quadrature points.
+Jannsen et al. observed one-dimensional thread indexing provided better performance than  multi-dimensional on the AMD MI250X devices in LUMI, however the cause remained uncertain.
+
+We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Performance Analysis Tools}}
 \label{sec:section3}
 
-\lipsum[8-9]
+The complexity of both the the software in question and the target hardware,
+limit what can be inferred solely using application-based performance reporting.
 
-\subsection{{[Subsection Title]}}
+Luckily, a growing amount of both vendor-provided and open-source software can provide the in-depth analysis capabalities, based on hardware performance counters, micro-benchmarking, and automatic analysis capabilities which can make performance optimization easier.
+
+
+\subsection{{Nvidia NSight Systems}}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
     \item \lipsum[10][1-2]
     \item \lipsum[10][3-4]
     \item \lipsum[10][5-6]
 \end{itemize}
 
-\subsection{{[Subsection Title]}}
+\subsection{{Intel oneAPI VTune}}
 \lipsum[11]
 
 \newpage
 
-\section{{[Section Title]}}
+\section{{Energy Measurment}}
 \label{sec:section4}
 
-\lipsum[12-13]
+The assesment of energy usage is an often-overlooked aspect in computing.
+While the energy costs are often ignored for software running on personal/desktop computers, the large scale of modern HPC systems incurs significant runtime
+costs for electricity.
+
+The performance per Watt has been increasing steadly in the last decades, driven
+by improvements in hardware architecture and design.
+Nonetheless, software factors also have a very large influence.
+A famous place where this plays out is the memory access pattern on modern GPUs,
+where the use of coalesced loading patterns greatly improves both performance
+and the expended enegy (CITE Steven Jones talk).
+
+The plethora of factors influencing energy usage, including frequency,
+software intensity, memory access patterns and parallelism, make reproducible measurement of energy challenging for the final scientific users.
+
 
 \begin{center}
     \begin{table}[h!]
