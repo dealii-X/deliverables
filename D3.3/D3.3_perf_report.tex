@@ -72,11 +72,35 @@ Approval Date: [Date]
 \section{{Introduction}}
 
 This deliverable provides a software framework demonstrator for the performance
-analysis of large-scale simulations on accelerator platforms of the EuroHPC environement,
-applicable to a broad range of European supercomputers.
+analysis of large-scale simulations on EuroHPC systems including accelerators.
+The intention is to provide a portable example (in terms of different hardware and software frameworks)
+which is applicatable to a broad range or European supercomputing architectures,
+thus supporting the transition to exascale computing platforms.
+
+The diversity of accelerators from multiple vendors (Nvidia, AMD, Intel) deployed
+at EuroHPC centers and also national HPC sites poses a significant challenge
+for scientists and engineers in terms of needed developments effort to obtain
+correct, robust and performant production codes for large-scale scientific computing.
 
 \subsection{{Purpose of the Document}}
-\lipsum[3]
+
+The purpose of the demonstrator is to provide a standardized blueprint for
+both library and application developers within WP1 and WP2 of the dealii.X project.
+The demonstrators are also of relevance to other stakeholders in the field of finite element
+software and GPU computing.
+
+We demonstrate three distinct methodologies, presented here in descending order
+of complexity and implementation effort:
+\begin{itemize}
+    \item application-level profiling and manual roofline analysis
+    \item instrumentation-based approaches
+    \item sampling based approaches
+\end{itemize}
+
+Being aware of the approaches and tools available, and adopting them early
+in the software project development curve can yield significant benefits
+for optimizing codebases across heterogeneous environments.
+
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
