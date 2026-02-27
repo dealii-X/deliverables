@@ -8,6 +8,7 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
+\usepackage[utf8x]{inputenc}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.3}
@@ -183,7 +184,16 @@ it uses a different number of quadrature points.
 
 In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
 number of quadrature points.
-Jannsen et al. observed one-dimensional thread indexing provided better performance than  multi-dimensional on the AMD MI250X devices in LUMI, however the cause remained uncertain.
+
+\cite{Karp2023} observed that the use of 1-d thread blocks enabled higher performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
+This stood in contrast to Nvidia GPUs where 2-d/3-d thread blocks were used.
+
+
+
+ce difference between the use of 1-d and 2-d thread blocks when
+indexing elements. In contrast to Nvidia GPUs, where the use of 2-d and 3-d thread blocks
+
+ one-dimensional thread indexing provided better performance than  multi-dimensional on the AMD MI250X devices in LUMI, however the cause remained uncertain.
 
 We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
 
@@ -224,11 +234,49 @@ Luckily, a growing amount of both vendor-provided and open-source software can p
     \item \lipsum[10][5-6]
 \end{itemize}
 
-\subsection{{Intel oneAPI VTune}}
-\lipsum[11]
+\subsection{{Intel® VTune™ Profiler VTune™}}
+
+The VTune Profiler\footnote{\url{https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html}} ...
+
+
+\subsubsection{Intel Application Performance Snapshot}
+
+The Intel Application Performance Snapshot is a helpful tool for Linux OS which provides a quick
+overview of compute intensive applications running on x86-64 architecture.
+
+\begin{verbatim}
+> aps --result-dir=<foldername> <target> [target-options]
+\end{verbatim}
+
+\subsubsection{VTune Profiler}
+
+\begin{verbatim}
+> vtune -quiet -collect gpu-offload -r vtune_gpu_offload <executable>
+> vtune -quiet -collect gpu-hotspots -r vtune_gpu_hotspots ...
+\end{verbatim}
+
+
+Cheat sheet\footnote{\url{https://www.intel.com/content/dam/develop/external/us/en/documents/vtune-profiler-cheat-sheet.pdf}}
+
+\subsection{Intel® Advisor}
+
+The tool also support a command-line interface (CLI), useful to collect results
+on remote systems and/or under batch-scheduling constraints.
+
+Collection of the roofline data is performed using the command
+\begin{verbatim}
+> advisor --collect=roofline --profile-gpu -- <executable>
+\end{verbatim}
+To obtain line profiling data linked to the source file, the executable must be (re)compiled with the following \texttt{icpx} options: \texttt{-fdebug-info-for-profiling -gline-tables-only}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{advisor-screenshot-2025-07-24}
+\caption{Exemplary view of Bakeoff Kernel result in Intel Advisor.}
+\label{fig:intel_advisor}
+\end{figure}
 
 \newpage
-
 \section{{Energy Measurement}}
 \label{sec:section4}
 
@@ -310,6 +358,12 @@ Item 3 & Description & Value \\
 \section{{Conclusion}} \label{sec:conclusion}
 
 \lipsum[20]
+
+
+
+\bibliographystyle{plainnat}
+% refs.bib in the same folder
+\bibliography{refs}
 
 \label{MyLastPage}
 
