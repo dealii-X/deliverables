@@ -74,8 +74,8 @@ Approval Date: [Date]
 This deliverable provides a software framework demonstrator for the performance
 analysis of large-scale simulations on EuroHPC systems including accelerators.
 The intention is to provide a portable example (in terms of different hardware and software frameworks)
-which is applicatable to a broad range or European supercomputing architectures,
-thus supporting the transition to exascale computing platforms.
+which is applicable to a broad range or European supercomputing,
+thus supporting the transition to exascale computing.
 
 The diversity of accelerators from multiple vendors (Nvidia, AMD, Intel) deployed
 at EuroHPC centers and also national HPC sites poses a significant challenge
@@ -92,15 +92,18 @@ software and GPU computing.
 We demonstrate three distinct methodologies, presented here in descending order
 of complexity and implementation effort:
 \begin{itemize}
-    \item application-level profiling and manual roofline analysis
-    \item instrumentation-based approaches
-    \item sampling based approaches
+    \item Application-level profiling and manual roofline analysis
+    \item Instrumentation-based approaches
+    \item Sampling-based approaches
 \end{itemize}
 
-Being aware of the approaches and tools available, and adopting them early
-in the software project development curve can yield significant benefits
-for optimizing codebases across heterogeneous environments.
-
+Understanding the trade-offs between these methods -- specifically regarding data
+collection granularity, runtime overhead, and degree of automation -- is essential
+for an information selection of the appropriate tool for a certain performance
+analysis task.
+Integrating these performance analysis workflows early in the software development
+ccle is critical for ensuring codebases remain performant and portable across the
+diverse heterogenous environments of the EuroHPC ecosystem.
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
