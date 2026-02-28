@@ -221,8 +221,8 @@
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: Feb 28th 2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -247,7 +247,7 @@ Approval Date: [Date]
 Work Package 1 is dedicated to the numerical software backbone of
 dealii-X, enabling the transition to exascale computing. One key
 aspect of the WP is the interfacing with external libraries,
-especially PSCToolkit~\url{https://psctoolkit.github.io} and MUMPS.
+especially PSCToolkit~\url{https://psctoolkit.github.io} and MUMPS~\url{https://mumps-solver.org/index.php}.
 This interface is mostly transparent to the application end-user;
 however, the developers need to acquire a working knowledge of the
 features available and of the performance that can be attained. The integration
@@ -327,7 +327,7 @@ private:
 
 The allocation of matrices and vectors are performed in the \texttt{setup\_system()} member function, which
 is called at the end of each refinement cycle. The user interface is identical to the one of the other linear
-algebra classes: we first need to acquire information about the MPI communicator and the degrees of freedom owned\footnote{Plus some so-called "ghost" or "halo" indices, i.e. indices owned by neighboring processes.} by
+algebra classes: we first need to acquire information about the MPI communicator and the degrees of freedom owned\footnote{Plus some so-called "ghost" or "halo" indices, i.e., indices owned by neighboring processes.} by
 the current process. Then, the \texttt{reinit()} member function performs the
 allocation of distributed sparse matrices and vectors. Listing \ref{lst:setup_system} shows the code snippet for the setup of the linear system and vectors.
 
@@ -354,7 +354,7 @@ void LaplaceProblem<dim>::setup_system()
 \end{lstlisting}
 
 
-The assembly loop is performed as in any standard tutorial program. It
+The assembly loop is performed as in any standard tutorial program of deal.II. It
 consists of a loop over all the cells owned by the current process,
 scattering local contributions to the global system matrix and
 right-hand side vector. The implementation of the assembly loop 
@@ -366,7 +366,7 @@ is to all extends identical to many other tutorial programs.
 \subsection{Solver and preconditioner setup}
 
 We finally describe the \texttt{solve()} function, which involves the setup of the linear solver and the preconditioner, as well as the
-solution of the linear system. As previously mentioned, the positive definiteness of the bilinear form
+solution of the linear system. As previously mentioned, the symmetry and positive definiteness of the bilinear form
 calls for the use of the preconditioned conjugate gradient (PCG) method. At the solver stage, the interface to PSCToolkit becomes essentially
 transparent to the user: any Krylov subspace solver provided by the native deal.II library can be instantiated
 with PSCToolkit matrix and vector wrappers, since they comply with the linear-algebra interface expected by deal.II. Hence, we use the native
@@ -388,7 +388,7 @@ The solver setup thus remains unchanged with respect to standard user
 codes; only the AMG4PSBLAS preconditioner settings (coarsening
 strategy, coarse solver, smoothers, tolerances) may require tuning by
 users. 
-
+\newpage
 
 \begin{lstlisting}[language=C++,caption={Native SolverCG class with PSCToolkit data structures.}, label=lst:linear_solve]
 template <int dim>
@@ -453,7 +453,7 @@ We consider the $\mathcal{Q}^1$ discretization of the anisotropic Poisson proble
      &
     \sin^2\theta + \varepsilon \cos^2\theta
   \end{pmatrix},
-\end{equation} and right-hand side $f=1$. The CG solver is stopped when the relative residual is reduced by a factor of $10^{-6}$, or when the absolute residual is smaller than $10^{-10}$.
+\end{equation} and right-hand side $f=1$. The CG solver is stopped when the relative residual is reduced to a factor $10^{-6}$ or less compared to the initial residual, or when the absolute residual is smaller than $10^{-10}$.
 
 Figure \ref{fig:AMR} shows the solution obtained with several AMR cycles starting from a Cartesian grid, and letting the AMR be driven by a suitable error estimator. The anisotropy parameters are $\varepsilon = 100$ and $\theta = \frac{\pi}{6}$, which yield a challenging test case for algebraic multigrid methods, especially when AMR is employed.
 
