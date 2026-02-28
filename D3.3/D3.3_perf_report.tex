@@ -223,73 +223,7 @@ The main quantities of interest are the run time as a function of the problem si
 
 % TODO: add plots/tables of the BP output
 
-
-
-The proxy app relies on the efficient implementation of the local kernels.
-
-% TODO: there is overlap with this section and the new results in D1.7
-%       maybe we can drop this section then?
-
-The Bakeoff Kernel variants can be obtained with the commands in the listing below:
-
-\begin{lstlisting}[
-    basicstyle=\ttfamily\small,
-    caption={Script for building the BK benchmarks}]
-git clone https://github.com/dealii-X/benchmarks.git
-cd benchmarks/sum_factorization
-cmake -B build -S . \
-    -DCMAKE_CXX_COMPILER="$(which cxx)" \
-    -DKokkos_DIR=<Kokkos_installation_path>
-cmake --build build -j <jobs>
-\end{lstlisting}
-
-The performance of the kernels is measured using application-level profiling.
-The two main quantities of interest are
-\begin{itemize}
-    \item DoF updates per second and
-    \item effective bandwidth.
-\end{itemize}
-
-The DOF updates per second are calculated by the formulas
-\begin{equation}
-   \text{Througput} = \frac{N * (p+2)^3}{\text{Time}}
-\end{equation}
-The effective bandwidth (BW) measures the rate at which the kernels stream through
-memory. Assuming the kernel is memory-bound, the effective BW measures how well the
-kernels are implemented. Figs.~\ref{fig:BK1_GH200}, \ref{fig:BK1_PVC}, \ref{fig:BK1_AMD} show the results on Nvidia, Intel and AMD GPU systems for the BK1 kernel.
-
-
-In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
-number of quadrature points.
-
-\cite{Karp2023} observed that the use of 1-d thread blocks enabled higher
-performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d
-thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
-This stood in contrast to Nvidia GPUs where 2-d/3-d thread blocks were used.
-
-We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{BK1_1}
-\caption{BK1 performance results on Nvidia GH200 GPU with Kokkos programming model.}
-\label{fig:BK1_GH200}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{I_BK1_1}
-\caption{BK1 performance results on Intel Data Center GPU Max 1550 (``Ponte Vecchio'') with Kokkos programming model.}
-\label{fig:BK1_PVC}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{A_BK1_1}
-\caption{BK1 performance results on AMD Instinct MI210 with Kokkos programming model.}
-\label{fig:BK1_AMD}
-\end{figure}
-
+We have reported extensive results on a variety of Nvidia, AMD and Intel hardware in the report for deliverable D1.7. Here, we show one complementary result, based on outcome from a moderate degree of hardware tuning based on the Kokkos kernels.
 Fig.~\ref{fig:ceed_pvc} shows the application throughput of the BP3.5
 benchmark on the Intel Data Center GPU Max 1550, replicating a similar case
 shown in the deliverable report D1.7 for the Nvidia GH200. It can be seen that
