@@ -568,6 +568,32 @@ finally:
     nvmlShutdown()
 \end{lstlisting}
 
+\subsection{{Other tools}}
+
+Beyond custom instrumentation with p3em, several established tools provide
+energy telemetry at different system levels.
+
+The Slurm job scheduler can be configured to report energy consumption for
+a completed job. In practice, this will typically be a single integrated value
+for the entire job duration, thus lacking the granularity required to
+correlate the energy consumption with specific application phases or kernels.
+A second disadvantage is that this information may also aggregate energy usage
+across different hardware components in a node.
+
+The \texttt{likwid-powermeter} tool, part of the LIKWID toolsuite,
+ can be used to measure power usage
+over a specified duration (so-called stethoscope mode) or invoked as a wrapper
+to measure energy usage of a given process.
+The use of the tool is primarily ceneted on Intel/AMD CPUs where the RAPL (Running Average Power Limit)
+interfaces is available to provide energy counters.
+
+For GPU devices, power draw can be queried using the vendor-specific
+``system management interfaces'' (SMI),
+such as \texttt{nvidia-smi}, \texttt{rocm-smi} (AMD), and \texttt{xpu-smi} (Intel).
+While these tools are indispensible for monitoring, they require a level
+of external orchestration and post-processing (as seen with the p3em subprocess concept)
+to provide the energy data desirable for fine-grained analysis.
+
 \newpage 
 \section{{Conclusion}} \label{sec:conclusion}
 
