@@ -63,8 +63,17 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{}
-    \tableEntry{Keywords}{}
+        \tableEntry{Abstract}{This report documents the progress achieved during
+    	the second semester of the dealii-X project (Months 12-17) in enhancing the
+    	deal.II finite element library towards exascale readiness. This deliverable focuses on the
+    	consolidation of the new features, their integration into real-world
+    	biomedical applications, and preliminary scaling tests on EuroHPC
+    	pre-exascale systems. Major achievements include significant
+    	improvements in GPU matrix-free solvers and multigrid preconditioners, the stabilization and extension
+    	of the generalized interface for coupling operators and mesh handling, the maturation of
+    	the polygonal discretization module, and the integration of external
+    	solver technologies (PSCToolkit and MUMPS) into the deal.II workflow. }
+    \tableEntry{Keywords}{Portable multigrid; Mesh handling; Polygonal discretization;  AMG4PSBLAS; mixed precision}
 \end{deliverableTable}
 
 \newpage
@@ -78,6 +87,7 @@
     \addVersion{0.5}{25/02/2026}{Luca Heltai}{Integration of VTK
       utilities and new tutorial}
     \addVersion{1.0}{28/02/2026}{Salvatore Filippone}{Release}
+    \addVersion{2.0}{28/02/2026}{Ivan Prusak}{Abstract, Introduction and Revision}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -104,10 +114,15 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
+The goal of Work Package 1 (WP1) is to strengthen the numerical and software backbone of the dealii-X Centre of Excellence by extending the capabilities of the deal.II library, enabling the exascale transition of digital twins for human organs. Deliverable D1.7 provides a consolidated report on the technical progress, highlighting the work carried out for technical reports D1.6 and D3.3, and emphasizes integration, benchmarking, and readiness for multiphysics biomedical applications.
 
+\section{{Purpose of the Document}}
+
+The purpose of this document is to provide a comprehensive overview of the advancements made in the deal.II library as part of the dealii-X project. It aims to inform stakeholders about the current state of the library, the challenges encountered, and the strategies employed to overcome them.
 
 \subsection{{Purpose of the Document}}
 
+The purpose of this document is to provide a comprehensive overview of the advancements made in the deal.II library as part of the dealii-X project. It aims to inform stakeholders about the current state of the library, the challenges encountered, and the strategies employed to overcome them.
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
@@ -1115,9 +1130,7 @@ Recent experiments with accelerated nodes (Nvidia-GraceHopper and AMD-Mi250 and 
 
 
 
-\newpage
 
-\section{{Conclusion}} \label{sec:conclusion}
 
 \begin{thebibliography}{10}
     \bibitem[Filippone and Colajanni, 2000]{PSBLAS}Salvatore Filippone and Michele Colajanni, "PSBLAS: a library for parallel linear algebra computation on sparse matrices", ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527--550, 2000. \url{https://doi.org/10.1145/365723.365732}
