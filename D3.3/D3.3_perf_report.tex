@@ -28,7 +28,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Integration of Performance Measuring Tools}
     \tableEntry{Deliverable number}{D3.3}
-    \tableEntry{Deliverable version}{0.1}
+    \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{February 28, 2026}
     \tableEntry{Actual date of delivery}{February 28, 2026}
     \tableEntry{Nature of deliverable}{Demonstrator, pilot, prototype}
@@ -39,22 +39,23 @@
 
 % Abstract and Keywords Section
 \begin{deliverableTable}
-    \tableEntry{Abstract}{\lipsum[1][1-5]}
-    \tableEntry{Keywords}{performance; analysis; energy; accelerators}
+  \tableEntry{Abstract}{This report details the software framework targeting performance
+    measurement tools in the dealii-X project. The framework is made generic to support a range of European supercomputers on the exascale threshold.}
+  \tableEntry{Keywords}{performance; analysis; energy; accelerators}
 \end{deliverableTable}
 
 \newpage
 
 \begin{documentControl}
-    \addVersion{0.1}{February 10, 2026}{Ivan Pribec}{Initial document plan}
-    \addVersion{0.2}{February 27, 2026}{Ivan Pribec}{Benchmark and measurement tool description}
-%    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
-%    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+    \addVersion{0.1}{Feb 10, 2026}{Ivan Pribec}{Initial document plan}
+    \addVersion{0.2}{Feb 27, 2026}{Ivan Pribec}{Benchmark \& measurement tool description}
+    \addVersion{0.3}{Feb 28, 2026}{M. Kronbichler}{Minor adjustments}
+    \addVersion{1.0}{Feb 28, 2026}{Ivan Pribec}{Final version}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: February 28, 2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -90,7 +91,7 @@ correct, robust and performant production codes for large-scale scientific compu
 \subsection{{Purpose of the Document}}
 
 The purpose of the demonstrator is to provide a standardized blueprint for
-both library and application developers within WP1 and WP2 of the dealii.X project.
+both library and application developers within WP1 and WP2 of the dealii-X project.
 The demonstrators are also of relevance to other stakeholders in the field of finite element
 software and GPU computing.
 
@@ -104,13 +105,15 @@ of complexity and implementation effort:
 
 Understanding the trade-offs between these methods -- specifically regarding data
 collection granularity, runtime overhead, and degree of automation -- is essential
-for an information selection of the appropriate tool for a certain performance
+for an informed selection of the appropriate tool for a certain performance
 analysis task.
 Integrating these performance analysis workflows early in the software development
-ccle is critical for ensuring codebases remain performant and portable across the
+cycle is critical for ensuring codebases remain performant and portable across the
 diverse heterogenous environments of the EuroHPC ecosystem.
 
 \subsection{{Structure of the Document}}
+
+This document is organized in the following three sections:
 \begin{itemize}
     \item Section \ref{sec:section2}: [Poisson Solver Proxy App]
     \item Section \ref{sec:section3}: [Energy Measurement]
@@ -125,19 +128,19 @@ diverse heterogenous environments of the EuroHPC ecosystem.
 The demonstrator utilizies a Poisson solver proxy based on the CEED Bakeoff Problems (BP),
 similar to BP3. It solves the Poisson equation,
 $$
--\nabla^2 u = f \text{in} \Omega, u = 0 \text{on} \partial \Omega
+-\nabla^2 u = f \quad \text{in } \Omega, u = 0 \text{ on } \partial \Omega
 $$
 over a 3-d box geometry, $\Omega = [0,1]^3$.
 The domain is discretized with hexahedral finite elements.
 The finite element space consists of tensor-product polynomials using
-nodal basis function at Gauss-Legendre-Lobatto (GLL) knots.
-For a polynomial degree $p$, there are $p+1$ points per spatial dimension.
+nodal basis function at Gauss--Legendre--Lobatto (GLL) knots.
+For a polynomial degree $p$, there are $p+1$ points per spatial dimension on each element.
 
 % TODO: mention quadrature choice, is it called "collocated integration"?
 
 To ensure the proxy app is representative of the complex geometries found in
 biological models, the implementation assumes deformed elements.
-This means the solver must handle the full metric terms (Jacobian) of the
+This means the solver must handle the full metric terms (Jacobian)
 of the transformation from physical to iso-parametric coordinates.
 
 Given the self-adjoint nature of the Laplace operator, we employ a Conjugate Gradient (CG) solver.
@@ -153,7 +156,7 @@ We envision the use of efficient multigrid-based preconditioners, which are
 essential for ``propagating information'' quickly across the mesh thereby
 reduing the total number of CG iterations needed before convergence.
 Recent enhancements of the portable GPU multigrid preconditioners are
-described in deliverable D1.7.
+described in the report for deliverable D1.7.
 
 It is worth pointing out that the setup shares architectural similarities
 with the High-Performance Conjugate Gradient (HPCG) benchmark,
@@ -181,7 +184,7 @@ the listing below:
 git clone https://github.com/dealii-X/benchmarks.git
 cd benchmarks/bakeoff_problems_dealii
 
-# checkout specific commit (git checkout <commit_hash>)
+# check out specific commit (git checkout <commit_hash>)
 
 cmake -B build -S src \
     -DCMAKE_CXX_COMPILER="$(which mpicxx)" \
@@ -192,7 +195,7 @@ cmake --build build
 We use application-level profiling using timers to measure the throughput
 of matrix-vector products and iterative solver steps.
 
-The main quantities of interest are:
+The main quantities of interest are the run time as a function of the problem size and the behavior across different problem and machine sizes.
 
 
 % TODO: add plots/tables of the BP output
@@ -219,10 +222,10 @@ cmake --build build -j <jobs>
 \end{lstlisting}
 
 The performance of the kernels is measured using application-level profiling.
-The two main quantities of interest are,
+The two main quantities of interest are
 \begin{itemize}
-    \item DoF updates per second
-    \item effective bandwidth
+    \item DoF updates per second and
+    \item effective bandwidth.
 \end{itemize}
 
 The DOF updates per second are calculated by the formulas
@@ -230,7 +233,8 @@ The DOF updates per second are calculated by the formulas
    \text{Througput} = \frac{N * (p+2)^3}{\text{Time}}
 \end{equation}
 The effective bandwidth (BW) measures the rate at which the kernels stream through
-memory. Assuming the kernel is memory-bound, the effective BW measures ...
+memory. Assuming the kernel is memory-bound, the effective BW measures how well the
+kernels are implemented. Figs.~\ref{fig:BK1_GH200}, \ref{fig:BK1_PVC}, \ref{fig:BK1_AMD} show the results on Nvidia, Intel and AMD GPU systems for the BK1 kernel.
 
 
 In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
@@ -245,21 +249,21 @@ We speculate that optimization of thread-block sizes and or the introduction of 
 
 \begin{figure}
 \centering
-%\includegraphics[width=0.8\textwidth]{BK1_1}
+\includegraphics[width=0.6\textwidth]{BK1_1}
 \caption{BK1 performance results on Nvidia GH200 GPU with Kokkos programming model.}
 \label{fig:BK1_GH200}
 \end{figure}
 
 \begin{figure}
 \centering
-%\includegraphics[width=0.8\textwidth]{BK1_1}
+\includegraphics[width=0.6\textwidth]{I_BK1_1}
 \caption{BK1 performance results on Intel Data Center GPU Max 1550 (``Ponte Vecchio'') with Kokkos programming model.}
 \label{fig:BK1_PVC}
 \end{figure}
 
 \begin{figure}
 \centering
-%\includegraphics[width=0.8\textwidth]{BK1_1}
+\includegraphics[width=0.6\textwidth]{A_BK1_1}
 \caption{BK1 performance results on AMD Instinct MI210 with Kokkos programming model.}
 \label{fig:BK1_AMD}
 \end{figure}
@@ -268,20 +272,20 @@ We speculate that optimization of thread-block sizes and or the introduction of 
 \section{{Performance Analysis Tools}}
 \label{sec:section3}
 
-The complexity of both the the software in question and the target hardware,
+The complexity of both the software in question and the target hardware
 limit what can be inferred solely using application-based performance reporting.
 
-Luckily, a growing amount of both vendor-provided and open-source software can provide the in-depth analysis capabalities, based on hardware performance counters, micro-benchmarking, and automatic analysis capabilities which can make performance optimization easier.
+Luckily, a growing amount of both vendor-provided and open-source software can provide in-depth analysis capabalities, based on hardware performance counters, micro-benchmarking, and automatic analysis capabilities which can make performance optimization easier.
 
 In the following sections, we provide a description and usage examples of
-tools that we have used for the optimization of the the Bakeoff Problems and
+tools that we have used for the optimization of the Bakeoff Problems and
 the underlying Bakeoff Kernels.
 
-The tools we have used so far,
+The tools we have used so far are
 \begin{itemize}
-    \item NVIDIA Nsight Systems
-    \item Intel VTune Profiler
-    \item LIKWID Performance Tools
+    \item NVIDIA Nsight Systems,
+    \item Intel VTune Profiler, and
+    \item LIKWID Performance Tools.
 \end{itemize}
 
 % TODO: AMD?
@@ -289,8 +293,8 @@ The tools we have used so far,
 \subsection{{NVIDIA NSight Systems}}
 
 NSight™ Systems provides a system-wide timeline view, showing how the CPU and GPU
-executions. It also provides statistics about API calls, overhead and memory transfers
-(HtoD/DtoH).
+execute the program. It also provides statistics about API calls, overhead and memory transfers
+(host-to-device/device-to-host).
 
 To create a profile, we launch the application with the command\footnote{We use \texttt{<>} to denote mandatory arguments, and \texttt{[]} to denote optional arguments}
 \begin{verbatim}
@@ -298,7 +302,7 @@ To create a profile, we launch the application with the command\footnote{We use 
 \end{verbatim}
 Further command switch options can be provided to control what is collected.
 
-It is useful to collect profiling tool invocations either in the project readme file or scripts for future reference.
+It is useful to collect profiling tool invocations either in the project readme file or scripts for future reference, a habit 
 
 \subsection{{Intel® VTune™ Profiler}}
 
