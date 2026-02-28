@@ -8,7 +8,8 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8x]{inputenc} % for registered and trademark symbols
+\usepackage{listings}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.3}
@@ -154,6 +155,26 @@ effective at propagating information at a faster rate compared to other iterativ
 One of the scaling problems arising with multigrid methods is the
 communication latency of the coarse-grid solver at very high MPI rank counts.
 
+\begin{lstlisting}[caption={Script for building the BP3.5 demo}]
+git clone https://github.com/dealii-X/benchmarks.git
+cd benchmarks/bakeoff_problems_dealii
+
+# checkout specific commit (git checkout <commit_hash>)
+
+cmake -B build -S src \
+    -DCMAKE_CXX_COMPILER="$(which mpicxx)" \
+    -DDEAL_II_DIR=<dealii_installation_path>
+cmake --build build
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Script for building the BK benchmarks}]
+git clone https://github.com/dealii-X/benchmarks.git
+cd benchmarks/sum_factorization
+cmake -B build -S . \
+    -DCMAKE_CXX_COMPILER="$(which cxx)" \
+    -DKokkos_DIR=<Kokkos_installation_path>
+cmake --build build -j <jobs>
+\end{lstlisting}
 
 \subsection{{BP3.5 Problem}}
 
