@@ -122,23 +122,26 @@ diverse heterogenous environments of the EuroHPC ecosystem.
 \section{{Poisson Solver Proxy App}}
 \label{sec:section2}
 
-The Bakeoff Problem (BP) based demonstrator solves the Poisson equation,
+The demonstrator utilizies a Poisson solver proxy based on the CEED Bakeoff Problems (BP),
+similar to BP3. It solves the Poisson equation,
 $$
-\nabla^2 u = f
+-\nabla^2 u = f \text{in} \Omega, u = 0 \text{on} \partial \Omega
 $$
-in a 3-d box geometry, $\Omega = [0,1]^3$ discretized with hexahedral elements using
-high order tensor-product polynomials.
-Essential boundary conditions, $u = 0$, are applied on the domain boundary $\partial \Omega$
+over a 3-d box geometry, $\Omega = [0,1]^3$.
+The domain is discretized with hexahedral finite elements.
+The finite element space consists of tensor-product polynomials using
+nodal basis function at Gauss-Legendre-Lobatto (GLL) knots.
+For a polynomial degree $p$, there are $p+1$ points per spatial dimension.
 
-To ensure the proxy app is representative of the complex geometries as found in
+% TODO: mention quadrature choice, is it called "collocated integration"?
+
+To ensure the proxy app is representative of the complex geometries found in
 biological models, the implementation assumes deformed elements.
 This means the solver must handle the full metric terms (Jacobian) of the
 of the transformation from physical to iso-parametric coordinates.
-The discretization uses nodal basis values at Gauss-Legendre-Lobatto (GLL) knots.
-For a polynomial degree $p$, there are $p+1$ points per spatial dimension.
 
 Given the self-adjoint nature of the Laplace operator, we employ a Conjugate Gradient (CG) solver.
-The system matrix is never assembled. Instead the bilinear forms are evaluated in
+The system matrix is never assembled, instead the bilinear forms are evaluated in
 a matrix-free fashion which is more efficient on modern CPU and GPU architectures.
 Following the original CEED Bakeoff Problem setup, non-preconditioned CG is used,
 as the main purpose of the benchmark is for software optimization
@@ -152,8 +155,25 @@ reduing the total number of CG iterations needed before convergence.
 Recent enhancements of the portable GPU multigrid preconditioners are
 described in deliverable D1.7.
 
+It is worth pointing out that the setup shares architectural similarities
+with the High-Performance Conjugate Gradient (HPCG) benchmark,
+although they differ in the choice of discretization method and intent.
+The HPCG benchmark utilizes a 27-point stencil finite difference method,
+while the BP3 proxy uses (high-order) finite elements.
+HPCG is typically limited by memory bandwidth due to the explicit (sparse)
+matrix stroage.
+In contrast, the matrix-free approach in the BP puts emphasis on arithmetic
+intensity and floating-point throughput.
+Unlike HPCG, which employs a symmetric Gauss-Seidel preconditioner,
+the BP benchmark uses non-preconditoner CG.
+
 %One of the scaling problems arising with multigrid methods is the
 %communication latency of the coarse-grid solver at very high MPI rank counts.
+
+\subsection{{BP Results}}
+
+The Bakeoff Problem demonstrator app can be obtained using the commands in
+the listing below:
 
 \begin{lstlisting}[
     basicstyle=\ttfamily\small,
@@ -169,6 +189,24 @@ cmake -B build -S src \
 cmake --build build
 \end{lstlisting}
 
+We use application-level profiling using timers to measure the throughput
+of matrix-vector products and iterative solver steps.
+
+The main quantities of interest are:
+
+
+% TODO: add plots/tables of the BP output
+
+
+\subsection{{Bakeoff Kernels}}
+
+The proxy app relies on the efficient implementation of the local kernels.
+
+% TODO: there is overlap with this section and the new results in D1.7
+%       maybe we can drop this section then?
+
+The Bakeoff Kernel variants can be obtained with the commands in the listing below:
+
 \begin{lstlisting}[
     basicstyle=\ttfamily\small,
     caption={Script for building the BK benchmarks}]
@@ -180,43 +218,28 @@ cmake -B build -S . \
 cmake --build build -j <jobs>
 \end{lstlisting}
 
-\subsection{{BP3.5 Problem}}
+The performance of the kernels is measured using application-level profiling.
+The two main quantities of interest are,
+\begin{itemize}
+    \item DoF updates per second
+    \item effective bandwidth
+\end{itemize}
 
-The Bakeoff Problem 3 (BP3) acts as a proxy-app solving a Poisson equation,
-a common step in fluid mechanics and/or scalar transport models, both of which are highly relevant also to biological systems such as organs.
+The DOF updates per second are calculated by the formulas
+\begin{equation}
+   \text{Througput} = \frac{N * (p+2)^3}{\text{Time}}
+\end{equation}
+The effective bandwidth (BW) measures the rate at which the kernels stream through
+memory. Assuming the kernel is memory-bound, the effective BW measures ...
 
-While the geometry is a simple cube ("a brick"), we emphasize that all our
-tests have been performed using general irregular data structures, such that
-we do not expect significant deviations in the case of more general hexahedral grids.
-
-It is worth highlighting that the problem setup is very similar to the HPCG benchmark.
-The main differences are the choice of numerical discretization method, namely finite differences for HPCG and finite elements for BP.
-HPCG is primilary a hardware benchmark; the accuracy of the finite difference stencil is set in advance. The throughput in terms of floating points operations is measured for a fixed time or a fixed number of steps. Due to the memory intensive storage of
-the matrix, the HPCG problem is typically limited by the memory bandwidth.
-
-Other differences are the BP problems do not include any preconditioner.
-
-TODO: check if HPCG uses preconditioners.
-
-The Poisson solver step is often formulated implicitly, requiring the solution
-of a large system of linear equations.
-
-The proxy problem is a hybrid of the two problems BP3 and BP5, since
-it uses a different number of quadrature points.
-(Is this over-integration, or is it still exact?)
-
-\subsection{{Bakeoff Kernels}}
 
 In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
 number of quadrature points.
 
-\cite{Karp2023} observed that the use of 1-d thread blocks enabled higher performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
+\cite{Karp2023} observed that the use of 1-d thread blocks enabled higher
+performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d
+thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
 This stood in contrast to Nvidia GPUs where 2-d/3-d thread blocks were used.
-
-ce difference between the use of 1-d and 2-d thread blocks when
-indexing elements. In contrast to Nvidia GPUs, where the use of 2-d and 3-d thread blocks
-
- one-dimensional thread indexing provided better performance than  multi-dimensional on the AMD MI250X devices in LUMI, however the cause remained uncertain.
 
 We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
 
@@ -250,14 +273,22 @@ limit what can be inferred solely using application-based performance reporting.
 
 Luckily, a growing amount of both vendor-provided and open-source software can provide the in-depth analysis capabalities, based on hardware performance counters, micro-benchmarking, and automatic analysis capabilities which can make performance optimization easier.
 
-\subsection{{Nvidia NSight Systems}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \lipsum[10][1-2]
-    \item \lipsum[10][3-4]
-    \item \lipsum[10][5-6]
+In the following sections, we provide a description and usage examples of
+tools that we have used for the optimization of the the Bakeoff Problems and
+the underlying Bakeoff Kernels.
+
+The tools we have used so far,
+\begin{itemize}
+    \item NVIDIA Nsight Systems
+    \item Intel VTune Profiler
+    \item LIKWID Performance Tools
 \end{itemize}
 
-NSight Systems provides a system-wide timeline view, showing how the CPU and GPU
+% TODO: AMD?
+
+\subsection{{NVIDIA NSight Systems}}
+
+NSight™ Systems provides a system-wide timeline view, showing how the CPU and GPU
 executions. It also provides statistics about API calls, overhead and memory transfers
 (HtoD/DtoH).
 
