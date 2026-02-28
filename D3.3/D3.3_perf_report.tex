@@ -274,12 +274,24 @@ The VTune Profiler\footnote{\url{https://www.intel.com/content/www/us/en/develop
 
 \subsubsection{Intel Application Performance Snapshot}
 
-The Intel Application Performance Snapshot is a helpful tool for Linux OS which provides a quick
-overview of compute intensive applications running on x86-64 architecture.
+The Intel Application Performance Snapshot is a helpful tool for Linux OS
+that can provide a quick overview of compute intensive applications running
+on Intel x86-64 CPUs.
 
+To launch data collection with APS the command is
 \begin{verbatim}
 > aps --result-dir=<foldername> <target> [target-options]
 \end{verbatim}
+By default, statistics of the whole application are collected.
+To enable collection only for a specific region, the source code can be instrumented
+with calls to Intel Tracing Technology (ITT) API.
+The function \texttt{__itt_pause()} and \texttt{__itt_resume()} allow pausing
+or resuming data collection, respectively.
+
+A common scenario in scientific finite elements applications is to have a preprocessing phase,
+where inputs are read and mesh-related infrastructure is set-up.
+To ignore this phase during APS collection, we can start aps in paused mode,
+and call \texttt{__itt_resume()} before the main time-stepping or solver loop.
 
 \subsubsection{VTune Profiler}
 
