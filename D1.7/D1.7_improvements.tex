@@ -81,8 +81,8 @@
 \begin{documentControl}
     \addVersion{0.1}{21/02/2026}{Marco Feder}{Initial draft}
     \addVersion{0.2}{22/02/2026}{Marco Feder}{Polygonal discretization module section}
-    \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration and preliminary results for PSCToolkit}
-    \addVersion{0.4}{23/02/2026}{Chiara Puglisi}{Preliminary results
+    \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration, preliminary results w.~PSCToolkit}
+    \addVersion{0.4}{23/02/2026}{Chiara Puglisi}{Results
         with advanced features in MUMPS}
     \addVersion{0.5}{25/02/2026}{Luca Heltai}{Integration of VTK
       utilities and new tutorial}
@@ -91,8 +91,8 @@
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: Feb 28th 2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -144,10 +144,10 @@ The purpose of this document is to provide a comprehensive overview of the advan
 \subsection{{Bakeoff kernels}}
 
 
-We have expanded the Matrix-Free Operator evaluation framework by improving Kokkos-based Bake-Off kernels with different variants.
-These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 benchmark implementations, leverage two-dimensional thread structures to maximize data locality and hardware efficiency. These implementations, available at dealii-X benchmarks repository \footnote{\url{https://github.com/dealii-X/benchmarks}} under sum\_factorization folder,
+We have expanded the matrix-free operator evaluation framework by improving the Kokkos-based bake-off kernels with different variants, see initial versions described at \url{https://ceed.exascaleproject.org/bps/}.
+These variants, which build upon the groundwork of Deliverables 1.3 and 3.2 with the respective benchmark implementations, leverage two-dimensional thread structures to maximize data locality and hardware efficiency. These implementations, available at the dealii-X benchmarks repository\footnote{\url{https://github.com/dealii-X/benchmarks}} under the \texttt{sum\_factorization} folder,
 utilize a two-dimensional thread block structure to significantly enhance thread-wise data locality and throughput. Additionally,
-C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling.
+C++ templates are leveraged to enable aggressive compile-time optimizations, including loop unrolling, building on prior insights with the CPU backend in deal.II~\citep{KronbichlerKormann}.
 
 
 Performance evaluations were conducted on the NVIDIA GH200 Grace Hopper Superchip, which integrates an ARM-based 72-core Grace CPU with a Hopper architecture GPU.
@@ -288,40 +288,45 @@ $hp$-capable multigrid infrastructure of
 deal.II~\citep{Fehn2020,Munch2023}. To this end, we have implemented
 polynomial and geometric transfer operators capable of running the
 interpolation algorithms on GPUs. The work has been started in interaction
-with other research in deal.II, particularly
-\url{https://github.com/dealii/dealii/pull/18922} and the organizational commit
-\url{https://github.com/dealii/dealii/pull/19000} that prepares the
+with other research done in deal.II, particularly
+\pr{18922} and the organizational commit
+\pr{19000} that prepares the
 infrastructure. The significant work concerning the local algorithms that
-entirely resides on the GPU have been made within the RUB team for dealii-X. The later include \url{https://github.com/dealii/dealii/pull/19347} and \url{https://github.com/dealii/dealii/pull/19051}.
+entirely resides on the GPU have been made within the RUB team for dealii-X. The latter include the main GPU transfer interface \pr{19347} and \pr{19051}.
 
 With these preparations, we have ported the library deal.II to the JUPITER
 system at J\"ulich Supercomputing Centre (JSC). Our code is capable of using
-the Neon vectorization in the Nvidia Grace CPU and the Hopper-based GPU,
-integrated into the GH200 superchip. For the GPU instructions, we have
+the Neon vectorization in the Nvidia Grace CPU and the Hopper-based GPU as outlined above,
+which together make up the GH200 superchip. For the GPU instructions, we have
 employed the Kokkos abstractions from deal.II with CUDA-aware MPI
 communication. In the following, we report first scaling results on up to 128
 nodes (512 GPUs) on JUPITER. Due to the late availability, with access being
 granted only in February 2026, the team has not been able to tune the
-parameters.
+parameters. Furthermore, the system has initially be observed to be plagued by
+relatively poor network performance, which influences the results presented
+below.
 
 As a test case, we have considered the cube case of
 \cite[Sec.~5.1]{KronbichlerLjungkvist2019}, with additional development
 towards $p$-multigrid. Our solver supports not just classical double-precision
 multigrid, but also mixed precision. As in our previous research
-\citep{KronbichlerLjungkvist2019, Fehn2020}, we have run the multigrid V-cycle
-in single precision (FP32) as a preconditioner, whereas an outer conjugate
-gradient solver is run in double precision. A point-Jacobi/Chebyshev smoother
+\citep{KronbichlerLjungkvist2019, Fehn2020}, we have found the multigrid V-cycle run
+in single precision (FP32) as a preconditioner, combined with an outer conjugate
+gradient solver run in double precision, to offer the best mix of performance and robustness. A point-Jacobi/Chebyshev smoother
 with 5 sweeps is used, and the coarse problem is solved by running a Chebyshev
-iteration until the residual is reduced by a factor $10^3$. As first test,
+iteration until the residual is reduced by a factor $10^3$. As a first test,
 Fig.~\ref{fig:matvec_jupiter} presents the throughput of the operator
 evaluation for continuous finite elements with polynomial degrees $p=3$ to
 $p=5$. The data has been normalized to one GPU, illustrating an excellent
-performance across a wide range of problems. We also include a result for
+performance across a wide range of problems. In relation to the BK kernels
+presented in the previous subsection, this case counts unknowns of the
+continuous finite-element space rather than all unknowns on all cells, and it
+employs a different quadrature formula, placing the kernel between BK3 and
+BK5. We also include a result for
 polynomial degree $p=4$ run on 2 nodes, where an increase in latency is
 observed. This is caused by inter-node communication, whose improvement is a
 topic of ongoing research.
 
-\newpage
 
 \pgfplotstableread{
 	cells     dofs    mv_outer  mv_inner   cg_time  cg_its cg_reduction
@@ -578,26 +583,26 @@ Fig.~\ref{fig:mg_jupiter} shows the throughput of the multigrid solver with
 the current state of the GPU implementation, run on one and two nodes of
 JUPITER, as well as the best CPU-based implementation of deal.II on an AMD-Zen
 5-based system (Otus
-supercomputer\footnote{\url{https://pc2.uni-paderborn.de/systems-and-services/otus}},
-AMD Epyc 9655 Turin, $2\times 96$ cores per node). We note that the CPU-based
+supercomputer\footnote{\url{https://pc2.uni-paderborn.de/systems-and-services/otus}}
+consisting of AMD Epyc 9655 Turin, $2\times 96$ cores per node). We note that the CPU-based
 code utilizes additional optimizations to reduce the memory transfer, in
 particular it (automatically) uses that the mesh is
-Cartesian~\cite{KronbichlerKormann2012} that significantly reduces the memory
+Cartesian~\citep{KronbichlerKormann2012} that significantly reduces the memory
 transfer. Furthermore, it uses advanced schemes to reduce the memory transfer,
 allowing the CPU architecture to compete with the formally much more powerful
 GPU. The point of the CPU result is to set a challenging bar to be exceeded
-for our GPU kernels.
+for our new GPU kernels.
 
 Our main ongoing activities are to improve the tuning on
 JUPITER further, because we expect a larger advantage in the throughput regime
-where a JUPITER node is already faster, and becase we want to improve the
+where a JUPITER node is already faster, and because we want to improve the
 throughput also for smaller sizes. An expected result is that the CPU system
 is doing considerably better when problem sizes are small: On the one hand,
 the lower-latency design of a CPU allows to reach a high performance for
 smaller problem sizes already. On the other hand, the caches in CPUs are
 generous, allowing moderate sizes to reach a superb performance when operating
 entirely from cache memory, as observed for problem sizes around 10 million
-unknowns.  As before, the latency gets impacted when going from 1 to 2 GPUs;
+unknowns.  As before, the latency gets impacted when going from 1 to 2 nodes;
 this is both visible on the CPU and the GPU results, albeit with a much more
 favorable outcome for the CPU in general. On the other hand, it is clearly
 visible that our mixed-precision strategy pays off, showing considerably
@@ -688,7 +693,9 @@ on the smaller problems in the multigrid hierarchy: Each communication step
 would increase with an increasing number of nodes. On 128 nodes, each ghost
 exchange on each level would take at least $7e-4$ seconds, no matter how small
 the message and problem size. As a result, further tuning is needed to improve
-these numbers, which will in turn also improve the scalability.
+these numbers, including the setup on the supercomputer itself, which will in
+turn also improve the scalability. Tests on other large GPU systems, such as
+MareNostrum and Leonardo, are planned to get results for cross-comparison.
 
 \begin{figure}
 	\begin{tikzpicture}
@@ -759,9 +766,9 @@ these numbers, which will in turn also improve the scalability.
 \label{sec:section2}
 
 This section documents upstream (deal.II) development items tracked
-with the \texttt{dealii-x} label and summarises recent auxiliary
+in deal.II with the \texttt{dealii-x} label and summarises recent auxiliary
 developments relevant to reduced (and mixed-dimensional) modelling
-workflows. This report discusses (i) Polygonal discretisation
+workflows and coupling algorithms. This report discusses (i) Polygonal discretisation
 workstream in Section~\ref{sec:section4}, (ii) specific
 PSCToolkit/AMG4PSBLAS integration in Section~\ref{sec:section5}, and
 (iii) advanced MUMPS factorisation features in
@@ -784,7 +791,7 @@ of PRs (beginning with \pr{19023} and \pr{19024}). In addition, we
 briefly note the status of two research-code repositories that support
 reduced/mixed-dimensional modelling pipelines for dealii-X: the
 ``Reduced Lagrange Multipliers'' repository, currently in use by the
-FAU group for brain brain simulations related to MRE studies and by
+FAU group for brain brain simulations related to MRE studies, explained in more detail in the report for deliverable D2.3, by
 the WIAS group for Liver simulations, and the ``Reduced dimensional
 blood flow simulator'', currently under active development, and to be
 coupled with Liver and Brain simulations. 
@@ -877,8 +884,8 @@ the meta-issue \issue{19056} (opened as of Newsletter \#339).% \footnote{Meta-is
 
 The tutorial implements a finite element immersed boundary method with
 distributed Lagrange multipliers for fully coupled fluid-structure
-interaction: an incompressible Navier--Stokes fluid is coupled to a
-compressible (possibly viscous) hyper-elastic solid on independent,
+interaction: an incompressible fluid described by the Navier--Stokes equations is coupled to a
+compressible, possibly viscous, hyper-elastic solid on independent,
 non-matching volumetric meshes, with velocity continuity enforced
 through an additional multiplier field $\lambda$ rather than
 penalization. It combines particle-based transfer,
@@ -894,7 +901,7 @@ preconditioning and advanced MUMPS configurations.
 The PR implements and showcases the application of the recently
 developed augmented Lagrangian preconditioner in the UNIPI group,
 which is designed to handle the saddle-point structure of the coupled
-system \cite{BenziFederHeltai-2026-a}. 
+system \citep{BenziFederHeltai-2026-a}. Taken together, the advances described here complete the milestone \#7 -- Scalable Coupling Algorithms Framework Completion.
 
 % \subsection{Complementary repositories for reduced/mixed-dimensional
 % modelling workflows} \label{sec:rom_related_repos} 
@@ -933,8 +940,6 @@ system \cite{BenziFederHeltai-2026-a}.
 % or (ii) an exported changelog/patchset, or (iii) manual extraction
 % by the deliverable editor. \end{itemize} 
 
-\newpage
-
 \section{{Polygonal discretization module}}
 \label{sec:section4}
 
@@ -947,13 +952,13 @@ In view of the integration of the core functionalities of \texttt{Polydeal} into
 
 \subsection{Geometrically informed multilevel preconditioning}
 Large-scale simulations require efficient preconditioners for the iterative solution of the linear systems arising from finite element discretizations, for instance with discontinuous Galerkin (DG) methods. For elliptic problems, geometric multigrid methods are among the most effective preconditioners. However, their application requires the construction of a mesh hierarchy, which can be challenging for fine, unstructured geometries. In such cases, AMG methods are often employed as an alternative. One of the key features of polytopal methods is precisely their very good interplay with DG methodologies (see e.g.,~\cite{polyDG,Antoniettihp}). In particular, the
-flexibility of DG methods allows the usage of very general agglomerated grids, i.e.\ grids obtained by merging together several elements of a
+flexibility of DG methods allows the usage of very general agglomerated grids, i.e., grids obtained by merging together several elements of a
 finer grid.
 
 
 By exploiting the efficient agglomeration routine developed in~\cite{FEDER2025113773}, already available in \texttt{Polydeal}, it is possible to construct
 a hierarchy of \emph{nested} agglomerated grids, for which intergrid transfer operators among consecutive levels are cheap. This hierarchy naturally enables the construction of multilevel preconditioners for DG discretizations of elliptic problems, leveraging polytopal grids on coarser levels, while keeping the \emph{original} grid unchanged. Coarser operators can be obtained by rediscretization of the partial differential
-equation on the agglomerated grids, or by triple Galerkin projection\footnote{This means that coarser operators are recursively obtained by restriction of the finer operators, in an algebraic multigrid sense.}. The latter approach is particularly appealing, since it
+equation on the agglomerated grids, or by triple Galerkin projection.\footnote{This means that coarser operators are recursively obtained by restriction of the finer operators, in an algebraic multigrid sense.} The latter approach is particularly appealing, since it
 allows obtaining coarser operators without the need of rediscretization on agglomerated meshes.
 
 This technique has been successfully applied in~\cite{feder2026agglomeration} to the DG discretization of the monodomain model arising in cardiac electrophysiology. More precisely, we have developed a novel multigrid solver for its DG discretization, exploiting agglomerated
@@ -1033,14 +1038,14 @@ application cost of the preconditioner.
 \label{sec:section5}
 
 The integration of PSCToolkit (Parallel Sparse Computing Toolkit)~\cite{psctoolkit} aims to provide scalable algebraic
-multigrid (AMG) preconditioners through its AMG4PSBLAS package. By merging the preconditioners developed within AMG4PSBLAS
+multigrid (AMG) preconditioners through its AMG4PSBLAS package. By merging the preconditioners developed within the library AMG4PSBLAS
 into deal.II, it will be possible to exploit them as drop-in replacements in application codes. The integration
 targets the following new release candidates: PSBLAS v3.9 and AMG4PSBLAS v1.2.
 
 \subsection{Integration status}
 The integration of PSCToolkit into the deal.II master branch is currently in progress, and can be tracked on the
-official deal.II GitHub repository~\footnote{See \pr{19050} and \pr{18938}}. Concurrently, a fully working interface (whose code will be progressively upstreamed into the main deal.II repository) has been developed on a separate
-branch\footnote{Available at \url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas/}.}, providing complete access
+official deal.II GitHub repository.\footnote{See \pr{19050} and \pr{18938}} Concurrently, a fully working interface (whose code will be progressively upstreamed into the main deal.II repository) has been developed on a separate
+branch,\footnote{Available at \url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas/}.} providing complete access
 to the preconditioners developed within AMG4PSBLAS.
 
 In general, the design of the user interface closely follows the existing structure of the main deal.II linear algebra frameworks, such as the
@@ -1062,9 +1067,9 @@ no structural changes to the application code.
 \subsection{Preliminary results for AMG4PSBLAS preconditioners}
 
 To validate the correctness and assess the performance of the AMG4PSBLAS interface, we have developed a tutorial application implementing a finite element solver for the Poisson problem, employing
-nodal Lagrangian $\mathcal{Q}^1$ elements. The implementation and results are documented in deliverable D1.6.
+nodal Lagrangian $\mathcal{Q}^1$ elements. The implementation and results are documented in deliverable D1.6 -- Tutorials based on External Libraries.
 
-To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center\footnote{MareNostrum 5 information: \url{https://www.bsc.es/marenostrum/marenostrum-5}}. These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
+To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center.\footnote{MareNostrum 5 information: \url{https://www.bsc.es/marenostrum/marenostrum-5}} These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
 typical of pre-exascale applications.
 
 \subsection{Ongoing and future work}
@@ -1092,9 +1097,10 @@ of number of floating point operations and of memory footprint.
 
 The complexity of the direct methods approaches can be reduced thanks to Block
 Low-Rank (BLR) approximation (see \cite{ablm:17b,aabblw:15}) with adaptive precision \cite{abbg:23} to exploit data sparsity.
-This is illustrated in Table~\ref{t:beltrami} on the Beltrami Flow problem from lifex library. Comparing the first two rows "Full-Rank" factorization and "BLR factorization with adaptive precision" in Table~\ref{t:beltrami} we see that the number of operation is reduce by two orders of magnitude.
+This is illustrated in Table~\ref{t:beltrami} on the Beltrami Flow problem from the lifex library. Comparing the first two rows "Full-Rank" factorization and "BLR factorization with adaptive precision" in Table~\ref{t:beltrami}, we see that the number of operation is reduced by two orders of magnitude.
 
 \begin{table}[hb]
+  \small
     \begin{center}
         \begin{tabular}{|l|c|c|c|c|}
             \hline
@@ -1119,8 +1125,8 @@ This is illustrated in Table~\ref{t:beltrami} on the Beltrami Flow problem from 
     \end{center}
 \end{table}
 
-The performance can be further improved using mixed precision algorithms \cite{abhl22a} as illustrated with the last two lines of Table~\ref{t:beltrami}.
-In row "Full-Rank", {\it single precision factorization with mixed precision iterative refinement (IR)} and an efficient approach to access data in low precision  \cite{ajlmp:2025} enable to divide time and memory by a factor of two.
+The performance can be further improved using mixed precision algorithms as described in \cite{abhl22a} and evaluated in the last two lines of Table~\ref{t:beltrami}.
+In row ``Full-Rank'', {\it single precision factorization with mixed precision iterative refinement (IR)} and an efficient approach to access data in low precision  \citep{ajlmp:2025} enable to cut the run time and memory requirements by a factor of two.
 Combining this approach to BLR with adaptive precision leads to an overall significant reduction in time (from 364 to 24 seconds) and memory (from 620 to 125 Gbytes) with a satisfactory backward error.
 It should be mentioned, as described in \cite{abhl22a}, that on ill-conditioned matrices GMRES based iterative refinements should be used.
 
@@ -1133,31 +1139,39 @@ Recent experiments with accelerated nodes (Nvidia-GraceHopper and AMD-Mi250 and 
 
 
 \begin{thebibliography}{10}
-    \bibitem[Filippone and Colajanni, 2000]{PSBLAS}Salvatore Filippone and Michele Colajanni, "PSBLAS: a library for parallel linear algebra computation on sparse matrices", ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527--550, 2000. \url{https://doi.org/10.1145/365723.365732}
-    \bibitem[D'Ambra et al., 2025]{psctoolkit}Pasqua D'Ambra, Fabio Durastante and Salvatore Filippone, "PSCToolkit: solving sparse linear systems with a large number of GPUs", arXiv preprint arXiv:2406.19754, 2025. \url{https://arxiv.org/abs/2406.19754}
-    \bibitem[Cangiani et al., 2014]{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
+
+    \bibitem[Amestoy et al., 2015]{aabblw:15} P.~R. Amestoy, C.~Ashcraft, O.~Boiteau, A.~Buttari, J.-Y. L'Excellent, and C.~Weisbecker. Improving multifrontal methods by means of block low-rank representations. {\em SIAM Journal on Scientific Computing}, 37(3):A1451--A1474, 2015.
+
+    \bibitem[Amestoy et al., 2023a]{abbg:23}P.~R. Amestoy, O.~Boiteau, A.~Buttari, M.~Gerest, F.~Jezequel, J.-Y. L'Excellent, and T.~Mary. Mixed precision low-rank approximations and their application to block low-rank {LU} factorization. {\em IMA Journal of Numerical Analysis}, 43:2198--2227, July 2023a.
+
+    \bibitem[Amestoy et al., 2019]{ablm:17b} P.~R. Amestoy, A.~Buttari, J.-Y. L'Excellent, and T.~Mary. {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures}. {\em ACM Transactions on Mathematical Software}, 45:2:1--2:26, 2019.
+
+    \bibitem[Amestoy et al., 2023b]{abhl22a} P.~R. Amestoy, A.~Buttari, N.~J. Higham, J.-Y. L'Excellent, T.~Mary, and B.~Vieubl\'e. Combining sparse approximate factorizations with mixed precision iterative refinement. {\em ACM Transactions on Mathematical Software}, 49(1):1--29, 2023b.
+
+    \bibitem[Amestoy et al., 2025] {ajlmp:2025} P.~R. Amestoy, A.~Jego, J.-Y. L'Excellent, T.~Mary, and G.~Pichon. {BLAS-based Block Memory Accessor with Applications to Mixed Precision Sparse Direct Solvers}. preprint submitted to publication, Apr. 2025.
+      
     \bibitem[Antonietti et al., 2013]{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
-    \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
-    \bibitem[Feder and Africa, 2026]{feder2026agglomeration}Marco Feder and Pasquale Claudio Africa, "An agglomeration-based multigrid solver for the discontinuous Galerkin discretization of cardiac electrophysiology", arXiv preprint arXiv:2602.16312, 2026.
+      
     \bibitem[Benzi et al., 2026]{BenziFederHeltai-2026-a}Michele Benzi, Marco Feder, Luca Heltai and Federica Mugnaioni, "Scalable Augmented Lagrangian preconditioners for Fictitious Domain problems", Computer methods in applied mechanics and engineering, vol. 450, p. 118522, 2026.
+      
+    \bibitem[Cangiani et al., 2014]{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
+      
+    \bibitem[D'Ambra et al., 2025]{psctoolkit}Pasqua D'Ambra, Fabio Durastante and Salvatore Filippone, "PSCToolkit: solving sparse linear systems with a large number of GPUs", arXiv preprint arXiv:2406.19754, 2025. \url{https://arxiv.org/abs/2406.19754}
+      
+    \bibitem[Feder and Africa, 2026]{feder2026agglomeration}Marco Feder and Pasquale Claudio Africa, "An agglomeration-based multigrid solver for the discontinuous Galerkin discretization of cardiac electrophysiology", arXiv preprint arXiv:2602.16312, 2026.
+      
+    \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
+
+    \bibitem[Fehn et al., 2020]{Fehn2020} Niklas Fehn, Peter Munch, Wolfgang A. Wall, and Martin Kronbichler, ``Hybrid multigrid methods for high-order discontinuous {G}alerkin discretizations'', Journal of Computational Physics, vol. 415 109538, 2020.
+
+    \bibitem[Filippone and Colajanni, 2000]{PSBLAS}Salvatore Filippone and Michele Colajanni, "PSBLAS: a library for parallel linear algebra computation on sparse matrices", ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527--550, 2000. \url{https://doi.org/10.1145/365723.365732}
+      
   %  \bibitem[Kronbichler and Kormann, 2019]{KronbichlerKormann}Martin Kronbichler and Katharina Kormann, "Fast Matrix-Free Evaluation of Discontinuous Galerkin Finite Element Operators", ACM Transactions on Mathematical Software, vol. 45, no. 3, Article 29, 2019.
-    \bibitem[Amestoy, Boiteau et al., 2023]{abbg:23}P.~Amestoy, O.~Boiteau, A.~Buttari, M.~Gerest, F.~Jezequel, J.-Y. L'Excellent, and T.~Mary. Mixed precision low-rank approximations and their application to block low-rank {LU} factorization. {\em IMA Journal of Numerical Analysis}, 43:2198--2227, July 2023.
 
 	\bibitem[Kronbichler and Kormann, 2012]{KronbichlerKormann2012} Martin Kronbichler and Katharina Kormann, ``A generic interface for parallel cell-based finite element operator application'', Computers \& Fluids 63, pp.~135--147, 2012.
 	\bibitem[Kronbichler and Kormann, 2019]{KronbichlerKormann}Martin Kronbichler and Katharina Kormann, ``Fast Matrix-Free Evaluation of Discontinuous Galerkin Finite Element Operators'', ACM Transactions on Mathematical Software, vol. 45, no. 3, Article 29, 2019.
 	\bibitem[Kronbichler and Ljungkvist, 2019]{KronbichlerLjungkvist2019}Martin Kronbichler and Karl Ljungkvist, ``Multigrid for matrix-free high-order finite element computations on graphics processors'', ACM Transactions on Parallel Computing 6, no. 1, Article 2, 2019.
 	\bibitem[Munch et al., 2023]{Munch2023}Peter Munch, Timo Heister, Laura Prieto Saavedra, and Martin Kronbichler, ``Efficient distributed matrix-free multigrid methods on locally refined meshes for FEM computations'', ACM Transactions on Parallel Computing, 10, no. 1, Article 3, 2023.
-
-	\bibitem[Fehn et al., 2020]{Fehn2020} Niklas Fehn, Peter Munch, Wolfgang A. Wall, and Martin Kronbichler, ``Hybrid multigrid methods for high-order discontinuous {G}alerkin discretizations'', Journal of Computational Physics, vol. 415 109538, 2020.
-
-    \bibitem[Amestoy, Buttari et al., 2023]{abhl22a} P.~Amestoy, A.~Buttari, N.~J. Higham, J.-Y. L'Excellent, T.~Mary, and B.~Vieubl\'e. Combining sparse approximate factorizations with mixed precision iterative refinement. {\em ACM Transactions on Mathematical Software}, 49(1):1--29, 2023.
-
-    \bibitem[Amestoy et al., 2025] {ajlmp:2025} P.~Amestoy, A.~Jego, J.-Y. L'Excellent, T.~Mary, and G.~Pichon. {BLAS-based Block Memory Accessor with Applications to Mixed Precision Sparse Direct Solvers}. preprint submitted to publication, Apr. 2025.
-
-    \bibitem[Amestoy et al., 2015]{aabblw:15} P.~R. Amestoy, C.~Ashcraft, O.~Boiteau, A.~Buttari, J.-Y. L'Excellent, and C.~Weisbecker. Improving multifrontal methods by means of block low-rank representations. {\em SIAM Journal on Scientific Computing}, 37(3):A1451--A1474, 2015.
-
-    \bibitem[Amestoy et al., 2019]{ablm:17b} P.~R. Amestoy, A.~Buttari, J.-Y. L'Excellent, and T.~Mary. {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures}. {\em ACM Transactions on Mathematical Software}, 45:2:1--2:26, 2019.
-    
     
 
 \end{thebibliography}
