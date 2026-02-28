@@ -11,6 +11,9 @@
 \usepackage[utf8x]{inputenc} % for registered and trademark symbols
 \usepackage{listings}
 
+% color for lstlistings
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.3}
 
@@ -109,11 +112,9 @@ diverse heterogenous environments of the EuroHPC ecosystem.
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
+    \item Section \ref{sec:section2}: [Poisson Solver Proxy App]
+    \item Section \ref{sec:section3}: [Energy Measurement]
     \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
 \end{itemize}
 
 \newpage
@@ -155,7 +156,9 @@ effective at propagating information at a faster rate compared to other iterativ
 One of the scaling problems arising with multigrid methods is the
 communication latency of the coarse-grid solver at very high MPI rank counts.
 
-\begin{lstlisting}[caption={Script for building the BP3.5 demo}]
+\begin{lstlisting}[
+    basicstyle=\ttfamily\small,
+    caption={Script for building the BP3.5 demo}]
 git clone https://github.com/dealii-X/benchmarks.git
 cd benchmarks/bakeoff_problems_dealii
 
@@ -167,7 +170,9 @@ cmake -B build -S src \
 cmake --build build
 \end{lstlisting}
 
-\begin{lstlisting}[caption={Script for building the BK benchmarks}]
+\begin{lstlisting}[
+    basicstyle=\ttfamily\small,
+    caption={Script for building the BK benchmarks}]
 git clone https://github.com/dealii-X/benchmarks.git
 cd benchmarks/sum_factorization
 cmake -B build -S . \
@@ -285,13 +290,13 @@ To launch data collection with APS the command is
 By default, statistics of the whole application are collected.
 To enable collection only for a specific region, the source code can be instrumented
 with calls to Intel Tracing Technology (ITT) API.
-The function \texttt{__itt_pause()} and \texttt{__itt_resume()} allow pausing
+The function \texttt{\_\_itt\_pause()} and \texttt{\_\_itt\_resume()} allow pausing
 or resuming data collection, respectively.
 
 A common scenario in scientific finite elements applications is to have a preprocessing phase,
 where inputs are read and mesh-related infrastructure is set-up.
 To ignore this phase during APS collection, we can start aps in paused mode,
-and call \texttt{__itt_resume()} before the main time-stepping or solver loop.
+and call \texttt{\_\_itt\_resume()} before the main time-stepping or solver loop.
 
 \subsubsection{VTune Profiler}
 
@@ -321,135 +326,174 @@ To obtain line profiling data linked to the source file, the executable must be 
 \label{fig:intel_advisor}
 \end{figure}
 
-
-\subsection{LIKWID}
+\subsection{LIKWID Performance Tools}
 
 The LIKWID Performance Tools\footnote{\url{https://hpc.fau.de/research/tools/likwid/}}
-developed by Erlangen National High Performance Computing Center (NHR@FAU) are a suite
+developed at the Erlangen National High Performance Computing Center (NHR@FAU) are a suite
 of command-line applications for performance monitoring and benchmarking.
-It supports Intel, AMD, and ARM CPU architectures on GNU/Linux operation system.
-Recent versions of the tools have also added support for Nvidia and AMD GPUs.
+They provide a lightweight abstraction for analyzing hardware performance counters
+across major CPU and GPU architectures. Within our demonstrator kernels, LIKWID
+is used to measure the arithmetic intensity and througput of high-order
+finite element kernels.
 
-For  the LIKWID Marker API is used. In this approach
-regions of interest in the code are tagged/registered for performance counter collection.
+We make use of the LIKWID Marker API which enables the measuring of named regions of code.
+This allows us to isolate specific computational bottlenecks, such as the evaluation
+of the bilinear finite element forms, right-hand side evaluation, and the iterative linear
+equation solver. As shown in Listing \ref{lst:Marker}, the instrumention is only minimally
+intrusive. The regions of interest are marked for collection by calling the Marker API
+functions or function-like macros, which allow the performance monitoring to be enabled
+or disabled using the preprocessor (\texttt{-D LIKWID\_PERFMON}.).
 
-Use of the Marker API enables measuring named regions of the code.
-
-\begin{lstlisting}[caption={Minimal example of using LIKWID Marker API for CPU instrumentation}]
+\begin{lstlisting}[
+    label={lst:Marker}
+    caption={Minimal example of using LIKWID Marker API for CPU instrumentation}]
+#ifdef LIKWID_PERFMON
 #include <likwid-marker.h>
+#else
+  // Empty definitions go here
+#endif
+
 int main() {
   LIKWID_MARKER_INIT;
   LIKWID_MARKER_THREADINIT;
   LIKWID_MARKER_START("matvec");
   /* region of interest we measure */
-  LIKWID_MARKER_STOP("kernel");
+  LIKWID_MARKER_STOP("matvec");
   LIKWID_MARKER_CLOSE;
   return 0;
 }
 \end{lstlisting}
-In practice, the Marker API calls are often controlled using preprocessor conditional text inclusion:
-\begin{verbatim}
-#ifdef LIKWID_PERFMON
-/* LIKWID header or Marker API calls*/
-#endif
-\end{verbatim}
-to allow selection of the instrumented code at compilation time using
-the definition \texttt{-D LIKWID_PERFMON}.
 
-After building the instrumented executable it is invoked with the Likwid performance counter wrapper:
+After the code has been instrumented and built accordingly, the measurements are
+collected by invoking the executable with the LIKWID performance counter tool:
 \begin{verbatim}
 > likwid-perfctr [options] <executable>
 \end{verbatim}
+The output groups can be selected using the command-line options, and normally include
+metrics including floating point operations per second and memory-bandwidth related metrics
+(see Listing \ref{lst:likwid_result}).
 
-The listing below shows an example of the expected output using the metric group:
-\begin{lstlisting}[caption={Output of \texttt{likwid-perfctr} for the serial BK1 benchmark (CPU-only).}]
+The instrumented executable is then used within a ``measure-refine'' cycle, analogous
+to the standard ``edit-compile-run'' cycle of software development, testing
+the impact of different optimizations (e.g. vectorization, cache-blocking) and
+immediately re-measuring to quantify the speedup and also inform the (numerical) algorithm design.
+Using the statistics collected by \texttt{likwid-perfctr} and related LIKWID tools,
+the scientific programmer can also create empirical roofline plots.
+
+\begin{lstlisting}[
+    label={lst:likwid_result}
+    caption={Output of \texttt{likwid-perfctr} for the serial BK1 benchmark (CPU-only).}]
 ...
 \end{lstlisting}
-Likwid supports several pre-existing metric groups to enable.
-
 
 \newpage
 \section{{Energy Measurement}}
 \label{sec:section4}
 
-The assesment of energy usage is an often-overlooked aspect in computing.
-While the energy costs are often ignored for software running on personal/desktop computers, the large scale of modern HPC systems incurs significant runtime
-costs for electricity.
+Energy consumption is an increasingly critical metric in modern computing.
+While often secondary for consumer-grade desktop software, the immense scale of
+High-Performance Computing (HPC) systems means that electricity usage
+accounts for a significant portion of total operational costs.
 
-The performance per Watt has been increasing steadly in the last decades, driven
-by improvements in hardware architecture and design.
-Nonetheless, software factors also have a very large influence.
-A famous place where this plays out is the memory access pattern on modern GPUs,
-where the use of coalesced loading patterns greatly improves both performance
-and the expended enegy (CITE Steven Jones talk).
+While hardware advancements have steadily improved performance-per-watt over recent decades, software efficiency remains a dominant factor. A prominent example is GPU memory optimization: utilizing coalesced loading patterns not only accelerates execution but also drastically reduces the energy footprint compared to unoptimized, strided access. However, the interplay of clock frequencies, computational intensity, and parallelism makes obtaining reproducible energy measurements a complex task for end-users.
 
-The plethora of factors influencing energy usage, including frequency,
-software intensity, memory access patterns and parallelism, make reproducible measurement of energy challenging for the final scientific users.
+\subsection{{p3em}}
 
+The p3em\footnote{\url{https://github.com/svtcli/p3em}} library \cite{Cielo2025} provides a modular framework for measuring power and energy across heterogeneous devices. It is designed with a minimalistic, header-only C++ API, facilitating
+easy integration into existing codebases. The API is exposed as a single class
+named \texttt{p3em}, instances of which serve as ``energy-meters''.
 
-\begin{center}
-    \begin{table}[h!]
-    \small
-    \caption{[Table Caption]}
-    \renewcommand{\arraystretch}{1.25}
-    \label{tab:example_table}
-    \begin{tabular}{|l|l|l|c|}
-    \hline
-    \textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} & \textbf{Column 4} \\
-    \hline
-    Item 1 & Description & Category & Value \\
-    Item 2 & Description & Category & Value \\
-    Item 3 & Description & Category & Value \\
-    \hline
-    \end{tabular}
-    \end{table}
-\end{center}
+The p3em library operates by spawning a background thread that manages a measurement loop.
+This thread initiaties a sub-process which interfaces with vendor-specific APIs
+(such as NVIDIA's \texttt{nvidia-smi} or Linux \texttt{perf}) to periodically
+query the device energy usage.
+To maintain a hardware-agnostic interface, p3em requires the sub-process to
+output a single monotonically increasing value representing the total energy
+consumption in Joules.
 
-\newpage
+The subprocess is responsible for the temporal integration of power into energy.
+It must output a monotonically increasing energy value, representing the total
+Joules consumed.
+Typically, this is calculated via trapezoidal integration
+of instantaneous power samples\footnote{In practice, these values may already be averaged by the device driver}.
+Alternatively, the sub-process may directly report hardware-level energy
+counters if supported by the device.
+The background thread in the parent process captures these value from the
+sub-process output, providing a synchronized running total for the given
+region of interest.
+The \texttt{p3em.sh} script provided in the library's reposotiry serves
+as a versatile template, containing pre-configured commands for several
+platforms, including Nvidia, Intel, and AMD (GPU) architectures,
+which can be toggled depending on the available hardware.
 
-\section{{[Section Title]}}
-\label{sec:section5}
+The listing~\ref{lst:p3em} demonstrates how to instrument a C++ "region of interest" (ROI)
+using p3em. Further usage examples in C, Fortran and Python can be found at the p3em source repository.
 
-\lipsum[14-15]
+\begin{lstlisting}[
+    label={lst:p3em},
+    language=C++, basicstyle=\ttfamily\small, breaklines=true,
+    backgroundcolor=\color{backcolour},
+    caption={Energy measurement instrumentation using p3em}]
+#include <cstdlib>
+#include <iostream>
+#include <p3em.hpp>
 
-\subsection{{[Subsection Title]}}
-\lipsum[16]
+int main() {
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
-\end{itemize}
+    // Determine sub-process script location via envvar or default path
+    auto p3em_script_path = []() -> std::string {
+        const char* path = std::getenv("P3EM_SCRIPT");
+        return path ? path : "p3em.sh";
+    }();
 
-\newpage
+    // Begin Region of Interest (ROI)
+    {
+        // Constructor initializes the background thread
+        auto em = p3em(p3em_script_path);
+        for(int i = 0; i < niters; ++i) {
+            // ... Perform heavy computational kernels ...
+        }
+        // Retrieve and report energy usage
+        std::cout << "Latest value:" << em.getLatestValue() << '\n';
 
-\section{{[Section Title]}}
-\label{sec:section6}
+        // Meter stops when 'em' goes out of scope (RAII)
+    }
 
-\lipsum[18-19]
+    return 0;
+}
+\end{lstlisting}
 
-\begin{center}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{|l|l|l|}
-\hline
-\textbf{Column 1} & \textbf{Column 2} & \textbf{Column 3} \\
-\hline
-Item 1 & Description & Value \\
-\hline
-Item 2 & Description & Value \\
-\hline
-Item 3 & Description & Value \\
-\hline
-\end{tabular}}
-\label{tab:example_table2}
-\end{center}
+An example of a specialized user-provided script, measuring energy by calling the NVIDIA Management Library
+via the Python bindings (\texttt{pyNVML}) is in Listing~\ref{lst:pynvml}.
+
+\begin{lstlisting}[
+    label={lst:pynvml},
+    language=Python,
+    caption={Python measurement script using pyNVML to stream cumulative GPU energy consumption in Joules.}]
+#!/usr/bin/env python3
+from pynvml import *
+import sys
+import time
+
+try:
+    nvmlInit()
+    handle = nvmlDeviceGetHandleByIndex(0)
+    while True:
+        # returns total energy in millijoules
+        nrg = nvmlDeviceGetTotalEnergyConsumption(handle)
+        # Output Joules to stdout
+        print(nrg / 1000.0)
+        sys.stdout.flush()
+        time.sleep(0.1)
+finally:
+    nvmlShutdown()
+\end{lstlisting}
 
 \newpage 
-
 \section{{Conclusion}} \label{sec:conclusion}
 
-\lipsum[20]
+
+
 
 
 
