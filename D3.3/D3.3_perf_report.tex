@@ -399,35 +399,34 @@ While hardware advancements have steadily improved performance-per-watt over rec
 
 \subsection{{p3em}}
 
-The p3em\footnote{\url{https://github.com/svtcli/p3em}} library \cite{Cielo2025} provides a modular framework for measuring power and energy across heterogeneous devices. It is designed with a minimalistic, header-only C++ API, facilitating
-easy integration into existing codebases. The API is exposed as a single class
-named \texttt{p3em}, instances of which serve as ``energy-meters''.
+p3em\footnote{\url{https://github.com/svtcli/p3em}} (standing for Permitted, Portable, Parsable Energy Meter)
+offers a simple API for measuring energy across heterogeneous devices \cite{Cielo2025}.
+It is designed as a minimalistic, header-only C++ library, facilitating
+easy integration into existing codebases.
+Callers of the API create instances of the \texttt{p3em} class, which serves as an ``energy-meter''.
 
-The p3em library operates by spawning a background thread that manages a measurement loop.
-This thread initiaties a sub-process which interfaces with vendor-specific APIs
-(such as NVIDIA's \texttt{nvidia-smi} or Linux \texttt{perf}) to periodically
-query the device energy usage.
+p3em operates by spawning a background thread that manages a power-measurement loop.
+This thread initiaties a sub-process which interfaces with vendor-specific APIs or
+OS-specific energy measurement tools (such as NVIDIA's \texttt{nvidia-smi} or Linux \texttt{perf})
+to periodically query the device energy usage.
+
 To maintain a hardware-agnostic interface, p3em requires the sub-process to
 output a single monotonically increasing value representing the total energy
 consumption in Joules.
-
-The subprocess is responsible for the temporal integration of power into energy.
-It must output a monotonically increasing energy value, representing the total
-Joules consumed.
-Typically, this is calculated via trapezoidal integration
-of instantaneous power samples\footnote{In practice, these values may already be averaged by the device driver}.
-Alternatively, the sub-process may directly report hardware-level energy
+This value could be calculated via numerical integration
+of instantaneous power samples\footnote{In practice, these values may already be averaged by the device driver}
+or alternatively, the sub-process may directly report hardware-level energy
 counters if supported by the device.
-The background thread in the parent process captures these value from the
-sub-process output, providing a synchronized running total for the given
-region of interest.
-The \texttt{p3em.sh} script provided in the library's reposotiry serves
+The background thread captures these value from the sub-process output,
+providing a synchronized running total for the given region of interest.
+The \texttt{p3em.sh} script provided in the library's repository serves
 as a versatile template, containing pre-configured commands for several
 platforms, including Nvidia, Intel, and AMD (GPU) architectures,
 which can be toggled depending on the available hardware.
 
 The listing~\ref{lst:p3em} demonstrates how to instrument a C++ "region of interest" (ROI)
-using p3em. Further usage examples in C, Fortran and Python can be found at the p3em source repository.
+using p3em. Conceptually, usage of the API is similar to using a RAII-based Timer class.
+Further usage examples in C, Fortran and Python can be found at the p3em source repository.
 
 \begin{lstlisting}[
     label={lst:p3em},
