@@ -354,6 +354,7 @@ As shown in Listing \ref{lst:intel_itt}, we can start APS in paused mode and res
 performance counter collection only for the region of interest.
 
 \begin{lstlisting}[
+    basicstyle=\ttfamily\small,
     label={lst:intel_itt},
     caption={Minimal instrumentation example using the Intel-specific ITT API}]
 #include <ittnotify.h>
@@ -372,13 +373,13 @@ int main() {
 }
 \end{lstlisting}
 
-An example of the APS output is shown in \ref{fig:intel_aps}.
+An example of the APS output is shown in Fig.~\ref{fig:intel_aps}.
 Due to the coarse, application-level profiling granularity, the performance
 snapshot must be interpreted with care.
 For instance, in a GPU-accelerated benchmark, low physical utilization is expected.
 Another source of interpretation errors is that APS scales its metrics against the
 full hardware resources of the system (e.g., in SuperMUC-NG Phase 2, all four GPUs of a node).
-In tests targetting only a single GPU device, this results in ``artificially'' low
+In tests targeting only a single GPU device, this results in ``artificially'' low
 utilization.
 
 \begin{figure}
@@ -439,8 +440,11 @@ intrusive. The regions of interest are marked for collection by calling the Mark
 functions or function-like macros, which allow the performance monitoring to be enabled
 or disabled using the preprocessor (\texttt{-D LIKWID\_PERFMON}.).
 
+\pagebreak
 \begin{lstlisting}[
-    label={lst:Marker}
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{backcolour},
+    label={lst:Marker},
     caption={Minimal example of using LIKWID Marker API for CPU instrumentation}]
 #ifdef LIKWID_PERFMON
 #include <likwid-marker.h>
@@ -480,8 +484,11 @@ immediately re-measuring to quantify the speedup and also inform the (numerical)
 Using the statistics collected by \texttt{likwid-perfctr} and related LIKWID tools,
 the scientific programmer can also create empirical roofline plots.
 
-\begin{figure}
-  \begin{verbatim}
+\begin{lstlisting}[
+    basicstyle=\ttfamily\footnotesize,
+    label={lst:likwid_result},
+    backgroundcolor=\color{backcolour},
+    caption={Output of \texttt{likwid-mpirun} for a BP3-inspired benchmark on an Intel Xeon Platinum 8360Y CPU (2 sockets, 72 cores used).}]
 +----------------------------------------+--------------+------------+
 |                 Metric                 |      Sum     |     Min    |
 +----------------------------------------+--------------+------------+
@@ -506,10 +513,7 @@ the scientific programmer can also create empirical roofline plots.
 | Operational intensity [FLOP/Byte] STAT |       0.9741 |          0 |
 |      Vectorization ratio [%] STAT      |    6684.3808 |    92.7566 |
 +----------------------------------------+--------------+------------+
-\end{verbatim}
-\caption{Output of \texttt{likwid-perfctr} for a BP3-inspired benchmark on a CPU.}
-\label{lst:likwid_result}
-\end{figure}
+\end{lstlisting}
 
 \newpage
 \section{{Energy Measurement}}
@@ -530,9 +534,9 @@ It is designed as a minimalistic, header-only C++ library, facilitating
 easy integration into existing codebases.
 Callers of the API create instances of the \texttt{p3em} class, which serves as an ``energy-meter''.
 
-p3em operates by spawning a background thread that manages a power-measurement loop.
+p3em operates by spawning a background thread that manages a power-measu\-rement loop.
 This thread initiaties a sub-process which interfaces with vendor-specific APIs or
-OS-specific energy measurement tools (such as NVIDIA's \texttt{nvidia-smi} or Linux \texttt{perf})
+OS-specific energy measurement tools (such as the NVIDIA tool \texttt{nvidia-smi} or Linux \texttt{perf})
 to periodically query the device energy usage.
 
 To maintain a hardware-agnostic interface, p3em requires the sub-process to
@@ -592,7 +596,8 @@ via the Python bindings (\texttt{pyNVML}) is in Listing~\ref{lst:pynvml}.
 
 \begin{lstlisting}[
     label={lst:pynvml},
-    language=Python,
+    language=Python, basicstyle=\ttfamily\small,
+    backgroundcolor=\color{backcolour},
     caption={Python measurement script using pyNVML to stream cumulative GPU energy consumption in Joules.}]
 #!/usr/bin/env python3
 from pynvml import *
@@ -639,11 +644,14 @@ While these tools are indispensible for monitoring, they require a level
 of external orchestration and post-processing (as seen with the p3em subprocess concept)
 to provide the energy data desirable for fine-grained analysis.
 
-\newpage 
+
 \section{{Conclusion}} \label{sec:conclusion}
 
 
-
+This report has documented the workflow established in dealii-X for
+performance measurements and tuning. We have made considerable progress in
+reaching hardware limits in a range of benchmarks, and will further build on
+this basis for the upcoming developments.
 
 
 
