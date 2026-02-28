@@ -255,6 +255,18 @@ Luckily, a growing amount of both vendor-provided and open-source software can p
     \item \lipsum[10][5-6]
 \end{itemize}
 
+NSight Systems provides a system-wide timeline view, showing how the CPU and GPU
+executions. It also provides statistics about API calls, overhead and memory transfers
+(HtoD/DtoH).
+
+To create a profile, we launch the application with the command\footnote{We use \texttt{<>} to denote mandatory arguments, and \texttt{[]} to denote optional arguments}
+\begin{verbatim}
+> nsys profile <target> [target-options]
+\end{verbatim}
+Further command switch options can be provided to control what is collected.
+
+It is useful to collect profiling tool invocations either in the project readme file or scripts for future reference.
+
 \subsection{{Intel® VTune™ Profiler VTune™}}
 
 The VTune Profiler\footnote{\url{https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html}} ...
@@ -296,6 +308,53 @@ To obtain line profiling data linked to the source file, the executable must be 
 \caption{Exemplary view of Bakeoff Kernel result in Intel Advisor.}
 \label{fig:intel_advisor}
 \end{figure}
+
+
+\subsection{LIKWID}
+
+The LIKWID Performance Tools\footnote{\url{https://hpc.fau.de/research/tools/likwid/}}
+developed by Erlangen National High Performance Computing Center (NHR@FAU) are a suite
+of command-line applications for performance monitoring and benchmarking.
+It supports Intel, AMD, and ARM CPU architectures on GNU/Linux operation system.
+Recent versions of the tools have also added support for Nvidia and AMD GPUs.
+
+For  the LIKWID Marker API is used. In this approach
+regions of interest in the code are tagged/registered for performance counter collection.
+
+Use of the Marker API enables measuring named regions of the code.
+
+\begin{lstlisting}[caption={Minimal example of using LIKWID Marker API for CPU instrumentation}]
+#include <likwid-marker.h>
+int main() {
+  LIKWID_MARKER_INIT;
+  LIKWID_MARKER_THREADINIT;
+  LIKWID_MARKER_START("matvec");
+  /* region of interest we measure */
+  LIKWID_MARKER_STOP("kernel");
+  LIKWID_MARKER_CLOSE;
+  return 0;
+}
+\end{lstlisting}
+In practice, the Marker API calls are often controlled using preprocessor conditional text inclusion:
+\begin{verbatim}
+#ifdef LIKWID_PERFMON
+/* LIKWID header or Marker API calls*/
+#endif
+\end{verbatim}
+to allow selection of the instrumented code at compilation time using
+the definition \texttt{-D LIKWID_PERFMON}.
+
+After building the instrumented executable it is invoked with the Likwid performance counter wrapper:
+\begin{verbatim}
+> likwid-perfctr [options] <executable>
+\end{verbatim}
+
+The listing below shows an example of the expected output using the metric group:
+\begin{lstlisting}[caption={Output of \texttt{likwid-perfctr} for the serial BK1 benchmark (CPU-only).}]
+...
+\end{lstlisting}
+Likwid supports several pre-existing metric groups to enable.
+
 
 \newpage
 \section{{Energy Measurement}}
