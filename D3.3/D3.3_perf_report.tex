@@ -128,33 +128,32 @@ $$
 $$
 in a 3-d box geometry, $\Omega = [0,1]^3$ discretized with hexahedral elements using
 high order tensor-product polynomials.
-Essential boundary conditions, $u = 0$, are applied on the domain boundar $\partial \Omega$
-The degrees of freedom in the discretized system are the nodal basis values at the
-Gauss-Legendre-Lobatto (GLL) knots. For a given polynomial degree $p$,
-the nodal basis has $p+1$ points in each spatial dimension.
+Essential boundary conditions, $u = 0$, are applied on the domain boundary $\partial \Omega$
 
-The implementation assumes deformed elements, meaning that for the
-operator evaluation the metric terms (Jacobian) are used and no simplications
-which could arise from aligned cartesian meshes are exploited.
-This makes the proxy app more representative for scenarios with complex geometries.
+To ensure the proxy app is representative of the complex geometries as found in
+biological models, the implementation assumes deformed elements.
+This means the solver must handle the full metric terms (Jacobian) of the
+of the transformation from physical to iso-parametric coordinates.
+The discretization uses nodal basis values at Gauss-Legendre-Lobatto (GLL) knots.
+For a polynomial degree $p$, there are $p+1$ points per spatial dimension.
 
-Given the adjointness of the Laplace operator, and the essential boundary conditions the conjugate gradient iterative solver is used to solve the linear system.
-The global system matrix is not assembled; only the operator action, i.e. the evaluation of the bilinear form is used.
+Given the self-adjoint nature of the Laplace operator, we employ a Conjugate Gradient (CG) solver.
+The system matrix is never assembled. Instead the bilinear forms are evaluated in
+a matrix-free fashion which is more efficient on modern CPU and GPU architectures.
+Following the original CEED Bakeoff Problem setup, non-preconditioned CG is used,
+as the main purpose of the benchmark is for software optimization
+and performance analysis purposes.
 
-The demonstrator includes both non-preconditioned and preconditioned variants
-of the Poisson problem.
+For actual models, which may require computational meshes with billions of degrees
+of freedom, the computational speed is perfomed.
+We envision the use of efficient multigrid-based preconditioners, which are
+essential for ``propagating information'' quickly across the mesh thereby
+reduing the total number of CG iterations needed before convergence.
+Recent enhancements of the portable GPU multigrid preconditioners are
+described in deliverable D1.7.
 
-The non-preconditioned variant, herein nicknamed BP3.5, is designed to be close
-to the CEED Bakeoff Problems. It's purpose is evaluation of the the accelerator software frameworks (Kokkos and vendor-provided frameworks), GPU kernel optimization of the bilinear form and performance analysis/estimation.
-
-The preconditioned variant is based on the multigrid approach (CITE...).
-For efficient solvers it is of critical importance to use suitable
-preconditioners.
-Multigrid-based preconditioners offer a very promising solution, as they are
-effective at propagating information at a faster rate compared to other iterative solvers.
-
-One of the scaling problems arising with multigrid methods is the
-communication latency of the coarse-grid solver at very high MPI rank counts.
+%One of the scaling problems arising with multigrid methods is the
+%communication latency of the coarse-grid solver at very high MPI rank counts.
 
 \begin{lstlisting}[
     basicstyle=\ttfamily\small,
