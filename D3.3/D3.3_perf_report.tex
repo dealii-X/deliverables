@@ -10,12 +10,35 @@
 \usepackage{lipsum}
 \usepackage[utf8x]{inputenc} % for registered and trademark symbols
 \usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.15}
+
 
 % color for lstlistings
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.3}
+
+\makeatletter
+\definecolor{gnuplot@orange}{RGB}{229,158,0}
+\definecolor{gnuplot@purple}{RGB}{148,0,212}
+\definecolor{gnuplot@lightblue}{RGB}{87,181,232}
+\definecolor{gnuplot@green}{RGB}{0,158,115}
+\definecolor{gnuplot@darkblue}{RGB}{0,115,179}
+\definecolor{gnuplot@yellow}{RGB}{240,227,66}
+\pgfplotscreateplotcyclelist{colorGPL}{%
+	gnuplot@darkblue,every mark/.append style={fill=gnuplot@darkblue!80!black},mark=o\\%
+	red!80!white,every mark/.append style={fill=red!80!black},mark=square\\%
+	gnuplot@green,every mark/.append style={fill=gnuplot@green!50!black},mark=otimes*\\%
+	gnuplot@orange,every mark/.append style={fill=gnuplot@orange!80!black,mark size=2.5pt},mark=x\\%
+	gnuplot@purple,mark=diamond\\%
+	black,densely dashed,every mark/.append style={solid,fill=gnuplot@darkblue!80!black},mark=square*\\%
+	gnuplot@lightblue,densely dashed,every mark/.append style={solid,fill=gnuplot@lightblue!30!black},mark=triangle*\\%
+	red!80!white,densely dashed,every mark/.append style={solid,fill=red!40!white},mark=oplus*\\%
+}
+\makeatother
 
 % Begin document
 \begin{document}
@@ -201,7 +224,6 @@ The main quantities of interest are the run time as a function of the problem si
 % TODO: add plots/tables of the BP output
 
 
-\subsection{{Bakeoff Kernels}}
 
 The proxy app relies on the efficient implementation of the local kernels.
 
@@ -266,6 +288,65 @@ We speculate that optimization of thread-block sizes and or the introduction of 
 \includegraphics[width=0.6\textwidth]{A_BK1_1}
 \caption{BK1 performance results on AMD Instinct MI210 with Kokkos programming model.}
 \label{fig:BK1_AMD}
+\end{figure}
+
+Fig.~\ref{fig:ceed_pvc} shows the application throughput of the BP3.5
+benchmark on the Intel Data Center GPU Max 1550, replicating a similar case
+shown in the deliverable report D1.7 for the Nvidia GH200. It can be seen that
+the throughput per GPU is considerably lower than the 8--10 GDOF/s on the
+Hopper GPU, but the data is nonetheless encouraging in the sense that
+portability with decent performance could be achieved. Further steps are work
+in progress.
+
+\pgfplotstableread{
+ cells    dofs     matvec   CG_tot_time CG_time/iters cg_its cg_reduction
+    256     18513 5.377e-04   5.312e-02     5.774e-04     92    7.959e-01
+    512     35937 5.768e-04   6.008e-02     6.068e-04     99    8.089e-01
+   1024     70785 4.623e-04   8.026e-02     5.246e-04    153    8.727e-01
+   2048    139425 4.234e-04   8.278e-02     4.870e-04    170    8.848e-01
+   4096    274625 4.187e-04   8.912e-02     4.951e-04    180    8.899e-01
+   8192    545025 4.322e-04   1.565e-01     5.115e-04    306    9.344e-01
+  16384   1081665 4.531e-04   1.869e-01     5.466e-04    342    9.409e-01
+  32768   2146689 4.698e-04   2.046e-01     5.714e-04    358    9.437e-01
+  65536   4276737 5.614e-04   4.188e-01     6.765e-04    619    9.671e-01
+ 131072   8520321 7.792e-04   6.502e-01     9.451e-04    688    9.703e-01
+ 262144  16974593 1.431e-03   1.265e+00     1.752e-03    722    9.717e-01
+ 524288  33883137 2.629e-03   4.696e+00     3.748e-03   1253    9.836e-01
+1048576  67634433 5.123e-03   9.153e+00     6.590e-03   1389    9.852e-01
+2097152 135005697 1.027e-02   1.823e+01     1.254e-02   1454    9.858e-01
+4194304 269748225 2.005e-02   6.140e+01     2.431e-02   2526    9.918e-01
+8388608 538970625 3.955e-02   2.512e+02     4.557e-02   5513    9.962e-01
+}\tableBP
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\begin{semilogxaxis}[
+			title style={font=\scriptsize},
+			tick label style={font=\scriptsize},
+			label style={font=\scriptsize},
+			legend style={font=\tiny},
+			width=0.55\columnwidth,
+			height=0.45\columnwidth,
+			xlabel={DOF / GPU},
+			ylabel={GDOF / [sec $\times$ GPU]},
+			legend columns = 3,
+			legend to name=legend:h100,
+			legend cell align={left},
+			cycle list name=colorGPL,
+			grid,
+			semithick,
+			ymin=0,
+			xmin=5e4,xmax=2e8
+			]
+			
+			\addplot table[x expr={\thisrowno{1}/8}, y expr={\thisrowno{1}*1e-9/\thisrowno{4}/8}] {\tableBP};
+		\end{semilogxaxis}
+	\end{tikzpicture}
+        \caption{Throughput of benchmark BP3.5 with polynomial degree $p=4$
+          (Gauss quadrature, $p+1$ quadrature points per direction) on 8 MPI
+          ranks of Intel Data Center GPU Max 1550 (``Ponte Vecchio'').}
+        \label{fig:ceed_pvc}
 \end{figure}
 
 \newpage
@@ -447,11 +528,16 @@ int main() {
 After the code has been instrumented and built accordingly, the measurements are
 collected by invoking the executable with the LIKWID performance counter tool:
 \begin{verbatim}
-> likwid-perfctr [options] <executable>
+> likwid-perfctr -C0-71 -g <group> -m <executable>
 \end{verbatim}
 The output groups can be selected using the command-line options, and normally include
 metrics including floating point operations per second and memory-bandwidth related metrics
 (see Listing \ref{lst:likwid_result}).
+We have also experimented with running LIKWID with MPI, using the command
+\begin{verbatim}
+likwid-mpirun -n 72 -g MEM_DP -m <executable>
+\end{verbatim}
+for the example of a 72-core CPU system.
 
 The instrumented executable is then used within a ``measure-refine'' cycle, analogous
 to the standard ``edit-compile-run'' cycle of software development, testing
@@ -460,11 +546,36 @@ immediately re-measuring to quantify the speedup and also inform the (numerical)
 Using the statistics collected by \texttt{likwid-perfctr} and related LIKWID tools,
 the scientific programmer can also create empirical roofline plots.
 
-\begin{lstlisting}[
-    label={lst:likwid_result}
-    caption={Output of \texttt{likwid-perfctr} for the serial BK1 benchmark (CPU-only).}]
-...
-\end{lstlisting}
+\begin{figure}
+  \begin{verbatim}
++----------------------------------------+--------------+------------+
+|                 Metric                 |      Sum     |     Min    |
++----------------------------------------+--------------+------------+
+|        Runtime (RDTSC) [s] STAT        |     417.3958 |     5.7865 |
+|        Runtime unhalted [s] STAT       |     419.5135 |     5.7372 |
+|            Clock [MHz] STAT            |  174094.7702 |  2386.7181 |
+|                CPI STAT                |      24.6792 |     0.3352 |
+|             Energy [J] STAT            |    2889.3940 |          0 |
+|             Power [W] STAT             |     498.9132 |          0 |
+|          Energy DRAM [J] STAT          |     160.2279 |          0 |
+|           Power DRAM [W] STAT          |      27.6661 |          0 |
+|            DP [MFLOP/s] STAT           | 1.797120e+06 | 24937.2927 |
+|          AVX DP [MFLOP/s] STAT         | 1.779952e+06 | 24699.4630 |
+|          Packed [MUOPS/s] STAT         |  222503.4982 |  3087.5617 |
+|          Scalar [MUOPS/s] STAT         |   17163.6339 |   230.6502 |
+|  Memory read bandwidth [MBytes/s] STAT |   92605.7665 |          0 |
+|  Memory read data volume [GBytes] STAT |     536.3158 |          0 |
+| Memory write bandwidth [MBytes/s] STAT |    9989.8876 |          0 |
+| Memory write data volume [GBytes] STAT |      57.8554 |          0 |
+|    Memory bandwidth [MBytes/s] STAT    |  102595.6540 |          0 |
+|    Memory data volume [GBytes] STAT    |     594.1713 |          0 |
+| Operational intensity [FLOP/Byte] STAT |       0.9741 |          0 |
+|      Vectorization ratio [%] STAT      |    6684.3808 |    92.7566 |
++----------------------------------------+--------------+------------+
+\end{verbatim}
+\caption{Output of \texttt{likwid-perfctr} for a BP3-inspired benchmark on a CPU.}
+\label{lst:likwid_result}
+\end{figure}
 
 \newpage
 \section{{Energy Measurement}}
