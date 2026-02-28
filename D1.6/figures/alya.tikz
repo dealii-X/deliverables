@@ -1,0 +1,120 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+\definecolor{mycolor4}{rgb}{0.49400,0.18400,0.55600}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=3.80in,
+height=1.2in,
+at={(0in,0in)},
+scale only axis,
+xmin=0,
+xmax=3080,
+xtick={  47,  383, 3071},
+xlabel style={font=\color{white!15!black}},
+%xlabel={number of MPI cores},
+ymin=0,
+ymax=80,
+ylabel style={font=\color{white!15!black}},
+ylabel={Avg Iterations},
+axis background/.style={fill=white},
+%title style={font=\bfseries},
+%title={Weak Scaling: systems size from 5570786 till 345276325},
+%legend style={at={(0.5,1)}, anchor=north east, legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1, line width=3.0pt, mark size=5.0pt, mark=o, mark options={solid, mycolor1}]
+  table[row sep=crcr]{%
+47	3\\
+383	8\\
+3071	6\\
+};
+
+\addplot [color=mycolor2, line width=3.0pt, mark size=5.0pt, mark=+, mark options={solid, mycolor2}]
+  table[row sep=crcr]{%
+47	4\\
+383	6\\
+3071	5\\
+};
+
+\addplot [color=mycolor3, line width=3.0pt, mark size=5.0pt, mark=asterisk, mark options={solid, mycolor3}]
+  table[row sep=crcr]{%
+47	5\\
+383	8\\
+3071	5\\
+};
+\addplot [color=mycolor4, line width=3.0pt, mark size=3.3pt, mark=triangle, mark options={solid, mycolor4}]
+  table[row sep=crcr]{%
+47	35\\
+383	52\\
+3071	70\\
+};
+
+\end{axis}
+\end{tikzpicture}
+
+\vspace*{-0.8em}
+\hspace*{-1em}
+\begin{tikzpicture}
+\begin{axis}[%
+width=3.80in,
+height=1.2in,
+at={(5.031in,7.152in)},
+scale only axis,
+xmin=0,
+xmax=3080,
+xtick={  47,  383, 3071},
+xlabel style={font=\color{white!15!black}},
+xlabel={number of MPI cores - from 5570786 till 345276325 dofs},
+ymin=0,
+ymax=2.5,
+ylabel style={font=\color{white!15!black}},
+ylabel={Avg Solve Time (sec)},
+axis background/.style={fill=white},
+%title style={font=\bfseries},
+%title={Weak Scaling: systems size from 5570786 till 345276325},
+legend columns=4,
+legend style={at={(0.5,1.2)}, anchor=north, legend cell align=left, align=left, draw=none,font=\scriptsize,fill=none}
+]
+\addplot [color=mycolor1, line width=3.0pt, mark size=5.0pt, mark=o, mark options={solid, mycolor1}]
+  table[row sep=crcr]{%
+47	0.3777\\
+383	1.1222\\
+3071	0.9435\\
+};
+\addlegendentry{MLVSBM}
+
+\addplot [color=mycolor2, line width=3.0pt, mark size=5.0pt, mark=+, mark options={solid, mycolor2}]
+  table[row sep=crcr]{%
+47	0.7506\\
+383	1.1199\\
+3071	1.0636\\
+};
+\addlegendentry{MLPARMATCH3}
+
+\addplot [color=mycolor3, line width=3.0pt, mark size=5.0pt, mark=asterisk, mark options={solid, mycolor3}]
+  table[row sep=crcr]{%
+47	0.5916\\
+383	1.04\\
+3071	1.0275\\
+};
+\addlegendentry{MLPARMATCH4}
+
+\addplot [color=mycolor4, line width=3.0pt, mark size=3.3pt, mark=triangle, mark options={solid, mycolor4}]
+  table[row sep=crcr]{%
+47	0.852\\
+383	1.5096\\
+3071	2.3447\\
+};
+\addlegendentry{DefCG}
+
+\end{axis}
+
+\end{tikzpicture}

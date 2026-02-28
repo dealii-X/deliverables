@@ -1,0 +1,110 @@
+\ProvidesPackageRCS $Header: beamerthemeRomaTorVergata.sty,v 1.7 2004/10/07 20:53:10 tantau Exp $
+
+% Copyright 2003 by Till Tantau <tantau@users.sourceforge.net>
+%
+% This program can be redistributed and/or modified under the terms
+% of the GNU Public License, version 2.
+
+\mode<presentation>
+\RequirePackage{graphics}
+\newif\ifbeamer@secheader
+\beamer@secheaderfalse
+
+\DeclareOptionBeamer{secheader}{\beamer@secheadertrue}
+\ProcessOptionsBeamer
+
+\usecolortheme{greenfield}
+\usecolortheme{orchid}
+\useinnertheme[shadow]{rounded}
+\useoutertheme{infolines}
+
+\ifbeamer@secheader\else\setbeamertemplate{headline}[default]\fi
+
+\iftrue
+\setbeamertemplate{frametitle}
+{
+  \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+  \@tempdima=\textwidth%
+  \advance\@tempdima by\beamer@leftmargin%
+  \advance\@tempdima by\beamer@rightmargin%
+  \begin{beamercolorbox}[sep=0.2cm,left,wd=\the\@tempdima]{frametitle}
+    \usebeamerfont{frametitle}%
+    \vbox{}\vskip-1ex%
+    \strut
+    \includegraphics[width=0.0325\paperwidth]{logo_utv.png}\hskip1ex
+     \hskip1ex
+     \includegraphics[width=0.1\paperwidth]{DealiiX_logo__official_colors_rgb.png}
+     \hskip1ex
+    \insertframetitle\strut\par%
+     {%
+       \ifx\insertframesubtitle\@empty%
+       \else%
+       {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\strut\par}%
+       \fi
+     }%
+     \vskip-1ex%
+     \if@tempswa\else\vskip-.3cm\fi% set inside beamercolorbox... evil here...
+  \end{beamercolorbox}%
+}
+
+\fi
+\newcommand{\tred}[1]{\textcolor[HTML]{E4605B}{#1}}
+\newcommand{\tblu}[1]{\textcolor[HTML]{467896}{#1}}
+\newcommand{\tgreen}[1]{\textcolor{greenfield}{#1}}
+% Requirement
+\RequirePackage{tikz,pgfplots}
+\RequirePackage{graphicx}
+\usetikzlibrary{positioning,fadings,through,calc,trees,arrows,chains,shapes.geometric,%
+	decorations.pathreplacing,decorations.pathmorphing,shapes,%
+	matrix,shapes.symbols}
+
+\tikzset{
+	>=stealth',
+	punktchain/.style={
+		rectangle, 
+		rounded corners, 
+		% fill=black!10,
+		draw=black, very thick,
+		text width=10em, 
+		minimum height=3em, 
+		text centered, 
+		on chain},
+	line/.style={draw, thick, <-},
+	element/.style={
+		tape,
+		top color=white,
+		bottom color=blue!50!black!60!,
+		minimum width=8em,
+		draw=blue!40!black!90, very thick,
+		text width=10em, 
+		minimum height=3.5em, 
+		text centered, 
+		on chain},
+	every join/.style={->, thick,shorten >=1pt},
+	decoration={brace},
+	tuborg/.style={decorate},
+	tubnode/.style={midway, right=2pt},
+}
+
+\newcommand{\myunit}{1 cm}
+\tikzset{
+	node style sp/.style={draw,circle,minimum size=\myunit},
+	node style ge/.style={circle,minimum size=\myunit},
+	arrow style mul/.style={draw,sloped,midway,fill=white},
+	arrow style plus/.style={midway,sloped,fill=white},
+}
+
+
+\definecolor{left}{HTML}{D9D9D9}
+\definecolor{right}{HTML}{F7FAFD}
+\definecolor{header}{HTML}{F5C479}
+\definecolor{redblock}{HTML}{E4605B}
+\definecolor{blueblock}{HTML}{467896}
+
+% Tills' opinion: should be done in an inner theme, not here.
+
+%\usesubitemizeitemtemplate{\tiny\raise1.5pt\hbox{\donotcoloroutermaths$\blacktriangleright$}}
+%\usesubsubitemizeitemtemplate{\tiny\raise1.5pt\hbox{\donotcoloroutermaths$\bigstar$}}
+
+\mode
+<all>

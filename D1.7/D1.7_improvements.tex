@@ -1,0 +1,510 @@
+\documentclass[a4paper,12pt]{article}
+
+% Import the deliverable package from common directory
+\usepackage{../common/deliverable}
+
+% Tell LaTeX where to find graphics files
+\graphicspath{{../common/logos/}{./figures/}{../}}
+
+\usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{todonotes}
+
+% GitHub shortcuts for dealii/dealii issues and pull requests
+\newcommand{\issue}[1]{\href{https://github.com/dealii/dealii/issues/#1}{\##1}}
+\newcommand{\pr}[1]{\href{https://github.com/dealii/dealii/pull/#1}{PR:\##1}}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{1.7}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Improvements to deal.II}
+
+\newpage
+
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{Improvements to deal.II}
+    \tableEntry{Deliverable number}{D1.7}
+    \tableEntry{Deliverable version}{[Version number]}
+    \tableEntry{Date of delivery}{Feb 28th 2026}
+    \tableEntry{Actual date of delivery}{Feb 28th 2026}
+    \tableEntry{Nature of deliverable}{Report}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP1}
+    \tableEntry{Partner responsible}{UNITOV}
+\end{deliverableTable}
+
+% Abstract and Keywords Section
+\begin{deliverableTable}
+    \tableEntry{Abstract}{}
+    \tableEntry{Keywords}{}
+\end{deliverableTable}
+
+\newpage
+
+\begin{documentControl}
+    \addVersion{0.1}{21/02/2026}{Marco Feder}{Initial draft}
+    \addVersion{0.2}{22/02/2026}{Marco Feder}{Polygonal discretization module section}
+    \addVersion{0.3}{23/02/2026}{Marco Feder}{Integration and preliminary results for PSCToolkit}
+    \addVersion{0.4}{23/02/2026}{Chiara Puglisi}{Preliminary results
+        with advanced features in MUMPS}
+    \addVersion{0.5}{25/02/2026}{Luca Heltai}{Integration of VTK
+      utilities and new tutorial}
+    \addVersion{1.0}{28/02/2026}{Salvatore Filippone}{Release}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: [Name] \\
+Approval Date: [Date]
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{{Introduction}}
+
+
+
+\subsection{{Purpose of the Document}}
+
+
+\subsection{{Structure of the Document}}
+\begin{itemize}
+    \item Section \ref{sec:section2}: Pre-exascale capabilities of deal.II
+%    \item Section \ref{sec:section3}: Pre-exascale modules of deal.II
+    \item Section \ref{sec:section4}: Polygonal discretization module
+    \item Section \ref{sec:section5}: Integration of PSCToolkit
+    \item Section \ref{sec:section6}: Integration of MUMPS
+\end{itemize}
+
+\newpage
+
+\section{{Pre-exascale capabilities of deal.II}}
+\label{sec:section2}
+
+This section documents upstream (deal.II) development items tracked
+with the \texttt{dealii-x} label and summarises recent auxiliary
+developments relevant to reduced (and mixed-dimensional) modelling
+workflows. This report discusses (i) Polygonal discretisation
+workstream in Section~\ref{sec:section4}, (ii) specific
+PSCToolkit/AMG4PSBLAS integration in Section~\ref{sec:section5}, and
+(iii) advanced MUMPS factorisation features in
+Section~\ref{sec:section6}. To avoid repetition, we focus here on
+\emph{complementary} contributions: a coherent series of VTK
+interoperability utilities in \texttt{deal.II} (from VTK data
+ingestion to direct conversion between \texttt{vtkUnstructuredGrid}
+and \texttt{Triangulation}), and supporting improvements in related
+infrastructure that enable robust data exchange for dealii-X
+applications. 
+
+A key outcome is an expanded, reusable path for importing and reusing
+meshes and solution fields from external toolchains (VTK-based) inside
+deal.II-based dealii-X applications, reducing friction for
+multi-physics coupling, parameter studies, and reduced modelling
+workflows where repeated transfer between meshing/visualisation
+pipelines and solver back-ends is common. The work is coordinated via
+a dedicated meta-issue (\issue{19056}) and realised through a sequence
+of PRs (beginning with \pr{19023} and \pr{19024}). In addition, we
+briefly note the status of two research-code repositories that support
+reduced/mixed-dimensional modelling pipelines for dealii-X: the
+``Reduced Lagrange Multipliers'' repository, currently in use by the
+FAU group for brain brain simulations related to MRE studies and by
+the WIAS group for Liver simulations, and the ``Reduced dimensional
+blood flow simulator'', currently under active development, and to be
+coupled with Liver and Brain simulations. 
+
+\subsection{VTK interoperability and data-ingestion
+  utilities} \label{sec:dealii_x_vtk} 
+
+\subsubsection{Motivation and relation to dealii-X} VTK is widely used
+as an interchange format in scientific computing pipelines (mesh
+generation, post-processing, experimental datasets, and in-house
+tools). For dealii-X, the ability to \emph{import} VTK meshes and
+associated point/cell fields using native VTK APIs, and to
+\emph{convert} VTK unstructured grids into deal.II triangulations (and
+back) enables: (i) streamlined integration with external
+pre-processing/segmentation tools, (ii) reproducible reuse of
+meshes/fields for reduced modelling surrogates, and (iii) less bespoke
+glue code in each lighthouse application, including robustness in
+future development of dealii-X applications that is inherited from the
+use of direct VTK apis. The VTK utilities workstream is coordinated by
+the meta-issue \issue{19056} (opened as of Newsletter \#339).% \footnote{Meta-issue reference in the digest: \url{https://www.mail-archive.com/dealii@googlegroups.com/msg15986.html}.}   
+
+% \subsubsection{Core \texttt{dealii-x} labelled PRs currently visible
+% in the PR index} The following PRs are explicitly labelled
+% \texttt{dealii-x} in the publicly indexed PR list (title, opening
+% date, and author shown there).% \footnote{PR list view:
+% \url{https://github.com/dealii/dealii/pulls}.} 
+
+% \paragraph{\pr{19023}: VTKWrappers utilities -- part I --
+% read\_tria''} \textbf{Opened:} 25 Nov 2025; \textbf{Author:}
+% \texttt{luca-heltai}.% \footnote{PR list view:
+% \url{https://github.com/dealii/dealii/pulls}.} This PR introduces
+% foundational support to construct/read a deal.II
+% \texttt{Triangulation} from VTK-provided geometric/topological data,
+% establishing the first building block for VTK ingestion. The deal.II
+% newsletter digest indicates this PR was merged by 10 Dec 2025.%
+% \footnote{Newsletter \#339 lists \pr{19023} as merged'':
+% \url{https://www.mail-archive.com/dealii@googlegroups.com/msg15986.html}.} 
+
+% \paragraph{\pr{19024}: VTKWrappers utilities -- part II --
+% read\_cell\_data''} \textbf{Opened:} 25 Nov 2025; \textbf{Author:}
+% \texttt{luca-heltai}.% \footnote{PR list view:
+% \url{https://github.com/dealii/dealii/pulls}.} This PR complements
+% the initial mesh ingestion by adding mechanisms to read
+% cell-associated datasets (e.g.\ material ids, region markers,
+% cell-wise scalars) from VTK into deal.II-compatible
+% representations. The deal.II digest indicates this PR was merged by
+% 10 Dec 2025.% \footnote{Newsletter \#339 lists \pr{19024} as
+% merged'':
+% \url{https://www.mail-archive.com/dealii@googlegroups.com/msg15986.html}.} 
+
+% \paragraph{Meta-issue \issue{19056}: ``VTK utils meta-issue''} This
+% issue tracks the decomposition, sequencing, and integration steps
+% for the full VTK utilities roadmap (opened as of 10 Dec 2025).%
+% \footnote{Newsletter \#339 lists \issue{19056} as an opened
+% discussion:
+% \url{https://www.mail-archive.com/dealii@googlegroups.com/msg15986.html}.} In practice, this acts as a technical coordination mechanism (task list, design decisions, and cross-links across the VTK PR chain). 
+
+% \subsubsection{Continuity of the VTK utilities series} Beyond the
+% first \texttt{dealii-x}-labelled PRs visible in the PR index, the
+% newsletter digests document a continuing series of VTK utility PRs
+% (\pr{19062}, \pr{19133}, \pr{19134}, \pr{19151}, \pr{19315},
+% \pr{19316}) culminating in direct conversion between
+% \texttt{vtkUnstructuredGrid} and \texttt{Triangulation}.%
+% \footnote{For example, Newsletter \#345 (20 Feb 2026) lists the
+% later VTK PRs \pr{19315} and \pr{19316}:
+% \url{https://www.mail-archive.com/dealii@googlegroups.com/msg16050.html}.} Because the \texttt{dealii-x} label cannot be verified for these later PRs from the retrievable sources here, their \emph{label status is unspecified} in this report; nevertheless they are important technical context and should be cross-checked on GitHub (as they complete the VTK pipeline).  
+
+% \subsubsection{Mermaid-style timeline of the VTK workstream} The
+% following timeline captures the PR sequence \emph{as identified from
+% publicly indexed deal.II digests}; replace \texttt{TBD} merge dates
+% with exact values from GitHub before final submission. 
+
+% \begin{verbatim} timeline title VTK utilities (deal.II) supporting
+% dealii-X 2025-09 : PR\#18888 Step-80 dealii-x (prototype; do not
+% merge) 2025-11-25 : PR\#19023 read_tria (opened) 2025-11-25 :
+% PR\#19024 read_cell_data (opened) 2025-12-10 : Issue\#19056 VTK
+% utils meta-issue (opened) 2025-12 : PR\#19023 merged (TBD exact day)
+% 2025-12 : PR\#19024 merged (TBD exact day) 2025-12 : PR\#19062
+% vtk_to_finite_element (merged; label TBD) 2026-01 : PR\#19133
+% GridTools::parallel_to_serial_vertex_indices (merged; label TBD)
+% 2026-01 : PR\#19134 read_all_data and load_vtk (merged; label TBD)
+% 2026-02 : PR\#19151 data_to_dealii_vector (merged; label TBD)
+% 2026-02-20 : PR\#19315 read_vtk (merged; label TBD) 2026-02-20 :
+% PR\#19316 vtkUnstructuredGrid <-> Triangulation (merged; label
+% TBD) \end{verbatim} 
+
+\subsection{New tutorials under the \texttt{dealii-x} label} \label{sec:dealii_x_tutorial}
+
+\paragraph{\pr{18888}: ``Step-80 dealii-x''}
+
+The tutorial implements a finite element immersed boundary method with
+distributed Lagrange multipliers for fully coupled fluid-structure
+interaction: an incompressible Navier--Stokes fluid is coupled to a
+compressible (possibly viscous) hyper-elastic solid on independent,
+non-matching volumetric meshes, with velocity continuity enforced
+through an additional multiplier field $\lambda$ rather than
+penalization. It combines particle-based transfer,
+\texttt{MappingFEField}-driven solid motion, and a monolithic
+saddle-point solve for $(u,p,w,\lambda)$, that will be further
+developed to include relevant validation scenarios. Within dealii-X,
+this is directly relevant to coupled multiphysics workloads in
+cardio-vascular flows, brain mechanics, and lungs/liver mechanics, and
+it provides a realistic test bench for linear solver and factorization
+capabilities developed in the project, in particular PSCToolkit-based
+preconditioning and advanced MUMPS configurations. 
+
+The PR implements and showcases the application of the recently
+developed augmented Lagrangian preconditioner in the UNIPI group,
+which is designed to handle the saddle-point structure of the coupled
+system \cite{BenziFederHeltai-2026-a}. 
+
+% \subsection{Complementary repositories for reduced/mixed-dimensional
+% modelling workflows} \label{sec:rom_related_repos} 
+
+% \subsubsection{Reduced Lagrange Multipliers framework} A public
+% documentation site (generated with Doxygen) describes the
+% \emph{Reduced Lagrange Multipliers} implementation for non-matching
+% coupling of mixed-dimensional domains, including an overview,
+% features, and build instructions.% \footnote{Documentation index:
+% \url{https://luca-heltai.github.io/reduced_lagrange_multipliers/}.}
+% The documentation explicitly links the software to the reduced
+% Lagrange multiplier method and cites the associated publication
+% (Heltai--Zunino, 2023, DOI~10.1142/S0218202523500525).% \footnote{As
+% stated in the documentation landing page snippet indexed publicly:
+% \url{https://luca-heltai.github.io/reduced_lagrange_multipliers/}.}
+% From the indexed content available at the time of writing, the
+% documentation was generated on 5 Aug 2025, which is \emph{slightly
+% older than} the requested six-month window (from 25 Aug 2025 to 25
+% Feb 2026).% \footnote{The generation timestamp appears in the
+% documentation page snippet:
+% \url{https://luca-heltai.github.io/reduced_lagrange_multipliers/}.}
+% Consequently, this report cannot confirm whether there were
+% substantial changes in the last six months beyond what is visible in
+% the indexed documentation; a manual GitHub check of commit history
+% (not accessible here) is required for final completeness. 
+
+% \subsubsection{\texttt{blood-flow} repository} The repository URL
+% \url{https://github.com/devi-raksha/blood-flow} was provided as
+% relevant for the reduced order modelling work package. However, no
+% publicly indexed content for this repository could be retrieved at
+% the time of writing, and direct inspection via the available sources
+% was unsuccessful. Therefore: \begin{itemize} \item The existence,
+% public visibility, default branch, and commit history for the last
+% six months are \textbf{unspecified}. \item No rigorous change
+% summary can be prepared without either (i) public indexing/access,
+% or (ii) an exported changelog/patchset, or (iii) manual extraction
+% by the deliverable editor. \end{itemize} 
+
+\newpage
+
+\section{{Polygonal discretization module}}
+\label{sec:section4}
+
+The polygonal discretization module described in Work Package 1.5 has undergone exhaustive testing and validation. The new library
+associated with this module, \texttt{Polydeal}, is available at \url{https://github.com/fdrmrc/Polydeal}. Some features available in this
+module are designed to be integrated into the deal.II library. In order to guarantee maximum compatibility, it is updated to the latest version of deal.II, and it is developed following the same coding style and practices.
+A comprehensive test suite is deployed at each new commit on the continuous integration system to guarantee the integrity of the codebase.
+
+In view of the integration of the core functionalities of \texttt{Polydeal} into \texttt{deal.II}, a preliminary pull request (\url{https://github.com/dealii/code-gallery/pull/233}) has been opened to submit an example demonstrating an agglomeration-based solver for the Poisson equation to the code gallery. Building from this, a refactoring process is ongoing to make the codebase of \texttt{Polydeal} compatible with \texttt{deal.II} coding conventions and ready for merging, expected by the end of the project (deliverable D1.8).
+
+\subsection{Geometrically informed multilevel preconditioning}
+Large-scale simulations require efficient preconditioners for the iterative solution of the linear systems arising from finite element discretizations, for instance with discontinuous Galerkin (DG) methods. For elliptic problems, geometric multigrid methods are among the most effective preconditioners. However, their application requires the construction of a mesh hierarchy, which can be challenging for fine, unstructured geometries. In such cases, AMG methods are often employed as an alternative. One of the key features of polytopal methods is precisely their very good interplay with DG methodologies (see e.g.,~\cite{polyDG,Antoniettihp}). In particular, the
+flexibility of DG methods allows the usage of very general agglomerated grids, i.e.\ grids obtained by merging together several elements of a
+finer grid.
+
+
+By exploiting the efficient agglomeration routine developed in~\cite{FEDER2025113773}, already available in \texttt{Polydeal}, it is possible to construct
+a hierarchy of \emph{nested} agglomerated grids, for which intergrid transfer operators among consecutive levels are cheap. This hierarchy naturally enables the construction of multilevel preconditioners for DG discretizations of elliptic problems, leveraging polytopal grids on coarser levels, while keeping the \emph{original} grid unchanged. Coarser operators can be obtained by rediscretization of the partial differential
+equation on the agglomerated grids, or by triple Galerkin projection\footnote{This means that coarser operators are recursively obtained by restriction of the finer operators, in an algebraic multigrid sense.}. The latter approach is particularly appealing, since it
+allows obtaining coarser operators without the need of rediscretization on agglomerated meshes.
+
+This technique has been successfully applied in~\cite{feder2026agglomeration} to the DG discretization of the monodomain model arising in cardiac electrophysiology. More precisely, we have developed a novel multigrid solver for its DG discretization, exploiting agglomerated
+grids on coarser levels. The resulting preconditioner builds coarser operators in an algebraic multigrid fashion, injecting geometric information through the agglomeration routine. In this sense, we
+have devised a \emph{geometrically informed} algebraic multigrid preconditioner, with the geometric information being injected through the agglomeration routine.
+
+Finally, the linear system of equations associated with the model is solved, at each time-step, with a conjugate-gradient method preconditioned by one V-cycle of our multigrid scheme. The preconditioner has been successfully applied to several test cases, including high-order polynomial degrees, and a realistic 3D ventricular geometry, shown in Figure~\ref{fig:left_ventricle}. Since the
+finest level of the multigrid hierarchy consists of an hexahedral grid, we leverage the tensor-product structure of the basis functions and quadrature points in order to exploit state-of-the-art matrix-free operator evaluation techniques developed in~\cite{KronbichlerKormann}, which form a key part of the computational backbone of
+the deal.II library.
+
+In Figure~\ref{fig:iterates_3D_monodomain}, we report the number of iterations throughout all the simulation, comparing our agglomerated multigrid preconditioner with the AMG implementation available in the Trilinos ML package. The results are reported
+for polynomial degrees $p\!=\!1,2$ for the three-dimensional ventricle mesh. It is evident how
+the iteration counts of the AMG preconditioner are always higher than the agglomeration-based multigrid approach. The actual wall-clock
+times (in seconds) are reported in Figure~\ref{fig:iteration_times_3D_monodomain}, showing a huge reduction of the time per iteration when using
+the agglomeration-based multigrid strategy. A detailed discussion on the costs can be found in~\cite{feder2026agglomeration}.
+
+
+The obtained results indicate the high effectiveness of the preconditioner in terms of iteration counts and robustness with respect to model parameters. Despite these encouraging results, several research directions remain open to further enhance the efficiency and scalability of the preconditioner. In this sense, integration
+within existing AMG frameworks is a promising direction, along with the development of matrix-free implementations of the coarser operators, which would further reduce the
+application cost of the preconditioner.
+
+
+
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig/left_ventricle_view-cropped.pdf}
+        \caption{}
+        \label{subfig:left_ventricle_mesh}
+    \end{subfigure}
+    \hspace{4cm}
+    \begin{subfigure}{0.30\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig/view_impulses.pdf}
+        \caption{}
+        \label{subfig:left_ventricle_impulses}
+    \end{subfigure}
+
+    \caption{
+        (\subref{subfig:left_ventricle_mesh}) Hexahedral mesh representing a realistic left ventricle.
+        (\subref{subfig:left_ventricle_impulses}) Propagation of the transmembrane potential.
+    }
+    \label{fig:left_ventricle}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig/iterates_3D_monodomain.pdf}
+    \caption{Number of preconditioned conjugate-gradient (PCG) iterations per time step for the monodomain problem, comparing AMG and agglomerated multigrid (AggloMG) for polynomial degrees $p\!=\!1,2$ for the three-dimensional
+        ventricle test.}
+    \label{fig:iterates_3D_monodomain}
+\end{figure}
+
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig/iteration_times_3D_monodomain.pdf}
+    \caption{Wall-clock time for PCG iteration time per time step for the monodomain problem, comparing AMG and agglomerated multigrid (AggloMG) for polynomial degrees $p\!=\!1,2$ for the three-dimensional
+        ventricle test. Results have been obtained on 128 MPI processes on the Toeplitz cluster at University of Pisa.}
+    \label{fig:iteration_times_3D_monodomain}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+\section{{Integration of PSCToolkit}}
+\label{sec:section5}
+
+The integration of PSCToolkit (Parallel Sparse Computing Toolkit)~\cite{psctoolkit} aims to provide scalable algebraic
+multigrid (AMG) preconditioners through its AMG4PSBLAS package. By merging the preconditioners developed within AMG4PSBLAS
+into deal.II, it will be possible to exploit them as drop-in replacements in application codes. The integration
+targets the following new release candidates: PSBLAS v3.9 and AMG4PSBLAS v1.2.
+
+\subsection{Integration status}
+The integration of PSCToolkit into the deal.II master branch is currently in progress, and can be tracked on the
+official deal.II GitHub repository~\footnote{See \pr{19050} and \pr{18938}}. Concurrently, a fully working interface (whose code will be progressively upstreamed into the main deal.II repository) has been developed on a separate
+branch\footnote{Available at \url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas/}.}, providing complete access
+to the preconditioners developed within AMG4PSBLAS.
+
+In general, the design of the user interface closely follows the existing structure of the main deal.II linear algebra frameworks, such as the
+interfaces to Trilinos and PETSc. In the same fashion, the interface to AMG preconditioners by AMG4PSBLAS has been designed following the same design
+principles of the existing interfaces to Trilinos and PETSc wrappers. Indeed, within the namespace \texttt{PSCToolkitWrappers}, a new class \texttt{PreconditionAMG} has been introduced, which implements
+a minimal interface which allows to:
+\begin{itemize}
+    \item construct the preconditioner with a given set of user-specified parameters,
+    \item build the AMG hierarchy and related smoothers, out of a given distributed PSBLAS system matrix,
+    \item apply the resulting preconditioner to a given vector through the standardized \texttt{vmult(dst,src)} method.
+\end{itemize}
+
+
+Parameters are exposed by passing an \texttt{AdditionalData} object to the constructor of the preconditioner, which is a
+standardized data structure to pipe additional flags to the preconditioner. In this way, the integration is completely
+transparent from the user's perspective: switching from, e.g., a Trilinos ML or Hypre AMG preconditioner to an AMG4PSBLAS one requires
+no structural changes to the application code.
+
+\subsection{Preliminary results for AMG4PSBLAS preconditioners}
+
+To validate the correctness and assess the performance of the AMG4PSBLAS interface, we have developed a tutorial application implementing a finite element solver for the Poisson problem, employing
+nodal Lagrangian $\mathcal{Q}^1$ elements. The implementation and results are documented in deliverable D1.6.
+
+To evaluate performance at significantly larger problem sizes, we have been granted access to the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center\footnote{MareNostrum 5 information: \url{https://www.bsc.es/marenostrum/marenostrum-5}}. These resources will enable us to conduct experiments and benchmarking at scale, providing insight into the behavior of our interface under sizes
+typical of pre-exascale applications.
+
+\subsection{Ongoing and future work}
+
+Ongoing work includes several tasks aimed at finalizing the integration and assessing the performance of the AMG4PSBLAS preconditioners in large-scale simulations:
+\begin{itemize}
+    \item finalizing the interface, introducing wrappers for sparse matrix types,
+    \item large-scale performance evaluations on HPC systems to identify potential performance bottlenecks in the interface and in the preconditioner itself,
+    \item GPU support: PSBLAS provides GPU acceleration through CUDA backends. The exposition of this functionality through the
+          deal.II interface will enable GPU-accelerated AMG preconditioning within standard deal.II solver workflows.
+\end{itemize}
+
+
+
+\newpage
+
+\section{{Integration of MUMPS}}
+\label{sec:section6}
+
+
+The direct solution of a sparse linear system $Ax=b$ relies on the factorization of the matrix $A$.
+The robustness of direct methods comes at the cost of a high complexity both in terms
+of number of floating point operations and of memory footprint.
+
+
+The complexity of the direct methods approaches can be reduced thanks to Block
+Low-Rank (BLR) approximation (see \cite{ablm:17b,aabblw:15}) with adaptive precision \cite{abbg:23} to exploit data sparsity.
+This is illustrated in Table~\ref{t:beltrami} on the Beltrami Flow problem from lifex library. Comparing the first two rows "Full-Rank" factorization and "BLR factorization with adaptive precision" in Table~\ref{t:beltrami} we see that the number of operation is reduce by two orders of magnitude.
+
+\begin{table}[hb]
+    \begin{center}
+        \begin{tabular}{|l|c|c|c|c|}
+            \hline
+                               & {Memory used} & Number of op.    & Total time         & Backward error            \\
+                               & (Gbytes)      & to factor matrix & (sec)              & after IR                  \\
+            \hline
+            % 1 Node x 4MPI x 48th  & & & & \\
+            Full-Rank          & {620}         & {1.6E15}         & {\bf 364}          & 2E-15                     \\
+            %    BLR(1E-9)+adaptive        &    298       &     6.1E13   &    \phantom{0}57    &      4E-8\phantom{0}   \\
+            BLR(1E-5)+adaptive & 224           & 2.3E13           & \phantom{0}38      & 1E-10                     \\
+            %                    & & & & \\
+            \hline
+            \multicolumn{5}{c}{ }                                                                                  \\
+            \multicolumn{5}{c}{\bf Single precision factorization in double prec instance with mixed precision IR} \\
+            \hline
+            Full-Rank          & 315           & 1.6E15           & 229                & 2E-12                     \\
+            BLR(1E-5)+adaptive & {125}         & {2.0E13}         & \bf{\phantom{0}24} & 8E-11                     \\
+
+            \hline
+        \end{tabular}
+        \caption{\label{t:beltrami} Beltrami matrix, performance analysis, AMD Genoa (4MPI x 48th). IR=Iterative Refinement}
+    \end{center}
+\end{table}
+
+The performance can be further improved using mixed precision algorithms \cite{abhl22a} as illustrated with the last two lines of Table~\ref{t:beltrami}.
+In row "Full-Rank", {\it single precision factorization with mixed precision iterative refinement (IR)} and an efficient approach to access data in low precision  \cite{ajlmp:2025} enable to divide time and memory by a factor of two.
+Combining this approach to BLR with adaptive precision leads to an overall significant reduction in time (from 364 to 24 seconds) and memory (from 620 to 125 Gbytes) with a satisfactory backward error.
+It should be mentioned, as described in \cite{abhl22a}, that on ill-conditioned matrices GMRES based iterative refinements should be used.
+
+Recent experiments with accelerated nodes (Nvidia-GraceHopper and AMD-Mi250 and AMD-Mi300) have shown that we can reduce the time for full-rank factorization of the Beltrami matrix by a factor between 3 and 6 depending on the compute node. Next challenge will be to combine the benefits from adaptive BLR and mixed precision algorithms on accelerated nodes.
+
+
+
+
+
+\newpage
+
+\section{{Conclusion}} \label{sec:conclusion}
+
+\begin{thebibliography}{10}
+    \bibitem[Filippone and Colajanni, 2000]{PSBLAS}Salvatore Filippone and Michele Colajanni, "PSBLAS: a library for parallel linear algebra computation on sparse matrices", ACM Transactions on Mathematical Software, vol. 26, no. 4, pp. 527--550, 2000. \url{https://doi.org/10.1145/365723.365732}
+    \bibitem[D'Ambra et al., 2025]{psctoolkit}Pasqua D'Ambra, Fabio Durastante and Salvatore Filippone, "PSCToolkit: solving sparse linear systems with a large number of GPUs", arXiv preprint arXiv:2406.19754, 2025. \url{https://arxiv.org/abs/2406.19754}
+    \bibitem[Cangiani et al., 2014]{polyDG}Andrea Cangiani, Emmanuil Georgoulis and Paul Houston, "hp-Version discontinuous Galerkin methods on polygonal and polyhedral meshes," Mathematical Models and Methods in Applied Sciences, vol. 24, no. 4, pp. 2009-2041, 2014.
+    \bibitem[Antonietti et al., 2013]{Antoniettihp}Paola Antonietti, Stefano Giani, and Paul Houston, "$hp$-Version Composite Discontinuous Galerkin Methods for Elliptic Problems on Complicated Domains", SIAM Journal on Scientific Computing, vol. 35, A1417-A1439, 2013.
+    \bibitem[Feder et al., 2025]{FEDER2025113773}Marco Feder, Andrea Cangiani and Luca Heltai, "R3MG: R-tree based agglomeration of polytopal grids with applications to multilevel methods", Journal of Computational Physics, vol. 526, 113773, 2025.
+    \bibitem[Feder and Africa, 2026]{feder2026agglomeration}Marco Feder and Pasquale Claudio Africa, "An agglomeration-based multigrid solver for the discontinuous Galerkin discretization of cardiac electrophysiology", arXiv preprint arXiv:2602.16312, 2026.
+    \bibitem[Benzi et al., 2026]{BenziFederHeltai-2026-a}Michele Benzi, Marco Feder, Luca Heltai and Federica Mugnaioni, "Scalable Augmented Lagrangian preconditioners for Fictitious Domain problems", Computer methods in applied mechanics and engineering, vol. 450, p. 118522, 2026.
+    \bibitem[Kronbichler and Kormann, 2019]{KronbichlerKormann}Martin Kronbichler and Katharina Kormann, "Fast Matrix-Free Evaluation of Discontinuous Galerkin Finite Element Operators", ACM Transactions on Mathematical Software, vol. 45, no. 3, Article 29, 2019.
+    \bibitem[Amestoy, Boiteau et al., 2023]{abbg:23}P.~Amestoy, O.~Boiteau, A.~Buttari, M.~Gerest, F.~Jezequel, J.-Y. L'Excellent, and T.~Mary. Mixed precision low-rank approximations and their application to block low-rank {LU} factorization. {\em IMA Journal of Numerical Analysis}, 43:2198--2227, July 2023.
+
+    \bibitem[Amestoy, Buttari et al., 2023]{abhl22a} P.~Amestoy, A.~Buttari, N.~J. Higham, J.-Y. L'Excellent, T.~Mary, and B.~Vieubl\'e. Combining sparse approximate factorizations with mixed precision iterative refinement. {\em ACM Transactions on Mathematical Software}, 49(1):1--29, 2023.
+
+    \bibitem[Amestoy et al., 2025] {ajlmp:2025} P.~Amestoy, A.~Jego, J.-Y. L'Excellent, T.~Mary, and G.~Pichon. {BLAS-based Block Memory Accessor with Applications to Mixed Precision Sparse Direct Solvers}. preprint submitted to publication, Apr. 2025.
+
+    \bibitem[Amestoy et al., 2015]{aabblw:15} P.~R. Amestoy, C.~Ashcraft, O.~Boiteau, A.~Buttari, J.-Y. L'Excellent, and C.~Weisbecker. Improving multifrontal methods by means of block low-rank representations. {\em SIAM Journal on Scientific Computing}, 37(3):A1451--A1474, 2015.
+
+    \bibitem[Amestoy et al., 2019]{ablm:17b} P.~R. Amestoy, A.~Buttari, J.-Y. L'Excellent, and T.~Mary. {Performance and Scalability of the Block Low-Rank Multifrontal Factorization on Multicore Architectures}. {\em ACM Transactions on Mathematical Software}, 45:2:1--2:26, 2019.
+
+\end{thebibliography}
+
+
+
+\label{MyLastPage}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: LaTeX
+%%% TeX-master: t
+%%% End:
