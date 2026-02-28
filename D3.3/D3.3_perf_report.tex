@@ -213,8 +213,6 @@ number of quadrature points.
 \cite{Karp2023} observed that the use of 1-d thread blocks enabled higher performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
 This stood in contrast to Nvidia GPUs where 2-d/3-d thread blocks were used.
 
-
-
 ce difference between the use of 1-d and 2-d thread blocks when
 indexing elements. In contrast to Nvidia GPUs, where the use of 2-d and 3-d thread blocks
 
@@ -271,41 +269,89 @@ Further command switch options can be provided to control what is collected.
 
 It is useful to collect profiling tool invocations either in the project readme file or scripts for future reference.
 
-\subsection{{Intel® VTune™ Profiler VTune™}}
+\subsection{{Intel® VTune™ Profiler}}
 
-The VTune Profiler\footnote{\url{https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html}} ...
-
+The Intel® VTune™ Profiler\footnote{\url{https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html}} is a performance analysis tool providing profiling
+and analysis capabilities to understand application performance on Intel CPUs and GPUs.
+The profiler can be used both as a graphical or command-line application,
+offering a visual timeline and microarchitectural analysis to identify
+performance bottlenecks.
 
 \subsubsection{Intel Application Performance Snapshot}
 
-The Intel Application Performance Snapshot is a helpful tool for Linux OS
-that can provide a quick overview of compute intensive applications running
-on Intel x86-64 CPUs.
+The Intel Application Performance Snapshot (APS) is a subtool from the VTune profiler
+(Linux OS only)
+that can provide a quick overview of compute-intensive applications running
+on Intel hardware.
+It can be used to check if a given application is CPU, Memory, or I/O bound
+before moving to a more fine-grained analysis.
 
 To launch data collection with APS the command is
 \begin{verbatim}
 > aps --result-dir=<foldername> <target> [target-options]
 \end{verbatim}
-By default, statistics of the whole application are collected.
-To enable collection only for a specific region, the source code can be instrumented
-with calls to Intel Tracing Technology (ITT) API.
-The function \texttt{\_\_itt\_pause()} and \texttt{\_\_itt\_resume()} allow pausing
-or resuming data collection, respectively.
+After finishing, a report is printed to the output terminal.
+In addition an HTML report is generated, which can be viewed in a
+supported browser (see Figure~\ref{fig:intel_aps}).
 
-A common scenario in scientific finite elements applications is to have a preprocessing phase,
-where inputs are read and mesh-related infrastructure is set-up.
-To ignore this phase during APS collection, we can start aps in paused mode,
-and call \texttt{\_\_itt\_resume()} before the main time-stepping or solver loop.
+By default, APS collects statistics of the whole application run.
+To enable collection only for a specific region (such as a solver loop),
+the source code can be instrumented
+with the Intel Tracing Technology (ITT) API.
+This is particularly useful in large scale finite-element applications to
+ignore the preprocessing phase (mesh setup).
+As shown in Listing \ref{lst:intel_itt}, we can start APS in paused mode and resume
+performance counter collection only for the region of interest.
 
-\subsubsection{VTune Profiler}
+\begin{lstlisting}[
+    label={lst:intel_itt},
+    caption={Minimal instrumentation example using the Intel-specific ITT API}]
+#include <ittnotify.h>
+
+int main() {
+    // Preprocessing, setup
+    setup_mesh();
+
+    __itt_resume(); // Start data collection
+    run_solver();   // Main solver iteration loop
+    __itt_pause();  // Stop data collection
+
+    // Post-processing
+    write_result();
+    return 0;
+}
+\end{lstlisting}
+
+An example of the APS output is shown in \ref{fig:intel_aps}.
+Due to the coarse, application-level profiling granularity, the performance
+snapshot must be interpreted with care.
+For instance, in a GPU-accelerated benchmark, low physical utilization is expected.
+Another source of interpretation errors is that APS scales its metrics against the
+full hardware resources of the system (e.g., in SuperMUC-NG Phase 2, all four GPUs of a node).
+In tests targetting only a single GPU device, this results in ``artificially'' low
+utilization.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{aps-screenshot-kokkos-unoptimized}
+\caption{Example output from an early iteration of the Bakeoff Kernels using the Kokkos framework on SuperMUC-NG Phase 2 (Intel ``Ponte Vecchio'' GPUs).}
+\label{fig:intel_aps}
+\end{figure}
+
+\subsubsection{VTune Profiler Hotspots and GPU Analysis}
+
+For codes utilizing Intel GPUs, VTune provides specialized collectors to
+analyze execution on the offload device.
 
 \begin{verbatim}
 > vtune -quiet -collect gpu-offload -r vtune_gpu_offload <executable>
 > vtune -quiet -collect gpu-hotspots -r vtune_gpu_hotspots ...
 \end{verbatim}
 
+The results are typically inspected via the VTune GUI, providing a powerful
+timeline view.
 
-Cheat sheet\footnote{\url{https://www.intel.com/content/dam/develop/external/us/en/documents/vtune-profiler-cheat-sheet.pdf}}
+% Cheat sheet\footnote{\url{https://www.intel.com/content/dam/develop/external/us/en/documents/vtune-profiler-cheat-sheet.pdf}}
 
 \subsection{Intel® Advisor}
 
