@@ -1,0 +1,581 @@
+\documentclass[a4paper,12pt]{article}
+
+% Import the deliverable package from common directory
+\usepackage{../common/deliverable}
+
+% Tell LaTeX where to find graphics files
+\graphicspath{{../common/logos/}{./figures/}{../}}
+
+\usepackage{xspace}
+\usepackage{lipsum}
+\usepackage[utf8x]{inputenc} % for registered and trademark symbols
+\usepackage{listings}
+
+% color for lstlistings
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Set the deliverable number (without the D prefix, it's added automatically)
+\setdeliverableNumber{3.3}
+
+% Begin document
+\begin{document}
+
+% Create the title page with the title as argument
+\maketitlepage{Integration of performance measuring tools}
+
+\newpage
+% Main Table using the new environment and command
+\begin{deliverableTable}
+    \tableEntry{Deliverable title}{Integration of Performance Measuring Tools}
+    \tableEntry{Deliverable number}{D3.3}
+    \tableEntry{Deliverable version}{0.1}
+    \tableEntry{Date of delivery}{February 28, 2026}
+    \tableEntry{Actual date of delivery}{February 28, 2026}
+    \tableEntry{Nature of deliverable}{Demonstrator, pilot, prototype}
+    \tableEntry{Dissemination level}{Public}
+    \tableEntry{Work Package}{WP3}
+    \tableEntry{Partner responsible}{BADW-LRZ}
+\end{deliverableTable}
+
+% Abstract and Keywords Section
+\begin{deliverableTable}
+    \tableEntry{Abstract}{\lipsum[1][1-5]}
+    \tableEntry{Keywords}{performance; analysis; energy; accelerators}
+\end{deliverableTable}
+
+\newpage
+
+\begin{documentControl}
+    \addVersion{0.1}{February 10, 2026}{Ivan Pribec}{Initial document plan}
+    \addVersion{0.2}{February 27, 2026}{Ivan Pribec}{Benchmark and measurement tool description}
+%    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+%    \addVersion{1.0}{[Date]}{[Author name]}{Final version}
+\end{documentControl}
+
+\subsection*{{Approval Details}}
+Approved by: [Name] \\
+Approval Date: [Date]
+
+\subsection*{{Distribution List}}
+\begin{itemize}
+    \item [] - Project Coordinators (PCs)
+    \item [] - Work Package Leaders (WPLs)
+    \item [] - Steering Committee (SC)
+    \item [] - European Commission (EC)
+\end{itemize}
+
+\vspace*{2cm}
+
+\disclaimer
+
+\newpage
+
+\tableofcontents % Automatically generated and hyperlinked Table of Contents
+
+\newpage
+
+\section{{Introduction}}
+
+This deliverable provides a software framework demonstrator for the performance
+analysis of large-scale simulations on EuroHPC systems including accelerators.
+The intention is to provide a portable example (in terms of different hardware and software frameworks)
+which is applicable to a broad range or European supercomputing,
+thus supporting the transition to exascale computing.
+
+The diversity of accelerators from multiple vendors (Nvidia, AMD, Intel) deployed
+at EuroHPC centers and also national HPC sites poses a significant challenge
+for scientists and engineers in terms of needed developments effort to obtain
+correct, robust and performant production codes for large-scale scientific computing.
+
+\subsection{{Purpose of the Document}}
+
+The purpose of the demonstrator is to provide a standardized blueprint for
+both library and application developers within WP1 and WP2 of the dealii.X project.
+The demonstrators are also of relevance to other stakeholders in the field of finite element
+software and GPU computing.
+
+We demonstrate three distinct methodologies, presented here in descending order
+of complexity and implementation effort:
+\begin{itemize}
+    \item Application-level profiling and manual roofline analysis
+    \item Instrumentation-based approaches
+    \item Sampling-based approaches
+\end{itemize}
+
+Understanding the trade-offs between these methods -- specifically regarding data
+collection granularity, runtime overhead, and degree of automation -- is essential
+for an information selection of the appropriate tool for a certain performance
+analysis task.
+Integrating these performance analysis workflows early in the software development
+ccle is critical for ensuring codebases remain performant and portable across the
+diverse heterogenous environments of the EuroHPC ecosystem.
+
+\subsection{{Structure of the Document}}
+\begin{itemize}
+    \item Section \ref{sec:section2}: [Poisson Solver Proxy App]
+    \item Section \ref{sec:section3}: [Energy Measurement]
+    \item Section \ref{sec:section4}: [Section Title]
+\end{itemize}
+
+\newpage
+
+\section{{Poisson Solver Proxy App}}
+\label{sec:section2}
+
+The demonstrator utilizies a Poisson solver proxy based on the CEED Bakeoff Problems (BP),
+similar to BP3. It solves the Poisson equation,
+$$
+-\nabla^2 u = f \text{in} \Omega, u = 0 \text{on} \partial \Omega
+$$
+over a 3-d box geometry, $\Omega = [0,1]^3$.
+The domain is discretized with hexahedral finite elements.
+The finite element space consists of tensor-product polynomials using
+nodal basis function at Gauss-Legendre-Lobatto (GLL) knots.
+For a polynomial degree $p$, there are $p+1$ points per spatial dimension.
+
+% TODO: mention quadrature choice, is it called "collocated integration"?
+
+To ensure the proxy app is representative of the complex geometries found in
+biological models, the implementation assumes deformed elements.
+This means the solver must handle the full metric terms (Jacobian) of the
+of the transformation from physical to iso-parametric coordinates.
+
+Given the self-adjoint nature of the Laplace operator, we employ a Conjugate Gradient (CG) solver.
+The system matrix is never assembled, instead the bilinear forms are evaluated in
+a matrix-free fashion which is more efficient on modern CPU and GPU architectures.
+Following the original CEED Bakeoff Problem setup, non-preconditioned CG is used,
+as the main purpose of the benchmark is for software optimization
+and performance analysis purposes.
+
+For actual models, which may require computational meshes with billions of degrees
+of freedom, the computational speed is perfomed.
+We envision the use of efficient multigrid-based preconditioners, which are
+essential for ``propagating information'' quickly across the mesh thereby
+reduing the total number of CG iterations needed before convergence.
+Recent enhancements of the portable GPU multigrid preconditioners are
+described in deliverable D1.7.
+
+It is worth pointing out that the setup shares architectural similarities
+with the High-Performance Conjugate Gradient (HPCG) benchmark,
+although they differ in the choice of discretization method and intent.
+The HPCG benchmark utilizes a 27-point stencil finite difference method,
+while the BP3 proxy uses (high-order) finite elements.
+HPCG is typically limited by memory bandwidth due to the explicit (sparse)
+matrix stroage.
+In contrast, the matrix-free approach in the BP puts emphasis on arithmetic
+intensity and floating-point throughput.
+Unlike HPCG, which employs a symmetric Gauss-Seidel preconditioner,
+the BP benchmark uses non-preconditoner CG.
+
+%One of the scaling problems arising with multigrid methods is the
+%communication latency of the coarse-grid solver at very high MPI rank counts.
+
+\subsection{{BP Results}}
+
+The Bakeoff Problem demonstrator app can be obtained using the commands in
+the listing below:
+
+\begin{lstlisting}[
+    basicstyle=\ttfamily\small,
+    caption={Script for building the BP3.5 demo}]
+git clone https://github.com/dealii-X/benchmarks.git
+cd benchmarks/bakeoff_problems_dealii
+
+# checkout specific commit (git checkout <commit_hash>)
+
+cmake -B build -S src \
+    -DCMAKE_CXX_COMPILER="$(which mpicxx)" \
+    -DDEAL_II_DIR=<dealii_installation_path>
+cmake --build build
+\end{lstlisting}
+
+We use application-level profiling using timers to measure the throughput
+of matrix-vector products and iterative solver steps.
+
+The main quantities of interest are:
+
+
+% TODO: add plots/tables of the BP output
+
+
+\subsection{{Bakeoff Kernels}}
+
+The proxy app relies on the efficient implementation of the local kernels.
+
+% TODO: there is overlap with this section and the new results in D1.7
+%       maybe we can drop this section then?
+
+The Bakeoff Kernel variants can be obtained with the commands in the listing below:
+
+\begin{lstlisting}[
+    basicstyle=\ttfamily\small,
+    caption={Script for building the BK benchmarks}]
+git clone https://github.com/dealii-X/benchmarks.git
+cd benchmarks/sum_factorization
+cmake -B build -S . \
+    -DCMAKE_CXX_COMPILER="$(which cxx)" \
+    -DKokkos_DIR=<Kokkos_installation_path>
+cmake --build build -j <jobs>
+\end{lstlisting}
+
+The performance of the kernels is measured using application-level profiling.
+The two main quantities of interest are,
+\begin{itemize}
+    \item DoF updates per second
+    \item effective bandwidth
+\end{itemize}
+
+The DOF updates per second are calculated by the formulas
+\begin{equation}
+   \text{Througput} = \frac{N * (p+2)^3}{\text{Time}}
+\end{equation}
+The effective bandwidth (BW) measures the rate at which the kernels stream through
+memory. Assuming the kernel is memory-bound, the effective BW measures ...
+
+
+In our experiments, the AMD MI210 has shown good performance of BK1 and BK5 kernels, particularly in the situations where the wavefront size perfectly matches the
+number of quadrature points.
+
+\cite{Karp2023} observed that the use of 1-d thread blocks enabled higher
+performance on the AMD Instinct MI250X GPU, compared to launching 2-d or 3-d
+thread blocks per element, despite the latter mapping naturally to the tensor product kernels.
+This stood in contrast to Nvidia GPUs where 2-d/3-d thread blocks were used.
+
+We speculate that optimization of thread-block sizes and or the introduction of padding to prevent bank conflicts, could yield further improvements and will be the subject of future work.
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Nvidia GH200 GPU with Kokkos programming model.}
+\label{fig:BK1_GH200}
+\end{figure}
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on Intel Data Center GPU Max 1550 (``Ponte Vecchio'') with Kokkos programming model.}
+\label{fig:BK1_PVC}
+\end{figure}
+
+\begin{figure}
+\centering
+%\includegraphics[width=0.8\textwidth]{BK1_1}
+\caption{BK1 performance results on AMD Instinct MI210 with Kokkos programming model.}
+\label{fig:BK1_AMD}
+\end{figure}
+
+\newpage
+\section{{Performance Analysis Tools}}
+\label{sec:section3}
+
+The complexity of both the the software in question and the target hardware,
+limit what can be inferred solely using application-based performance reporting.
+
+Luckily, a growing amount of both vendor-provided and open-source software can provide the in-depth analysis capabalities, based on hardware performance counters, micro-benchmarking, and automatic analysis capabilities which can make performance optimization easier.
+
+In the following sections, we provide a description and usage examples of
+tools that we have used for the optimization of the the Bakeoff Problems and
+the underlying Bakeoff Kernels.
+
+The tools we have used so far,
+\begin{itemize}
+    \item NVIDIA Nsight Systems
+    \item Intel VTune Profiler
+    \item LIKWID Performance Tools
+\end{itemize}
+
+% TODO: AMD?
+
+\subsection{{NVIDIA NSight Systems}}
+
+NSight™ Systems provides a system-wide timeline view, showing how the CPU and GPU
+executions. It also provides statistics about API calls, overhead and memory transfers
+(HtoD/DtoH).
+
+To create a profile, we launch the application with the command\footnote{We use \texttt{<>} to denote mandatory arguments, and \texttt{[]} to denote optional arguments}
+\begin{verbatim}
+> nsys profile <target> [target-options]
+\end{verbatim}
+Further command switch options can be provided to control what is collected.
+
+It is useful to collect profiling tool invocations either in the project readme file or scripts for future reference.
+
+\subsection{{Intel® VTune™ Profiler}}
+
+The Intel® VTune™ Profiler\footnote{\url{https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html}} is a performance analysis tool providing profiling
+and analysis capabilities to understand application performance on Intel CPUs and GPUs.
+The profiler can be used both as a graphical or command-line application,
+offering a visual timeline and microarchitectural analysis to identify
+performance bottlenecks.
+
+\subsubsection{Intel Application Performance Snapshot}
+
+The Intel Application Performance Snapshot (APS) is a subtool from the VTune profiler
+(Linux OS only)
+that can provide a quick overview of compute-intensive applications running
+on Intel hardware.
+It can be used to check if a given application is CPU, Memory, or I/O bound
+before moving to a more fine-grained analysis.
+
+To launch data collection with APS the command is
+\begin{verbatim}
+> aps --result-dir=<foldername> <target> [target-options]
+\end{verbatim}
+After finishing, a report is printed to the output terminal.
+In addition an HTML report is generated, which can be viewed in a
+supported browser (see Figure~\ref{fig:intel_aps}).
+
+By default, APS collects statistics of the whole application run.
+To enable collection only for a specific region (such as a solver loop),
+the source code can be instrumented
+with the Intel Tracing Technology (ITT) API.
+This is particularly useful in large scale finite-element applications to
+ignore the preprocessing phase (mesh setup).
+As shown in Listing \ref{lst:intel_itt}, we can start APS in paused mode and resume
+performance counter collection only for the region of interest.
+
+\begin{lstlisting}[
+    label={lst:intel_itt},
+    caption={Minimal instrumentation example using the Intel-specific ITT API}]
+#include <ittnotify.h>
+
+int main() {
+    // Preprocessing, setup
+    setup_mesh();
+
+    __itt_resume(); // Start data collection
+    run_solver();   // Main solver iteration loop
+    __itt_pause();  // Stop data collection
+
+    // Post-processing
+    write_result();
+    return 0;
+}
+\end{lstlisting}
+
+An example of the APS output is shown in \ref{fig:intel_aps}.
+Due to the coarse, application-level profiling granularity, the performance
+snapshot must be interpreted with care.
+For instance, in a GPU-accelerated benchmark, low physical utilization is expected.
+Another source of interpretation errors is that APS scales its metrics against the
+full hardware resources of the system (e.g., in SuperMUC-NG Phase 2, all four GPUs of a node).
+In tests targetting only a single GPU device, this results in ``artificially'' low
+utilization.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{aps-screenshot-kokkos-unoptimized}
+\caption{Example output from an early iteration of the Bakeoff Kernels using the Kokkos framework on SuperMUC-NG Phase 2 (Intel ``Ponte Vecchio'' GPUs).}
+\label{fig:intel_aps}
+\end{figure}
+
+\subsubsection{VTune Profiler Hotspots and GPU Analysis}
+
+For codes utilizing Intel GPUs, VTune provides specialized collectors to
+analyze execution on the offload device.
+
+\begin{verbatim}
+> vtune -quiet -collect gpu-offload -r vtune_gpu_offload <executable>
+> vtune -quiet -collect gpu-hotspots -r vtune_gpu_hotspots ...
+\end{verbatim}
+
+The results are typically inspected via the VTune GUI, providing a powerful
+timeline view.
+
+% Cheat sheet\footnote{\url{https://www.intel.com/content/dam/develop/external/us/en/documents/vtune-profiler-cheat-sheet.pdf}}
+
+\subsection{Intel® Advisor}
+
+The tool also support a command-line interface (CLI), useful to collect results
+on remote systems and/or under batch-scheduling constraints.
+
+Collection of the roofline data is performed using the command
+\begin{verbatim}
+> advisor --collect=roofline --profile-gpu -- <executable>
+\end{verbatim}
+To obtain line profiling data linked to the source file, the executable must be (re)compiled with the following \texttt{icpx} options: \texttt{-fdebug-info-for-profiling -gline-tables-only}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{advisor-screenshot-2025-07-24}
+\caption{Exemplary view of Bakeoff Kernel result in Intel Advisor.}
+\label{fig:intel_advisor}
+\end{figure}
+
+\subsection{LIKWID Performance Tools}
+
+The LIKWID Performance Tools\footnote{\url{https://hpc.fau.de/research/tools/likwid/}}
+developed at the Erlangen National High Performance Computing Center (NHR@FAU) are a suite
+of command-line applications for performance monitoring and benchmarking.
+They provide a lightweight abstraction for analyzing hardware performance counters
+across major CPU and GPU architectures. Within our demonstrator kernels, LIKWID
+is used to measure the arithmetic intensity and througput of high-order
+finite element kernels.
+
+We make use of the LIKWID Marker API which enables the measuring of named regions of code.
+This allows us to isolate specific computational bottlenecks, such as the evaluation
+of the bilinear finite element forms, right-hand side evaluation, and the iterative linear
+equation solver. As shown in Listing \ref{lst:Marker}, the instrumention is only minimally
+intrusive. The regions of interest are marked for collection by calling the Marker API
+functions or function-like macros, which allow the performance monitoring to be enabled
+or disabled using the preprocessor (\texttt{-D LIKWID\_PERFMON}.).
+
+\begin{lstlisting}[
+    label={lst:Marker}
+    caption={Minimal example of using LIKWID Marker API for CPU instrumentation}]
+#ifdef LIKWID_PERFMON
+#include <likwid-marker.h>
+#else
+  // Empty definitions go here
+#endif
+
+int main() {
+  LIKWID_MARKER_INIT;
+  LIKWID_MARKER_THREADINIT;
+  LIKWID_MARKER_START("matvec");
+  /* region of interest we measure */
+  LIKWID_MARKER_STOP("matvec");
+  LIKWID_MARKER_CLOSE;
+  return 0;
+}
+\end{lstlisting}
+
+After the code has been instrumented and built accordingly, the measurements are
+collected by invoking the executable with the LIKWID performance counter tool:
+\begin{verbatim}
+> likwid-perfctr [options] <executable>
+\end{verbatim}
+The output groups can be selected using the command-line options, and normally include
+metrics including floating point operations per second and memory-bandwidth related metrics
+(see Listing \ref{lst:likwid_result}).
+
+The instrumented executable is then used within a ``measure-refine'' cycle, analogous
+to the standard ``edit-compile-run'' cycle of software development, testing
+the impact of different optimizations (e.g. vectorization, cache-blocking) and
+immediately re-measuring to quantify the speedup and also inform the (numerical) algorithm design.
+Using the statistics collected by \texttt{likwid-perfctr} and related LIKWID tools,
+the scientific programmer can also create empirical roofline plots.
+
+\begin{lstlisting}[
+    label={lst:likwid_result}
+    caption={Output of \texttt{likwid-perfctr} for the serial BK1 benchmark (CPU-only).}]
+...
+\end{lstlisting}
+
+\newpage
+\section{{Energy Measurement}}
+\label{sec:section4}
+
+Energy consumption is an increasingly critical metric in modern computing.
+While often secondary for consumer-grade desktop software, the immense scale of
+High-Performance Computing (HPC) systems means that electricity usage
+accounts for a significant portion of total operational costs.
+
+While hardware advancements have steadily improved performance-per-watt over recent decades, software efficiency remains a dominant factor. A prominent example is GPU memory optimization: utilizing coalesced loading patterns not only accelerates execution but also drastically reduces the energy footprint compared to unoptimized, strided access. However, the interplay of clock frequencies, computational intensity, and parallelism makes obtaining reproducible energy measurements a complex task for end-users.
+
+\subsection{{p3em}}
+
+p3em\footnote{\url{https://github.com/svtcli/p3em}} (standing for Permitted, Portable, Parsable Energy Meter)
+offers a simple API for measuring energy across heterogeneous devices \cite{Cielo2025}.
+It is designed as a minimalistic, header-only C++ library, facilitating
+easy integration into existing codebases.
+Callers of the API create instances of the \texttt{p3em} class, which serves as an ``energy-meter''.
+
+p3em operates by spawning a background thread that manages a power-measurement loop.
+This thread initiaties a sub-process which interfaces with vendor-specific APIs or
+OS-specific energy measurement tools (such as NVIDIA's \texttt{nvidia-smi} or Linux \texttt{perf})
+to periodically query the device energy usage.
+
+To maintain a hardware-agnostic interface, p3em requires the sub-process to
+output a single monotonically increasing value representing the total energy
+consumption in Joules.
+This value could be calculated via numerical integration
+of instantaneous power samples\footnote{In practice, these values may already be averaged by the device driver}
+or alternatively, the sub-process may directly report hardware-level energy
+counters if supported by the device.
+The background thread captures these value from the sub-process output,
+providing a synchronized running total for the given region of interest.
+The \texttt{p3em.sh} script provided in the library's repository serves
+as a versatile template, containing pre-configured commands for several
+platforms, including Nvidia, Intel, and AMD (GPU) architectures,
+which can be toggled depending on the available hardware.
+
+The listing~\ref{lst:p3em} demonstrates how to instrument a C++ "region of interest" (ROI)
+using p3em. Conceptually, usage of the API is similar to using a RAII-based Timer class.
+Further usage examples in C, Fortran and Python can be found at the p3em source repository.
+
+\begin{lstlisting}[
+    label={lst:p3em},
+    language=C++, basicstyle=\ttfamily\small, breaklines=true,
+    backgroundcolor=\color{backcolour},
+    caption={Energy measurement instrumentation using p3em}]
+#include <cstdlib>
+#include <iostream>
+#include <p3em.hpp>
+
+int main() {
+
+    // Determine sub-process script location via envvar or default path
+    auto p3em_script_path = []() -> std::string {
+        const char* path = std::getenv("P3EM_SCRIPT");
+        return path ? path : "p3em.sh";
+    }();
+
+    // Begin Region of Interest (ROI)
+    {
+        // Constructor initializes the background thread
+        auto em = p3em(p3em_script_path);
+        for(int i = 0; i < niters; ++i) {
+            // ... Perform heavy computational kernels ...
+        }
+        // Retrieve and report energy usage
+        std::cout << "Latest value:" << em.getLatestValue() << '\n';
+
+        // Meter stops when 'em' goes out of scope (RAII)
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+An example of a specialized user-provided script, measuring energy by calling the NVIDIA Management Library
+via the Python bindings (\texttt{pyNVML}) is in Listing~\ref{lst:pynvml}.
+
+\begin{lstlisting}[
+    label={lst:pynvml},
+    language=Python,
+    caption={Python measurement script using pyNVML to stream cumulative GPU energy consumption in Joules.}]
+#!/usr/bin/env python3
+from pynvml import *
+import sys
+import time
+
+try:
+    nvmlInit()
+    handle = nvmlDeviceGetHandleByIndex(0)
+    while True:
+        # returns total energy in millijoules
+        nrg = nvmlDeviceGetTotalEnergyConsumption(handle)
+        # Output Joules to stdout
+        print(nrg / 1000.0)
+        sys.stdout.flush()
+        time.sleep(0.1)
+finally:
+    nvmlShutdown()
+\end{lstlisting}
+
+\newpage 
+\section{{Conclusion}} \label{sec:conclusion}
+
+
+
+
+
+
+\bibliographystyle{plainnat}
+% refs.bib in the same folder
+\bibliography{refs}
+
+\label{MyLastPage}
+
+\end{document}
