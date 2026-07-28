@@ -16,6 +16,13 @@
 \usepackage{algorithmic}
 \usepackage{multirow}
 
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+
+\pgfplotsset{compat=1.9}
+
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{1.9}
 
@@ -405,17 +412,141 @@ A space–time DG formulation has been developed on the resulting agglomerated m
 \section{RUB}
 \label{sec:section5}
 
-\lipsum[14-15]
+\subsection{{Performance Evaluations of High Order Finite Element Kernels on Modern Accelerators}}
 
-\subsection{{[Subsection Title]}}
-\lipsum[16]
+We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs). 
+The matrix-free framework and its initial implementations are described in Deliverable 1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}). 
+To evaluate these problems, we adopt the bake-off benchmarks \cite{bakeoff} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements. 
+Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \cite{tens_prod}. This approach causes low-order elements to underutilize 
+the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \cite{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit, 
+leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
+Based on a batch processing approach, our technique assigns multiple elements to each thread block to overcome these limitations. For example, a polynomial order of 1 in the Laplace operator evaluation (Bake-Off Kernel 3 in the CEED benchmarks) can fit 11 elements per thread block. 
+A performance comparison between the single-element-per-thread-block and the batched processing approaches is given in Figure~\ref{fig:BK3_1_10}. The new technique achieves a 2$\times$ speedup for polynomial order 1 on the NVIDIA GH200 Superchip at the JUPITER supercomputer located at the Jülich Research Centre.
+New batched implementations are available at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED\_BK}.
 
-\subsection{{[Subsection Title]}}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-    \item \textbf{[Item Title]}: \lipsum[17][1-2]
-    \item \textbf{[Item Title]}: \lipsum[17][3-4]
-    \item \textbf{[Item Title]}: \lipsum[17][5-6]
-\end{itemize}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figures/GH200_fp64_BK3_1KB_10KB}
+	\caption{Performance comparison of the Laplace operator (BK3) in FP64 on the NVIDIA GH200. Single-element-per-thread-block approach (Left); proposed multiple-elements-per-thread-block approach (right).}
+	\label{fig:BK3_1_10}
+\end{figure}
+
+We refer to Deliverable D3.4 for the detailed performance analysis with NVIDIA Nsight Compute as well as the roofline model.
+
+
+\subsection{Laplace Solver Performance (CEED BP3)}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.5\textwidth]{figures/GH200_BK_BP}
+	\caption{
+		Performance results for the Laplace Operator (CEED BK3) \& Problem (CEED BP3) are evaluated across various polynomial orders and problem sizes on the GH200 GPU. Both Bake-Off Kernel performance (GDOF/s) 
+		and Bake-Off Problem performance ($\text{GDOF} \times \text{CG}_{\text{iter}} / (\text{second} \times \text{process})$) are measured using the global degrees of freedom (the T-vector in CEED).
+	}
+	\label{fig:BK_BP}
+\end{figure}
+
+We extend our operator evaluation to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem 3 (BP3) benchmark. 
+The solver, implemented within the deal.II finite element library framework is evaluated on both single and multi-GPU configurations of the NVIDIA GH200 Superchip, utilizing MPI with peer-to-peer (P2P) communication enabled. Figure~\ref{fig:BK_BP} illustrates the initial performance results, 
+highlighting that the performance difference between operator evaluations (BK) and full linear solvers (BP) 
+is primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the results confirm the computational efficiency of high-order elements which directly leverages the tensor-product formulation of the shape functions to increase arithmetic intensity. 
+The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}.
+
+
+
+\subsection{Raviart-Thomas Elements and Kernel Performance}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figures/GH200_Mass_32_64}
+	\caption{Performance comparison of the vector Mass operator using FP32 (left) and FP64 (right) precisions on the NVIDIA GH200 Superchip.}
+	\label{fig:GH200_vector_Mass}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figures/MI250x_Mass_32_64}
+	\caption{Performance comparison of the vector Mass operator using FP32 (left) and FP64 (right) precisions on the single AMD MI250x GPU tile.}
+	\label{fig:MI250x_vector_Mass}
+\end{figure}
+$H^1$-conforming elements (as used in the CEED Bake-Off kernels) enforce continuity of all vector components across elements, whereas the Navier-Stokes equations, 
+in mixed formulations often require continuity of the normal component of the flux across element boundaries which is a property of $H(\mathrm{div})$-conforming spaces. 
+Elements designed for this purpose are known as Raviart-Thomas finite elements. We developed the vector Mass, mixed divergence and mixed gradient operators the core operations 
+in Raviart-Thomas kernel design and implemented them in our benchmarks. These benchmarks are available at \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
+
+
+
+
+Figure \ref{fig:GH200_vector_Mass} shows the performance of the vector Mass operator on the NVIDIA GH200 in both FP32 and FP64 precisions. Batch processing enabled all polynomial orders to achieve similar throughput (GDOF/s). Similar trends are observed for the AMD MI250X 
+GPU from the LUMI supercomputer, which performs well given its $1.3\text{ TB/s}$ STREAM bandwidth. Only polynomial order 8 performs significantly worse than the other orders, as shown in Figure \ref{fig:MI250x_vector_Mass}. 
+This drop in performance is likely due to register file capacity constraints in this slightly older AMD architecture.
+
+
+We also introduce a new technique to target NVIDIA tensor cores \cite{nvidia_mma} 
+which are designed to perform fast matrix-matrix multiplication in different precisions. Initial implementations for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) are available 
+in the same rt\_kernels benchmarks repository.
+
+
+\newcommand{\average}[1]{\left\{\!\left\{#1\right\}\!\right\}}
+\newcommand{\jump}[1]{\left[\!\left[{#1}\right]\!\right]}
+
+
+\subsection{Discontinuous Galerkin kernels and multigrid solvers}
+
+Another development by the RUB group is the Discontinuous Galerkin (DG) kernels including the face integration. In particular, the main interest lies in the matrix-free evaluation of, for instance,  the symmetric penalty (Nitsche) discretization of the Laplace operator which read as 
+\[
+	 \sum\limits_{K \in \text{cells}} \left(\nabla \varphi_i, \nabla u_h \right)_{K} + \sum\limits_{F \in \text{faces}} \big( -\left< \jump{\varphi_i}, \average{\nabla u_h} \right>_{F} - \left< \average{\nabla \varphi_i}, \jump{u_h}\right>_F  + \left< \jump{\varphi_i}, \sigma \jump{u_h}\right>_F \big),
+\]
+where $\average{v} = \frac{v^{-}-v^{+}}{2}$ and $\jump{v} = n^{-}v^{-}+n^{+}v^{+}$ are average and the directed jump of a quantity $v$ over a face between two adjacent cells $K^{-}$ and $K^{+}$, respectively, and $\sigma$ is an appropriate Nitsche penalty parameter to ensure the coercivity of the discretization. 
+
+
+
+ As a first approach, the face-centric loop (FCL) with global temporary storage has been implemented~\cite{KronbichlerAllalen2018, KronbichlerKormann2019}. The FCL algorithm is described as follows:
+
+\noindent\rule{\textwidth}{1pt}\\[-0.5em]
+\textbf{Algorithm 1:} Face-centric loop (FCL) with global temporary storage.\\[-0.5em]
+\rule{\textwidth}{0.6pt}
+
+\begin{enumerate}[label=\arabic*., leftmargin=2em, itemsep=0.8em]
+	\item Parallel for loop over all cells $K$:
+	\begin{itemize}[label=--, leftmargin=2em, itemsep=0.2em]
+		\item Perform cell integration for all test functions $\varphi_i$ on values of input vector with sum factorization.
+		\item Write result into position $i$ of result vector with non-temporal stores.
+		\item Interpolate cell values from input vector to all $2d$ faces for both values and the reference-cell normal derivative; write these $2(k+1)^{d-1}$ values per face into global auxiliary face storage with non-temporal stores.
+	\end{itemize}
+	
+	\item Parallel for loop over all inner faces $F$:
+	\begin{itemize}[label=--, leftmargin=2em, itemsep=0.2em]
+		\item Load values and normal derivatives from global auxiliary storage on elements $K^-$ and $K^+$.
+		\item Perform face integration using values and normal derivative with sum factorization, producing results for both sides simultaneously.
+		\item Write result tested by value and normal derivative of test function $\varphi_i$ into global auxiliary storage.
+	\end{itemize}
+	
+	\item Parallel for loop over boundary faces $F$: Similar to inner faces.
+	
+	\item Parallel for loop over all cells $K$:
+	\begin{itemize}[label=--, leftmargin=2em, itemsep=0.2em]
+		\item Read values and normal derivatives on each face from global auxiliary storage and finalize face integration step by expanding test functions $\varphi_i$ into the cell and adding the contribution into the result vector.
+	\end{itemize}
+\end{enumerate}
+
+\vspace{-0.5em}
+\noindent\rule{\textwidth}{1pt}
+
+\input{figures/dg_matvec.tex}
+
+The throughput performance of the FCL algorithm during matrix–vector product evaluation is presented in Figures~\ref{fig:dg_mat_vec_dp} and~\ref{fig:dg_mat_vec_sp}, alongside the Continuous Galerkin (CG) operator evaluation. The Degrees of Freedom (DoF) per GPU are measured for each dimension of the corresponding discontinuous and continuous finite element spaces. Continuous matrix–vector evaluation listings are included to complement the DG results rather than to serve as a direct comparison.
+
+Nevertheless, two key differences are worth highlighting: the DG elements reach a clear performance plateau, and increasing the GPU count consistently achieves this same throughput limit. In contrast, the CG elements display a pronounced latency effect. This highlights strong potential for improved scaling—even though the current implementation transmits all ghost cell values (instead of faces) and results in redundant computations across ghost cells shared by MPI processes. Communication reduction and alternative paradigms, such as a cell-centric loop for face integration, are currently under investigation, with a full scalability study planned for the coming months.
+
+\input{figures/dg_mg_jupiter.tex}
+
+Finally, the portable multigrid frameworks has been extended also to the DG discretizations. In particular, the the most performant on CPUs variant cph--MG solver performance with the continuous embedding of the discontinuous space into continuous at the finest followed by the ph-solver developed previous for the continuous elements~\cite{Fehn2020}. The performance of the mixed--precision cph-MG solver is shown in Figure~\ref{fig:cph_mg}.
+
+The implementation of the algorithms are available at \url{https://github.com/dealii-X/portable-multigrid}.
+
+\subsection{Portable multigrid infrastructure in \texttt{deal.II}}
+
+Developments of the portable multigrid infrastructure is gradually migrating to \texttt{deal.II}. Matrix-free geometric transfer operators were introduced in PR~\#19347\footnote{\url{https://github.com/dealii/dealii/pull/19347}, retrieved on 28.07.2026} (opened in February 2026 and merged in June 2026). This functionality was subsequently extended to support systems of finite elements in PR~\#20023\footnote{\url{https://github.com/dealii/dealii/pull/20023}, retrieved on 28.07.2026} (opened and merged in July 2026). Both pull requests are included in the upcoming \texttt{deal.II} release 9.8, scheduled for the coming weeks. Furthermore, PR~\#20023 has been successfully utilized in the new tutorial Step-104\footnote{\url{https://github.com/dealii/dealii/pull/20026}, retrieved on 28.07.2026}, demonstrating a substantial speedup of the transfer operators and boosting the overall solver speed by a factor of 3.
 
 \newpage
 
