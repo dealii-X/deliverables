@@ -422,7 +422,8 @@ the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedu
 leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
 Based on a batch processing approach, our technique assigns multiple elements to each thread block to overcome these limitations. For example, a polynomial order of 1 in the Laplace operator evaluation (Bake-Off Kernel 3 in the CEED benchmarks) can fit 11 elements per thread block. 
 A performance comparison between the single-element-per-thread-block and the batched processing approaches is given in Figure~\ref{fig:BK3_1_10}. The new technique achieves a 2$\times$ speedup for polynomial order 1 on the NVIDIA GH200 Superchip at the JUPITER supercomputer located at the Jülich Research Centre.
-New batched implementations are available at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED\_BK}.
+New batched implementations are available at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED\_BK}\footnote{retrieved on 28.07.2026}.
+\\
 
 \begin{figure}[htbp]
 	\centering
@@ -449,7 +450,7 @@ We extend our operator evaluation to a complete linear solver by embedding the L
 The solver, implemented within the deal.II finite element library framework is evaluated on both single and multi-GPU configurations of the NVIDIA GH200 Superchip, utilizing MPI with peer-to-peer (P2P) communication enabled. Figure~\ref{fig:BK_BP} illustrates the initial performance results, 
 highlighting that the performance difference between operator evaluations (BK) and full linear solvers (BP) 
 is primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the results confirm the computational efficiency of high-order elements which directly leverages the tensor-product formulation of the shape functions to increase arithmetic intensity. 
-The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}.
+The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}\footnote{retrieved on 28.07.2026}.
 
 
 
@@ -471,7 +472,7 @@ The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree
 $H^1$-conforming elements (as used in the CEED Bake-Off kernels) enforce continuity of all vector components across elements, whereas the Navier-Stokes equations, 
 in mixed formulations often require continuity of the normal component of the flux across element boundaries which is a property of $H(\mathrm{div})$-conforming spaces. 
 Elements designed for this purpose are known as Raviart-Thomas finite elements. We developed the vector Mass, mixed divergence and mixed gradient operators the core operations 
-in Raviart-Thomas kernel design and implemented them in our benchmarks. These benchmarks are available at \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
+in Raviart-Thomas kernel design and implemented them in our benchmarks. These benchmarks are available at \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}\footnote{retrieved on 28.07.2026}.
 
 
 
@@ -542,11 +543,11 @@ Nevertheless, two key differences are worth highlighting: the DG elements reach 
 
 Finally, the portable multigrid frameworks has been extended also to the DG discretizations. In particular, the the most performant on CPUs variant cph--MG solver performance with the continuous embedding of the discontinuous space into continuous at the finest followed by the ph-solver developed previous for the continuous elements~\cite{Fehn2020}. The performance of the mixed--precision cph-MG solver is shown in Figure~\ref{fig:cph_mg}.
 
-The implementation of the algorithms are available at \url{https://github.com/dealii-X/portable-multigrid}.
+The implementation of the algorithms are available at \url{https://github.com/dealii-X/portable-multigrid}\footnote{retrieved on 28.07.2026}.
 
 \subsection{Portable multigrid infrastructure in \texttt{deal.II}}
 
-Developments of the portable multigrid infrastructure is gradually migrating to \texttt{deal.II}. Matrix-free geometric transfer operators were introduced in PR~\#19347\footnote{\url{https://github.com/dealii/dealii/pull/19347}, retrieved on 28.07.2026} (opened in February 2026 and merged in June 2026). This functionality was subsequently extended to support systems of finite elements in PR~\#20023\footnote{\url{https://github.com/dealii/dealii/pull/20023}, retrieved on 28.07.2026} (opened and merged in July 2026). Both pull requests are included in the upcoming \texttt{deal.II} release 9.8, scheduled for the coming weeks. Furthermore, PR~\#20023 has been successfully utilized in the new tutorial Step-104\footnote{\url{https://github.com/dealii/dealii/pull/20026}, retrieved on 28.07.2026}, demonstrating a substantial speedup of the transfer operators and boosting the overall solver speed by a factor of 3.
+Developments of the portable multigrid infrastructure is gradually migrating to \texttt{deal.II}. Matrix-free geometric transfer operators were introduced in PR~\href{https://github.com/dealii/dealii/pull/19347}{\#19347}\footnote{retrieved on 28.07.2026} (opened in February 2026 and merged in June 2026). This functionality was subsequently extended to support systems of finite elements in PR~\href{https://github.com/dealii/dealii/pull/20023}{\#20023}\footnote{retrieved on 28.07.2026} (opened and merged in July 2026). Both pull requests are included in the upcoming \texttt{deal.II} release 9.8, scheduled for the coming weeks. Furthermore, the latter PR has been successfully utilized in the new tutorial Step-104\footnote{\url{https://github.com/dealii/dealii/pull/20026}, retrieved on 28.07.2026}, demonstrating a substantial speedup of the transfer operators and boosting the overall solver speed by a factor of 3.
 
 \newpage
 
