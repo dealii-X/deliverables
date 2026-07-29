@@ -7,6 +7,8 @@
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
 \usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{placeins}
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,arrows.meta}
 
@@ -44,9 +46,9 @@
 \begin{deliverableTable}
     \tableEntry{Abstract}{ dealii-X D2.7 reports on the deployment of the
         first version of the Proof of Concept (PoC) platform, whose design was
-        presented in D2.6. The platform, named DealiiX Platform, is a desktop
-        application providing a node-based low-code editor for building
-        computational graphs, which are executed by CORAL, a C++ computational
+        presented in D2.6. The platform, named DealiiX Platform, is accessed through a desktop
+        application which provides a node-based low-code editor for building
+        computational graphs, which are then executed by CORAL, a C++ computational
         graph engine backed by the deal.II library. The no-code layer
         envisioned in D2.6 is realized through subnetwork nodes, allowing users
         to encapsulate low-code graphs into reusable high-level components.
@@ -74,6 +76,10 @@
 
 \begin{documentControl}
   \addVersion{0.1}{16/07/2026}{M. Franzon}{Initial draft}
+  \addVersion{0.2}{29/07/2026}{P. Colturi, M. Franzon}{Added the section on
+    testing with the lighthouse applications and early-user feedback; revised
+    the description of the HPC deployment and of the planned orchestration
+    layer; updated the Outlook}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -132,8 +138,10 @@ section 2 of D2.6. Section 4 describes the no-code layer, based on
 subnetwork nodes. Section 5 covers the execution modes and the
 meta-scheduling functionality, which transparently target local and remote
 computational resources. Section 6 presents the collaborative and
-visualization services. Section 7 reports on packaging, deployment and
-quality assurance, and section 8 outlines the activities planned for the
+visualization services. Section 7 reports on the testing of the platform
+with the dealii-X lighthouse applications and on the feedback collected
+during the deployment phase. Section 8 reports on packaging, deployment and
+quality assurance, and section 9 outlines the activities planned for the
 final phase of the project.
 
 \section{\textcolor{EUblue}{Architecture of the PoC platform}}
@@ -219,6 +227,7 @@ application. This fulfills one of the key modularity requirements set in
 D2.6.
 
 \section{\textcolor{EUblue}{The low-code node editor}}
+\label{sec:lowcode}
 
 The low-code interface implements the node-based programming model designed
 in section 2 of D2.6. The minimal set of object-oriented entities identified
@@ -242,6 +251,10 @@ well-formed graphs reach the execution engine.
     \caption{The DealiiX Platform canvas editor}
     \label{canvas}
 \end{figure}
+
+% Keep the figure above the sentence that introduces the feature list, so it
+% cannot be placed between that sentence and the list itself.
+\FloatBarrier
 
 On top of this typed graph model, the editor (Fig.~\ref{canvas}) provides
 the interaction features expected from a modern visual programming
@@ -289,11 +302,26 @@ network protocol and persisted across sessions.
 
 \begin{figure}
     \centering
-    \figureOrPlaceholder{subnetwork.png}{a subnetwork node on the canvas and
-        the same subnetwork opened for editing, with the breadcrumb bar
-        visible}
-    \caption{Subnetwork nodes: a collapsed high-level node (no-code view)
-        and its internal low-code definition}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \figureOrPlaceholder{subnetwork-collapsed.png}{a subnetwork node
+            collapsed on the canvas, exposing only its external interface}
+        \caption{a collapsed high-level node}
+        \label{subnetwork-a}
+    \end{subfigure}
+
+    \vspace{0.6cm}
+
+    \begin{subfigure}{\textwidth}
+        \centering
+        \figureOrPlaceholder{subnetwork-internal.png}{the internal graph of
+            the same subnetwork node, opened for editing, with the breadcrumb
+            bar visible}
+        \caption{the internal lower-level definition of the subnetwork node
+            shown in (\subref{subnetwork-a})}
+        \label{subnetwork-b}
+    \end{subfigure}
+    \caption{Subnetwork nodes}
     \label{subnetwork}
 \end{figure}
 
@@ -303,8 +331,8 @@ through a breadcrumb bar (Fig.~\ref{subnetwork}). A subnetwork can also be
 \emph{exploded} back into its constituent nodes in the parent graph. On
 export, every node is annotated with a qualified identifier that encodes its
 position in the nesting hierarchy, which is what allows the per-node
-execution monitoring described in section 5 to work transparently across
-nested graphs.
+execution monitoring described in Sec.~\ref{sec:execution} to work
+transparently across nested graphs.
 
 This mechanism directly realizes the vision of D2.6: an expert user builds a
 simulation workflow with the low-code editor and collapses it into a single
@@ -313,7 +341,11 @@ and a result output --- and a non-expert user then operates purely at the
 no-code level, connecting a few high-level nodes and running the simulation
 without ever seeing the underlying logic.
 
+% Confine the subnetwork figure to this section.
+\FloatBarrier
+
 \section{\textcolor{EUblue}{Execution modes and meta-scheduling}}
+\label{sec:execution}
 
 The design requirement of a transparent usage of computational resources is
 implemented by a meta-scheduling layer that supports four execution modes,
@@ -348,8 +380,9 @@ provided, for serial and MPI execution; when MPI is enabled, the job
 configuration dialog exposes the number of nodes and tasks per node, and the
 exported network JSON is annotated with the MPI plugin block required by
 CORAL for parallel initialization. Submitted jobs are tracked in a
-persistent jobs table showing scheduler status (pending, running, completed,
-failed, cancelled), submission and completion times, and the backend used.
+persistent jobs table (Fig.~\ref{jobs}) showing scheduler status (pending,
+running, completed, failed, cancelled), submission and completion times, and
+the backend used.
 For CORAL jobs, the execution status of every individual node of the graph
 --- including nodes nested inside subnetworks, via their qualified
 identifiers --- can be inspected from the interface, and the standard output
@@ -363,15 +396,28 @@ of the job can be opened directly in the application.
     \label{jobs}
 \end{figure}
 
-Two deployment targets have been exercised during the testing phase. The
+Two deployment scenarios have been exercised during the testing phase. The
 first is a containerized environment, distributed with the platform, in
 which a Docker container runs CORAL together with a complete Slurm
-installation and an SSH server, faithfully simulating a remote HPC cluster
-on the developer's machine. The second is a real remote machine: the same
-containers are deployed on a remote host and reached through an SSH tunnel,
-with a documented step-by-step setup guide. Since the application only
-assumes SSH access and a Slurm scheduler, the same mechanism applies to
-production HPC systems.
+installation and an SSH server; this reproduces the interaction with a
+remote batch-scheduled cluster faithfully enough to develop and test the
+whole submission and monitoring path on a single machine. The second is an
+HPC cluster, on which the same containers have been deployed and reached
+over SSH, with the procedure documented step by step in the platform
+repository:
+\url{https://github.com/2listic/dealiiX-platform/blob/main/docs/remote-setup.md}.
+Since the platform assumes only SSH access and a Slurm scheduler, the same
+mechanism applies to other production HPC systems.
+
+The layer described so far executes a single computational unit (a graph or
+an executable) per submission. Its natural extension is the
+orchestration of several such units, and this is the purpose of the pipeline
+mode described in Sec.~\ref{sec:validation}. At the time of writing the
+orchestrator has been designed but not yet developed: the design defines the
+pipeline stages, the ordering edges between them and the translation of the
+resulting graph into a chain of dependent scheduler jobs, while the
+implementation is deliberately left to the final phase of the project, so
+that it can be shaped by the feedback of the users who will operate it.
 
 \section{\textcolor{EUblue}{Collaborative and visualization services}}
 
@@ -385,15 +431,89 @@ permissions. This allows, for instance, an expert user to prepare and share
 a validated simulation workflow that a colleague can open and run without
 rebuilding it.
 
-Simulation results are inspected through the Coral Visualizer, a web-based
-viewer for VTK/deal.II output formats (\texttt{.vtk}, \texttt{.vtu}),
-reachable directly from the application. During the reporting period the
+\begin{figure}
+    \centering
+    \figureOrPlaceholder{visualizer-poisson.png}{the Poisson solution
+        produced by the graph of Fig.~\ref{canvas}, rendered in the Coral
+        Visualizer}
+    \caption{Poisson solution in the Coral Visualizer as a result of the
+        workflow of Fig.~\ref{canvas}}
+    \label{visualizer}
+\end{figure}
+
+Simulation results are inspected through the Coral Visualizer
+(Fig.~\ref{visualizer}), a web-based viewer for VTK/deal.II output formats
+(\texttt{.vtk}, \texttt{.vtu}), reachable directly from the application. During the reporting period the
 visualizer has been substantially extended with a ParaView-based rendering
 backend providing filters, visualization pipelines, solution field
 rendering, cell manipulation and edit sessions, while retaining a
 lightweight VTK backend for local usage. The visualizer has been tested with
 project-relevant datasets, including vascular geometries such as carotid
 artery meshes.
+
+\section{\textcolor{EUblue}{Testing with the lighthouse applications and
+early-user feedback}}
+\label{sec:validation}
+
+A central goal of the PoC platform is that a user without deep knowledge of
+the underlying simulation codes, and without the ability to write deal.II
+code or to assemble a computational graph, should still be able to
+configure and run a complete simulation. The executable mode described in
+Sec.~\ref{sec:execution} realizes this goal directly: given a program that
+follows the executable contract, the platform probes it for its parameter
+tree, presents that tree in the parameters panel in either JSON or
+\texttt{.prm} form, and dispatches the run to the selected local or remote
+target through the meta-scheduling layer, with monitoring and output
+retrieval available from the same interface. The interaction is reduced to
+editing parameters and pressing run.
+
+This path has been tested on two of the dealii-X lighthouse applications,
+brain and liver (\texttt{immersx}, elasticity solver), and on the deal.II
+tutorial program step-70, which is included in the repository as a reference
+example of the contract. Output from these runs was inspected through the
+Coral Visualizer; Fig.~\ref{brain} shows results from the brain application.
+Because the contract requires no platform-side development per application,
+support in executable mode is a property of the mechanism rather than of a
+per-application integration effort: the heart (\texttt{lifex},
+\texttt{.prm} input) and lungs (\texttt{exadg}, JSON input) applications
+comply with the same parameter-file convention and are expected to work
+without changes to the platform.
+
+\begin{figure}[!htb]
+    \centering
+    \figureOrPlaceholder{brain.png}{results of the brain lighthouse
+        application rendered in the Coral Visualizer}
+    \caption{Results of the brain lighthouse application, inspected in the
+        Coral Visualizer}
+    \label{brain}
+\end{figure}
+
+Testing also showed that the executable mode and the node editor should not
+remain two disjoint ways of using the platform. The observation that emerged
+most clearly is that an executable is itself a natural unit of composition
+(a black box with parameters, a run and an output), and therefore a
+natural candidate to become a node. This has led to the design of a
+\emph{pipeline mode}, currently under development, in which a higher-level
+directed acyclic graph is built whose nodes are entire computational units:
+either a complete CORAL graph or a standalone executable. Edges express
+execution order, and the resulting graph is topologically sorted and
+submitted to the scheduler as a chain of dependent jobs, giving the
+meta-scheduler an orchestration capability that neither CORAL nor a single
+executable provides on its own. Pipeline mode is a node editor in its own
+right, built on the same canvas technology as the low-code editor, and is
+therefore positioned to reuse the interaction features already available
+there. In this way a lighthouse application driven in executable mode ceases
+to be an alternative to the graph paradigm and becomes a component within
+it.
+
+Feedback collected from project partners during the testing phase was
+consistently positive on the central proposition of D2.6, and converged with
+the development team's own findings on the priorities for the final phase,
+in particular MPI support in executable mode, the enrichment of the node
+registries, and the consolidation of pipeline mode described above, which
+originated as a suggestion during this phase.
+
+\FloatBarrier
 
 \section{\textcolor{EUblue}{Packaging, deployment and quality assurance}}
 
@@ -441,9 +561,11 @@ tiers run against an isolated configuration store, so tests are reproducible
 and cannot interfere with a user's installation.
 
 \section{\textcolor{EUblue}{Outlook}}
+\label{sec:outlook}
 
 With the deployment of the first version of the PoC platform, task 2.6.4 of
-the development plan presented in D2.6 (Fig.~\ref{gantt}) is completed. The
+the development plan presented in D2.6, reproduced in Fig.~\ref{gantt}, is
+completed. The
 final phase of the project (task 2.6.5, M23--M27) is devoted to the
 development of additional features, driven by the feedback collected from
 the project partners during the testing period. The main directions are:
@@ -453,8 +575,12 @@ the project partners during the testing period. The main directions are:
         libraries developed in the other work packages, moving from tutorial
         examples towards the organ-scale digital twin workflows targeted by
         the project;
-    \item deployment and validation of the remote execution modes on
-        production HPC systems;
+    \item development of the orchestrator designed during this phase: passing
+        of artifacts between pipeline stages, verification that the expected
+        artifacts of a stage exist before the stages depending on it are
+        released, and a short path to edit the parameters of an individual stage of a
+        pipeline directly from the orchestrator canvas;
+    \item MPI support in executable mode;
     \item continued improvement of the visualization service and of the
         no-code user experience for non-expert users.
 \end{itemize}
