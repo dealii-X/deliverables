@@ -7,14 +7,9 @@
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
 \usepackage{xspace}
+\usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,arrows.meta}
-
-% Include a screenshot if present in ./figures/, otherwise render a framed
-% placeholder so the document always compiles while screenshots are collected.
-\newcommand{\figureOrPlaceholder}[2]{%
-  \IfFileExists{./figures/#1}{\includegraphics[width=400pt]{#1}}{%
-    \fbox{\parbox[c][5cm][c]{380pt}{\centering\itshape Screenshot to be added:\\ #2\\ (\texttt{figures/#1})}}}}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{2.7}
@@ -236,10 +231,10 @@ well-formed graphs reach the execution engine.
 
 \begin{figure}
     \centering
-    \figureOrPlaceholder{canvas.png}{the canvas editor with a deal.II graph
-        (e.g.\ the step-4 Poisson solver), the node palette on the left and
-        the parameters panel on the right}
-    \caption{The DealiiX Platform canvas editor}
+    \includegraphics[width=\textwidth]{canvas.png}
+    \caption{A computational graph built in the DealiiX Platform's
+        node-based low-code editor, executed by CORAL and equivalent to
+        deal.II's step-4 tutorial in three dimensions}
     \label{canvas}
 \end{figure}
 
@@ -289,11 +284,20 @@ network protocol and persisted across sessions.
 
 \begin{figure}
     \centering
-    \figureOrPlaceholder{subnetwork.png}{a subnetwork node on the canvas and
-        the same subnetwork opened for editing, with the breadcrumb bar
-        visible}
-    \caption{Subnetwork nodes: a collapsed high-level node (no-code view)
-        and its internal low-code definition}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{subnetwork-collapsed.png}
+        \caption{a collapsed high-level node}
+        \label{subnetwork-collapsed}
+    \end{subfigure}\par\medskip
+    \begin{subfigure}{\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{subnetwork-internal.png}
+        \caption{the internal lower level definition of the subnetwork node
+            shown in Fig.~\ref{subnetwork-collapsed}}
+        \label{subnetwork-internal}
+    \end{subfigure}
+    \caption{Subnetwork nodes}
     \label{subnetwork}
 \end{figure}
 
@@ -357,8 +361,7 @@ of the job can be opened directly in the application.
 
 \begin{figure}
     \centering
-    \figureOrPlaceholder{jobs.png}{the jobs table with per-node execution
-        status modal opened}
+    \includegraphics[width=\textwidth]{jobs.png}
     \caption{Job monitoring: jobs table and per-node execution status}
     \label{jobs}
 \end{figure}
@@ -384,6 +387,14 @@ envisioned in D2.6 --- shared with other users with read or write
 permissions. This allows, for instance, an expert user to prepare and share
 a validated simulation workflow that a colleague can open and run without
 rebuilding it.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{visualizer.png}
+    \caption{Poisson solution in the Coral Visualizer as a result of the
+        workflow in Fig.~\ref{canvas}}
+    \label{visualizer}
+\end{figure}
 
 Simulation results are inspected through the Coral Visualizer, a web-based
 viewer for VTK/deal.II output formats (\texttt{.vtk}, \texttt{.vtu}),
