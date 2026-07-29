@@ -49,7 +49,8 @@
 	\newpage
 	
 	\begin{documentControl}
-		\addVersion{0.1}{15.07.2026}{I. Prusak}{Initial draft}
+		\addVersion{0.1}{25.07.2026}{I. Prusak}{Initial draft}
+		\addVersion{0.2}{29.07.2026}{I. Prusak}{Techical WP summary}
 		\addVersion{1.0}{31.07.2026}{M. Kronbichler}{Final version}
 	\end{documentControl}
 	
@@ -581,122 +582,107 @@ WP3 focuses on advancing co-design, technology exploitation, and energy efficien
 \item Foster collaboration within the CASTIEL2 network and other relevant HPC initiatives to leverage shared expertise and resources.
 \end{itemize}
 
-As part of this work package, the benchmark repository is made publically available at: \url{https://github.com/dealii-X/benchmarks/}. The preparation of these benchmarks has been the focus of Milestone \#3 -- Public repository of benchmark sets for performance evaluation -- verified by means of runs of the software on at least three different accelerated platforms.
+
+\subsection{WP3.1: Benchmarking on emerging hardware}
+
+\subsubsection*{Poisson Solver Proxy App and CEED Bakeoff Benchmarks}
+
+\noindent A Poisson solver proxy app based on the CEED Bakeoff Problems (BP3/BP3.5)\footnote{\url{https://libceed.org/en/latest/examples/bps/}, retrieved on 29.07.2026} serves as a benchmark demonstrator to evaluate matrix-free finite element performance on modern hardware.
+
+\noindent\textbf{Matrix-free implementation and algorithmic design.}
+The proxy app solves the 3D Poisson equation over a deformed domain discretized with hexahedral elements using high-order tensor-product polynomials at Gauss--Legendre--Lobatto (GLL) nodes. To mirror complex biological geometries, full geometric transformation metrics (Jacobians) are evaluated on the fly. An unpreconditioned Conjugate Gradient (CG) solver computes matrix-free operator evaluations without assembling sparse matrices, prioritizing arithmetic intensity and floating-point throughput over memory-bandwidth-bound matrix assembly strategies.
+
+\noindent\textbf{Cross-Platform Hardware Performance.}
+Publicly available within the repository\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/bakeoff_problems_dealii}, retrieved on 28.07.2026}, the BP3.5 proxy was evaluated on Intel Data Center GPU Max 1550 platforms using Kokkos backend kernels. Performance data demonstrated good portability across heterogeneous architectures, achieving solid throughput trends comparable to prior baseline measurements on NVIDIA GH200 systems. The results are reported in Deliverables D1.9, D3.3 and D3.4.
+
+\noindent\textbf{Linear solver efficiency and inter-GPU communication.}
+Laplace operator evaluations were extended into full linear solvers to assess parallel overheads across multi-GPU Superchip architectures. Evaluations of the Laplace operator (BK3) and complete CG solvers (BP3)\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}, retrieved on 28.07.2026} on single- and multi-GPU NVIDIA GH200 nodes highlight performance differences stemming from peer-to-peer (P2P) MPI communications and gather-scatter operations. Throughput metrics [$\text{GDOF} \times \text{CG}_{\text{iter}} / (\text{s} \cdot \text{process})$] confirm that increasing polynomial degree $p$ enhances computational efficiency by leveraging tensor-product shape function evaluations. The results are reported in Deliverables D1.9, D3.3 and D3.4.
+
+\subsubsection*{Raviart--Thomas Kernels and Emerging Accelerator Support}
+
+\noindent Benchmark capabilities were expanded beyond $H^1$-conforming spaces to $H(\mathrm{div})$-conforming Raviart--Thomas vector spaces required for mixed formulations.
+
+\noindent\textbf{H(div) kernel implementations.}
+Vector mass, mixed divergence, and mixed gradient operators were benchmarked\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/rt_kernels}, retrieved on 28.07.2026} across FP32 and FP64 precisions on NVIDIA GH200 and AMD MI250X platforms. Batch processing yielded high GDOF/s throughput across polynomial orders, with performance reductions at $p=8$ on AMD MI250X attributed to register file capacity constraints. The results are reported in Deliverables D1.9 and D3.4.
+
+\noindent\textbf{Tensor Core Optimization.}
+To target modern hardware matrix accelerators, specialized operator evaluation kernels were developed leveraging NVIDIA Tensor Cores (\texttt{mma}). Initial implementations support double-precision (FP64) and TensorFloat-32 (TF32) matrix-matrix multiplication routines to maximize floating-point throughput during high-order tensor updates. Preliminary results are reported in Deliverables D1.9 and D3.4.
+\subsection{WP3.2: Supporting accelerator programming paradigms}
+
+Different accelerator programming models and specialized compilation toolchains have been investigated to maximize hardware utilization under diverse computational workloads. The evaluation focuses on three critical performance indicators: time-to-solution, throughput, and memory bandwidth.
+
+\subsubsection*{Domain-specific optimizations and TinyTC}
+
+\noindent Specialized compiler toolchains and tile-based Domain-Specific Languages (DSLs) provide targeted optimizations for matrix-free tensor evaluations.
+
+\noindent\textbf{Tiny Tensor Compiler (TinyTC).}
+Technical support in Work Package 1 explored accelerator toolchains, focusing on Intel GPU optimization via the open-source Tiny Tensor Compiler (TinyTC)\footnote{\url{https://intel.github.io/tiny-tensor-compiler/}, retrieved on 29.07.2026}. TinyTC utilizes a specialized tensor language exposing matrix-multiplication primitives, cooperative matrix operations, and strided tensor array views to formulate matrix-free finite element tensor contractions.
+
+\noindent\textbf{Tile-Based Optimization and Efficiency.}
+Implementations of BK1 and BK5 kernels using TinyTC intermediate representations achieved near-theoretical machine memory bandwidth limits on Intel GPUs, maintaining consistent performance across polynomial orders compared to high-level directive models. TinyTC achieves this by delegating thread mapping, vectorization, and matrix unit utilization to the compiler while enabling aggressive operation fusing. More details are reported in Deliverable D3.4.
+
+\subsubsection*{Kernel Specialization and JIT Compilation Strategies}
+
+\noindent Static templating and compile-time specialization optimize nested finite element loops with small trip counts to maximize instruction-level parallelism.
+
+\noindent\textbf{Performance Impact of Static Sizing.}
+Transitioning from dynamic loop bounds to compile-time static constants yielded a consistent $2\times$ throughput speedup across all polynomial orders. Exposing loop dimensions statically enables backend compilers to perform complete loop unrolling, optimize register allocation, and improve instruction scheduling.
+
+\noindent\textbf{Mitigation of Compilation Overhead via JIT.}
+To mitigate long offline build times and binary bloat resulting from static specialization, Just-In-Time (JIT) compilation strategies were integrated into runtime workflows. Implemented JIT mechanisms include CUDA Jitify for NVIDIA architectures, SYCL specialization constants within Intel oneAPI, and TinyTC's native execution-time JIT workflow for specialized tensor shape generation. More details are reported in Deliverable D3.4.
 
 
-\subsection{Progress Achieved in Year 1} %(M1–M12)
+\subsection{WP3.3: Performance portability}
 
-\subsubsection*{CEED Bakeoff Problems}
+To establish compiler maturity and weigh the trade-offs between cross-architecture portability and peak hardware performance, benchmarks were implemented across a broad spectrum of programming paradigms.
 
-The CEED Bakeoff Problems are a benchmark to measure the evaluation speed of the basic finite element operators (discretized bilinear forms), posed for problems on hexahedral grids, and the primary focus is on sum factorization techniques.  Both scalar and vector problems are included in the benchmarks. So far our efforts have been focused on the scalar problems. Each of the Bakeoff Problems (BP) has an associated Benchmark Kernel (BK) that evaluates a particular finite element operator and is of high arithmetic intensity.  The efficient implementation of these kernels is paramount to obtaining good performance.
+\subsubsection*{Evaluation of Cross-Platform Programming Paradigms}
 
-The subset we have focused on so far are,
-\begin{itemize}
-\item BK1: scalar PCG with mass matrix, $q = p+2$
-\item BK3: scalar PCG with stiffness matrix, $q = p+1$
-\item BK5: scalar PCG with stiffness matrix, $q = p+2$
-\end{itemize}
-The benchmark kernels form the algorithmic core of the benchmark problems (BP), which include a complete finite element workflow, including mesh setup, partitioning, and parallel computation.
+\noindent Performance evaluation across vendor-native and vendor-agnostic paradigms establishes the viability of unified codebases across heterogeneous HPC systems.
 
-The initial kernels have been implemented in three variants: 1) sequential kernels for verification, 2) using Kokkos Core, a C++ programming model for writing portable applications, part of the larger Kokkos C++ Performance Portability Programming Ecosystem\footnote{Kokkos, \url{https://kokkos.org}, retrieved on 30 Sept 2025.} and 3) using the CUDA Driver API. We note that the deal.II library currently bases the portable kernels on Kokkos, and the investigations presented in this report have the objective of providing insight into the behavior of the methods on modern hardware. In order to evaluate the impact of parallelization strategies, the Kokkos and CUDA-based kernels have several sub-variants that use different thread-mapping strategies, i.e., the assignment of degrees-of-freedom and quadrature points to GPU threads and associated strategies for the use of shared memory on the GPU.
+\noindent\textbf{Paradigm expansion.}
+Evaluations extended original Kokkos (vendor-agnostic) and CUDA (NVIDIA-optimized) implementations to include OpenMP target offloading (\texttt{omp target teams loop}), OpenCL for cross-architecture reach, and SYCL within the Intel oneAPI ecosystem.
 
-In order to obtain a wider impression of GPU programming models available we have also created variants using OpenCL, OpenMP target offloading and a variant for the Tiny Tensor Compiler, a recently introduced domain specific language for tensor operations from Intel. 
+\noindent\textbf{Comparative performance and efficiency.}
+OpenMP target offloading provided adequate baseline performance at lower polynomial orders but struggled on arithmetically intensive kernels due to suboptimal register allocation and shared memory management. OpenCL and SYCL matched Kokkos in throughput performance and execution efficiency across evaluated platforms. The results are reported in D3.4.
 
-Below, we briefly mention the architecture systems and performance results achieved, and refer to Deliverable D3.2 ``Co-Design and Energy Efficiency Report I'' for more details.
+\subsubsection*{Ecosystem Trade-Offs and Abstraction Limits}
 
-\pagebreak
+\noindent Long-term selection of performance-portable abstractions requires balancing ease of development against profiling infrastructure and compiler maturity.
 
-\noindent\textbf{Kokkos and CUDA Performance Results}
+\noindent\textbf{Toolchain and Profiling Ecosystems.}
+While OpenCL and SYCL deliver competitive runtime efficiency, toolchain ecosystem support varies significantly across vendors; notably, OpenCL lacks native profiling support from primary GPU vendors such as NVIDIA.
 
-{\bf BK1.} Early performance results for the different test cases are evaluated on an Nvidia H100 GPU. Each test case uses 3D thread blocks, determines the number of quadrature points at run time, and employs thread blocks for element-wise computations. The only difference between the two cases is the programming model: CUDA for testcase 1 and Kokkos for testcase 2. 
+\noindent\textbf{Hardware Abstraction Limits.}
+While high-level directive abstractions (e.g., OpenMP) simplify code portability and maintenance across target architectures, reaching machine hardware limits in complex, high-order finite element tensor kernels requires fine-grained abstractions supported by mature, vendor-backed profiling and compiler ecosystems. More details are reported in Deliverable D3.4.
 
-The first finding is that polynomial order 1 shows lower performance compared to higher-order elements in both test cases. This behavior has a mathematical reason and an execution-related reason, both rooted in the first-order polynomial space with 8 degrees of freedom per element. Since the number of quadrature points is fixed at $p+2$, the resulting number of quadrature points 27 leads to a higher work when related to each unknown, compared to higher values of the degree $p$. Furthermore, the fact that the work is mapped to a GPU with 27 threads per block leads to under-utilization of the warp (size 32) on the target hardware. The second finding is that Kokkos achieves approximately 90\% of the performance observed with the CUDA model, demonstrating that the performance portability model introduces only a minor overhead with properly designed algorithms. Note that the Kokkos abstraction contained in deal.II release 9.7 (see above) uses additional abstractions, which also reduce the performance considerably below our measurements in the specific benchmark kernels. Therefore, the integration of new kernels into deal.II will carefully assess the performance ceilings established in this benchmark.
+\subsection{WP3.4: Energy and performance profiling}
 
-{\bf BK5.} Unlike the multiple polynomial order evaluations in the BK1 test cases, we analyzed the kernels with a fixed cubic polynomial order (p=3) and templated quadrature points. Using templates shifts certain computations from runtime to compile-time, allowing the compiler to apply optimizations. As a result, templated implementations are often significantly faster, in most cases improving performance by 30\% at least, compared to their runtime counterparts.
+\subsubsection*{Performance Analysis Tools}
 
-Both CUDA and Kokkos kernels were implemented with three-dimensional thread blocks and a simple data mapping approach, where each thread operates on a single data entry. The total number of degrees of freedom (DOF) in this test case is 27 million. Kernel performance values were measured by NVIDIA Nsight Compute, and, in these measurements, both CUDA and Kokkos executions showed identical performance. The corresponding arithmetic intensity was found to lead to 86\% of peak bandwidth utilization (2.88 TB/s out of 3.2 TB/s). The kernels also achieved 75\% occupancy, and register usage per thread was identified as the primary limiting factor besides the memory access.
+\noindent Hardware performance counter profiling, micro-benchmarking, and automated timeline analysis enable in-depth optimization of matrix-free finite element kernels beyond application-level timer reporting. Detailed description of the performance analysis tools and the associated results are provides in Deliverables D3.3 and D3.4.
 
-Overall, the results demonstrate that both CUDA and Kokkos BK5 implementations deliver near-optimal performance on the H100, efficiently exploiting available memory bandwidth and achieving performance levels very close to the hardware limits.
+\noindent\textbf{NVIDIA Nsight Systems} NVIDIA Nsight Systems provides timeline visualizations tracking concurrent CPU/GPU execution, API invocation overheads, and host-to-device (H2D) / device-to-host (D2H) memory transfers. Command-line profiling (\texttt{nsys profile}) captures system-level metrics to isolate kernel dispatch bottlenecks.
 
-\noindent\textbf{OpenCL}
+\noindent\textbf{Intel Application Performance Snapshot (APS).}
+Intel APS delivers rapid compute-bound, memory-bound, and I/O-bound profiling summaries. To isolate target numerical solver loops from initialization phases, source code is instrumented via the Intel Tracing Technology (ITT) API (\texttt{\_\_itt\_resume()} / \texttt{\_\_itt\_pause()}). Fine-grained GPU offload and hotspot analysis are conducted via VTune Profiler CLI collectors (\texttt{gpu-offload}, \texttt{gpu-hotspots}).
 
-For experimentation across a wider array of potential accelerator devices, the CUDA kernels have also been translated to the OpenCL-C language for use with the vendor-neutral OpenCL framework from Khronos. OpenCL remains widely supported across both CPU and GPU devices from multiple vendors. The verbose setup required via the OpenCL runtime API, the split kernel source model, and restriction to C level language semantics, are some of the main criticisms from scientific software developers.  The growing popularity of C++ coupled with powerful syntactic features has shifted the attention to more expressive programming models including SYCL and Kokkos, which provide similar capabilities as OpenCL, but are arguably simpler to use. 
-
-\noindent\textbf{OpenMP Offloading}
-
-Since its introduction in OpenMP 4.5, offloading has become an integral component of this directive-based parallel programming framework. Adding OpenMP directives for offloading to an existing code can be quite straightforward, assuming the right data structures and loop patterns are already in place. When using OpenMP for GPU offloading, it is important to distinguish between two categories of directives for memory movement and work sharing.
-
-Similar to other GPU programming models, OpenMP offers fine-grained control over the hierarchical parallelism in terms of teams and threads. These are reflected by the two directives, `\texttt{omp teams}' which replicates execution across a league of teams and `\texttt{omp parallel}' which replicates execution across threads of a team.  The two directives can also be used to program in a SPMD-like mode (also called ``me'' mode). Typically, however, the directives are combined with work-sharing constructs like `\texttt{distribute}' and `\texttt{for}' which control the parallelization of (nested) loops. A very useful work-sharing construct is the `\texttt{[teams] loop}` directive, which provides  a descriptive form of parallelism in contrast to other prescriptive directives. With the `\texttt{target [teams] loop}' directive, the precise distribution of the loop iteration space across teams and threads is left to the compiler. This kind of descriptiveness can provide superior performance portability, assuming the compiler succeeds in auto-parallelizing the loop well.
-
-\noindent\textbf{Tiny Tensor Compiler}
-
-The Tiny Tensor Compiler (TinyTC) is an open-source tensor compiler developed by Intel for efficient execution of tensor computations on CPUs and GPUs. TinyTC compiles programs written in a domain-specific tensor language into OpenCL-C or SPIR-V, supporting runtime environments such as OpenCL, Level Zero, and SYCL. C and C++ APIs are available. TinyTC assumes a batched execution model, where each kernel is executed by a work-group with concurrent work-items, and the compiler maps tensor operations to efficient GPU instructions, including cooperative GEMMs and subgroup vectorization.
-
-Our first test of TinyTC aims to accelerate the finite element mass matrix evaluation (BK1) using sum factorization. As a first demonstration of tensor language, we present the BK1 kernel using an algorithm, where each tensor product is implemented using the loop over GEMM approach. For simplicity, the implementation uses four temporary arrays, \texttt{wsp0}-\texttt{wsp4}, allocated in group local storage. As the \texttt{alloca} instruction reserves temporary memory in shared local memory, TinyTC automatically inserts thread barriers between each of the six GEMM passes to ensure functional correctness. The kernel shown above achieved 10 GDoF/s on the Intel Ponte Vecchio GPU, roughly one quarter of the performance we observed using OpenMP. One of several possible optimizations to obtain larger GEMMs with a more favourable operation count is fusing dimensions.
-
-Other GEMM steps can be fused in a similar manner, however this only delivered a few percent improvement. Upon consultation with the TinyTC author it became apparent that a different strategy would be needed to obtain performant execution and optimal SIMD utilization of the PVC architecture.
-In collaboration with Intel, we are currently investigating the application of index fusion, batch vectorization and memory layout transformations to guarantee optimal register and SIMD usage.
+\noindent\textbf{Intel Advisor Roofline Profiling.}
+Intel Advisor collects GPU roofline and source-linked line-profiling data (\texttt{icpx -fdebug-info-for-profiling}). This quantifies memory bandwidth saturation against compute capacity for high-order finite element implementations.
 
 
-\subsubsection*{Streaming kernels}
+\noindent\textbf{LIKWID Performance Tools and Empirical Metrics.}
+The LIKWID suite provides lightweight CPU and GPU hardware performance counter monitoring and region instrumentation. LIKWID isolates specific computational blocks (e.g., matrix-vector products, linear solver loops) via the LIKWID Marker API (\texttt{LIKWID\_MARKER\_START} / \texttt{STOP}) with minimal execution overhead. Command-line profiling tools (\texttt{likwid-perfctr}, \texttt{likwid-mpirun}) measure operational intensity (FLOP/Byte), double-precision throughput (MFLOP/s), vectorization ratios, and memory read/write bandwidth across parallel MPI ranks.
 
-Iterative linear system solvers make heavy use of low arithmetic intensity operations --- the so-called streaming operations.
-%When matrix-free high-order FEM schemes are combined with iterative solvers. 
-Previous research in the case of the conjugate gradient method shows that above a certain problem size, the streaming operations contribute a significant chunk of the solver run-time.
+\subsubsection*{Energy Measurement Tools}
 
-Streaming kernels capture a second important group of low-intensity operations, where memory movement is dominant.
-The kernels generally take one or two long vectors as arguments. The first four kernels included are: copy (COPY), scaled sum of vectors (AXPBY), squared norm (NRM2), and inner product of two vectors (DOT). The fifth kernel is the fused conjugate gradient update that involves the combination of a scaled sum and norm of a residual vector in a single sweep. The last two kernels are the gather and scatter kernels that involve packing and unpacking the degrees of freedom associated with a given finite element mesh into a linear vector. The gather and scatter kernels are tied to a particular mesh and finite element space, requiring more extensive driver setup, and they are planned for future work. 
+\noindent Heterogeneous C++ energy metering abstraction enables region-of-interest (ROI) power profiling. Detailed description of the energy measurement tools and the associated results are provides in Deliverables D3.3 and D3.4.
 
-As an initial step toward the performance characterization and modelling of the relevant streaming operations, we have implemented the streaming kernels as a portable Fortran program using OpenMP for parallel CPU and GPU execution. We have also implemented ``backends'' using other programming solutions, including C++ array libraries for linear algebra such as Eigen\footnote{Eigen, \url{https://eigen.tuxfamily.org/}, retrieved on 30 Sept 2025.} and/or common linear algebra libraries for Fortran and C such as BLAS and BLIS.\footnote{BLIS, \url{https://github.com/flame/blis}, retrieved on 30 Sept 2025.} In the remaining months of the work package we also plan to expand the backends to cover Kokkos and C++ standard parallelism for better cross-platform assesment. 
+\noindent\textbf{Header-only p3em framework.}
+The \texttt{p3em}\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 29.07.2026} library provides an RAII-based C++ interface that launches a background thread to manage subprocess energy queries. Subprocesses interface with OS/driver counters (e.g., \texttt{pyNVML}, \texttt{nvidia-smi}, Linux \texttt{perf}) to compute cumulative Joules via numerical integration or hardware energy registers across target GPU architectures. 
 
-Our preleminary work has been concerned about studying the bandwidth scaling with respect to number of threads for the streaming kernels on two recent CPU architectures: an Nvidia Grace CPU (part of the Grace Hopper Superchip) and an Intel Sapphire Rapids (Intel Xeon Platinum 8480+) CPU. We observed the expected saturating behavior: The Grace CPU achieves a throughput of over 300 GB/s over all kernels, exceeding 50\% of the peak memory bandwidth (567 GB/s), while the BS3 kernel was able to reach almost 450 GB/s --- a value close to the maximum memory bandwidth (467 GB/s). In the case of BS2 and BS5, the saturated regime was reached with only 20 out of 72 cores. Similar saturating behavior was observed for the Intel Sapphire Rapids, with bandwidths in the range of 250--350 GB/s, close to the peak bandwidth. A slightly slower rate can be observed for the BS1 kernel, including a step increase when using more than 46 cores, warranting more investigation. This behavior appears to be linked to the write-allocation evasion mechanism of modern Intel CPUs.
-
-Overall, our initial results confirm that the proposed streaming kernels are able to expose memory bandwidth behavior consistently across different architectures, demonstrating their usefulness as a lightweight proxy for iterative solver workloads.  The observed saturation patterns highlight the importance of systematic performance characterization. In the next stage, we aim to extend the benchmarking to a broader set of CPUs and GPUs and integrate the results into predictive performance models for matrix-free iterative solvers.
-
-
-
-\subsubsection*{Energy Efficiency}
-
-The shift to heterogeneous computing with accelerators is driven not only by the demand for higher performance but also by the increasing power and thermal constraints of modern semiconductor technology. These pressures have led to hardware specialization for more energy-efficient computing, as reflected in the Green500 list, where GPU-accelerated systems dominate. As shown by \cite{Cielo25} in a case study of an astrophysical simulation, accelerators can deliver a 5–10$\times$ improvement in energy efficiency (flops per watt) over CPUs. This advantage stems from their throughput-oriented parallel design, which contrasts with the latency-focused nature of traditional CPUs.
-
-Maximizing these benefits requires energy-aware practices from both HPC practitioners and application developers. Since power and energy usage vary across devices, workloads, and runtime conditions, precise modeling is difficult, making empirical measurement essential. System-level monitoring frameworks such as Intel’s RAPL, AMD uProf, NVIDIA’s NVML, or Arm’s Streamline provide access to hardware counters, while job- and process-level tools such as the Energy Aware Runtime, perf, likwid-powermeter, and PAPI enable finer-grained insights. For kernel-level breakdowns, vendor tools like NVIDIA Nsight or Intel VTune are available, but they often involve heavy instrumentation and vendor lock-in. In practice, lightweight and portable solutions remain highly attractive.
-
-To this end, our work \cite{Cielo25} proposed a process-based approach in which applications call an external ``energy-meter'' script during execution. The script samples instantaneous power through utilities such as `nvidia-smi', `xpu-smi', or `perf', and integrates the readings to estimate total energy consumption. A key advantage is that programmers can call the meter only around the sections of interest, thereby excluding initialization or I/O phases and focusing on the algorithmic kernels. The method is portable, simple to maintain, and adaptable to a variety of devices or custom meters. 
-
-In the remaining period of this work package, we plan to adopt this strategy to measure the energy usage of the core algorithmic kernels and gain an overview of their power behavior. Although we have not yet carried out such experiments, we take inspiration from a recent presentation by S. Cielo (LRZ), who demonstrated the benefits of these techniques, and we intend to implement them as part of our future performance and energy-efficiency evaluations.
-
-\begin{thebibliography}{10}
-\bibitem{Cielo25} S. Cielo, A. P\"oppl, I. Pribec: `` {SYCL} for energy-efficient numerical astrophysics: the case of {DPE}cho.''. \emph{arXiv Preprint}, 2025, \href{https://doi.org/10.48550/arXiv.2508.14117}{arXiv:2508.14117}
-\end{thebibliography}
-
-\subsection{Connection to Other CoEs}
-
-The dealii-X project has actively engaged with CASTIEL2 to foster collaboration and knowledge exchange among European HPC Centres of Excellence. In July 2025, deal.II was presented as the “Code of the Month” by CASTIEL2, highlighting its impact and relevance within the European HPC ecosystem. As part of CASTIEL2 WP2, dealii-X contributed code descriptions, use cases, and technical information, as documented in Deliverable D3.1 (M6).
-
-The consortium has actively participated in PMT-CoE leader meetings, joint workshops, and Kokkos programming sessions to align strategies and share best practices across CoEs. Collaboration on continuous integration and deployment (CI/CD) has been initiated through the European Environment for Scientific Software Installations (EESSI), enabling multi-system deployment of dealii-X’s three core codes: deal.II, PSCToolkit, and MUMPS.
-
-To strengthen knowledge transfer and community engagement, dealii-X has participated in the NCC-CoE all-hands meeting in Tallinn, Estonia (September 2025) and has planned an online seminar series to showcase research outcomes and invite guest speakers from other CoEs. The first dealii-X Research School is scheduled for December 2025 in Trieste, focusing on hands-on HPC training, co-design methodologies, and accelerator programming. These activities ensure that dealii-X remains closely connected to the European HPC ecosystem and actively contributes to its development.
-
-
-\subsection{Next Steps} %(M13–M27)
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Expand benchmarking to additional prototype hardware and emerging platforms.
-\item Continue supporting accelerator programming paradigms and ensure full compatibility across WP1 applications.
-\item Implement performance portability improvements based on collected benchmarks and profiling data.
-\item Complete systematic energy and performance profiling to guide optimized configurations for simulations.
-\end{itemize}
-
-% \subsection{Next Steps} % (M13–M27)
-
-% \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-% \item Continue benchmarking codes on emerging HPC hardware, evaluating performance and energy efficiency for various accelerator and CPU configurations.
-% \item Advance support for accelerator programming paradigms (CUDA, SYCL, OpenMP/OpenACC, Kokkos/RAJA) to ensure portability and optimal performance across different systems.
-% \item Extend performance portability efforts, refining algorithms and computational kernels for efficient execution on diverse architectures.
-% \item Complete energy and performance profiling of key applications, using results to guide optimization strategies and resource allocation.
-% \item Strengthen collaboration with CASTIEL2, including contributions to the seminar series, preparation for the NCC-CoE all-hands meeting in Tallinn (September 2025), and alignment with joint CI/CD initiatives.
-% \item Organize and deliver the first dealii-X Research School (December 2025, Trieste) to train researchers and foster knowledge exchange on co-design, HPC, and accelerator programming.
-% \end{itemize}
-
+\noindent\textbf{Scheduler and  RAPL profiling.}
+Alternative energy telemetry utilities at system level complement application-level instrumentation at varying granularities. The Slurm workload manager provides coarse, job-level aggregate energy summaries. LIKWID PowerMeter utilizes CPU Running Average Power Limit (RAPL) interfaces to log power draw over target intervals. Vendor System Management Interfaces (\texttt{nvidia-smi}, \texttt{rocm-smi}, \texttt{xpu-smi}) report continuous telemetry data for external orchestration.
 
 \newpage
 
