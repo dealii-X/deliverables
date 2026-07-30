@@ -51,9 +51,11 @@
 	\newpage
 	
 	\begin{documentControl}
-		\addVersion{0.1}{25.07.2026}{I. Prusak}{Initial draft}
-		\addVersion{0.2}{29.07.2026}{I. Prusak}{Techical WP summary}
-		\addVersion{1.0}{31.07.2026}{M. Kronbichler}{Final version}
+		\addVersion{0.1}{25.07.2026}{Ivan Prusak}{Initial draft}
+		\addVersion{0.2}{28.07.2026}{Ivan Prusak}{Techical WP summary}
+		\addVersion{0.2}{29.07.2026}{Ivan Prusak}{Non--technical WP summary}
+		\addVersion{0.3}{30.07.2026}{Ivan Prusak}{RP1 project review integration}
+		\addVersion{1.0}{31.07.2026}{Martin Kronbichler}{Final version}
 	\end{documentControl}
 	
 	\subsection*{{Approval Details}}
@@ -577,11 +579,10 @@ The integration of meta-scheduling capabilities, modular sub-graphs, persistent 
 WP3 focuses on advancing co-design, technology exploitation, and energy efficiency within the dealii-X project. The objectives are:
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing to achieve optimal performance
-\item Identify and evaluate emerging technologies that can be exploited to enhance the capabilities of the exascale computing system.
-\item Explore and implement techniques to optimize energy consumption and power efficiency in the exascale computing infrastructure.
-\item Identify and address bottlenecks in the system to improve overall computational efficiency.
-\item Foster collaboration within the CASTIEL2 network and other relevant HPC initiatives to leverage shared expertise and resources.
+\item investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing to achieve optimal performance;
+\item identify and evaluate emerging technologies that can be exploited to enhance the capabilities of the exascale computing system;
+\item explore and implement techniques to optimize energy consumption and power efficiency in the exascale computing infrastructure;
+\item identify and address bottlenecks in the system to improve overall computational efficiency.
 \end{itemize}
 
 
@@ -609,6 +610,7 @@ Vector mass, mixed divergence, and mixed gradient operators were benchmarked\foo
 
 \noindent\textbf{Tensor Core Optimization.}
 To target modern hardware matrix accelerators, specialized operator evaluation kernels were developed leveraging NVIDIA Tensor Cores (\texttt{mma}). Initial implementations support double-precision (FP64) and TensorFloat-32 (TF32) matrix-matrix multiplication routines to maximize floating-point throughput during high-order tensor updates. Preliminary results are reported in Deliverables D1.9 and D3.4.
+
 \subsection{WP3.2: Supporting accelerator programming paradigms}
 
 Different accelerator programming models and specialized compilation toolchains have been investigated to maximize hardware utilization under diverse computational workloads. The evaluation focuses on three critical performance indicators: time-to-solution, throughput, and memory bandwidth.
@@ -618,7 +620,7 @@ Different accelerator programming models and specialized compilation toolchains 
 \noindent Specialized compiler toolchains and tile-based Domain-Specific Languages (DSLs) provide targeted optimizations for matrix-free tensor evaluations.
 
 \noindent\textbf{Tiny Tensor Compiler (TinyTC).}
-Technical support in Work Package 1 explored accelerator toolchains, focusing on Intel GPU optimization via the open-source Tiny Tensor Compiler (TinyTC)\footnote{\url{https://intel.github.io/tiny-tensor-compiler/}, retrieved on 29.07.2026}. TinyTC utilizes a specialized tensor language exposing matrix-multiplication primitives, cooperative matrix operations, and strided tensor array views to formulate matrix-free finite element tensor contractions.
+With technical support from WP1, accelerator toolchains, focusing on Intel GPU optimization via the open-source Tiny Tensor Compiler (TinyTC)\footnote{\url{https://intel.github.io/tiny-tensor-compiler/}, retrieved on 29.07.2026}, were explored. TinyTC utilizes a specialized tensor language exposing matrix-multiplication primitives, cooperative matrix operations, and strided tensor array views to formulate matrix-free finite element tensor contractions.
 
 \noindent\textbf{Tile-Based Optimization and Efficiency.}
 Implementations of BK1 and BK5 kernels using TinyTC intermediate representations achieved near-theoretical machine memory bandwidth limits on Intel GPUs, maintaining consistent performance across polynomial orders compared to high-level directive models. TinyTC achieves this by delegating thread mapping, vectorization, and matrix unit utilization to the compiler while enabling aggressive operation fusing. More details are reported in Deliverable D3.4.
@@ -646,7 +648,7 @@ To establish compiler maturity and weigh the trade-offs between cross-architectu
 Evaluations extended original Kokkos (vendor-agnostic) and CUDA (NVIDIA-optimized) implementations to include OpenMP target offloading (\texttt{omp target teams loop}), OpenCL for cross-architecture reach, and SYCL within the Intel oneAPI ecosystem.
 
 \noindent\textbf{Comparative performance and efficiency.}
-OpenMP target offloading provided adequate baseline performance at lower polynomial orders but struggled on arithmetically intensive kernels due to suboptimal register allocation and shared memory management. OpenCL and SYCL matched Kokkos in throughput performance and execution efficiency across evaluated platforms. The results are reported in D3.4.
+OpenMP target offloading provided adequate baseline performance at lower polynomial orders but struggled on arithmetically intensive kernels due to suboptimal register allocation and shared memory management. OpenCL and SYCL matched Kokkos in throughput performance and execution efficiency across evaluated platforms. The results are reported in Deliverable D3.4.
 
 \subsubsection*{Ecosystem Trade-Offs and Abstraction Limits}
 
@@ -662,9 +664,9 @@ While high-level directive abstractions (e.g., OpenMP) simplify code portability
 
 \subsubsection*{Performance Analysis Tools}
 
-\noindent Hardware performance counter profiling, micro-benchmarking, and automated timeline analysis enable in-depth optimization of matrix-free finite element kernels beyond application-level timer reporting. Detailed description of the performance analysis tools and the associated results are provides in Deliverables D3.3 and D3.4.
+\noindent Hardware performance counter profiling, micro-benchmarking, and automated timeline analysis enable in-depth optimization of matrix-free finite element kernels beyond application-level timer reporting. Detailed description of the performance analysis tools and the associated results are provided in Deliverables D3.3 and D3.4.
 
-\noindent\textbf{NVIDIA Nsight Systems} NVIDIA Nsight Systems provides timeline visualizations tracking concurrent CPU/GPU execution, API invocation overheads, and host-to-device (H2D) / device-to-host (D2H) memory transfers. Command-line profiling (\texttt{nsys profile}) captures system-level metrics to isolate kernel dispatch bottlenecks.
+\noindent\textbf{NVIDIA Nsight Systems.} Timeline visualizations track concurrent CPU/GPU execution, API invocation overheads, and host-to-device (H2D) / device-to-host (D2H) memory transfers. Command-line profiling (\texttt{nsys profile}) captures system-level metrics to isolate kernel dispatch bottlenecks.
 
 \noindent\textbf{Intel Application Performance Snapshot (APS).}
 Intel APS delivers rapid compute-bound, memory-bound, and I/O-bound profiling summaries. To isolate target numerical solver loops from initialization phases, source code is instrumented via the Intel Tracing Technology (ITT) API (\texttt{\_\_itt\_resume()} / \texttt{\_\_itt\_pause()}). Fine-grained GPU offload and hotspot analysis are conducted via VTune Profiler CLI collectors (\texttt{gpu-offload}, \texttt{gpu-hotspots}).
@@ -678,12 +680,12 @@ The LIKWID suite provides lightweight CPU and GPU hardware performance counter m
 
 \subsubsection*{Energy Measurement Tools}
 
-\noindent Heterogeneous C++ energy metering abstraction enables region-of-interest (ROI) power profiling. Detailed description of the energy measurement tools and the associated results are provides in Deliverables D3.3 and D3.4.
+\noindent Heterogeneous C++ energy metering abstraction enables region-of-interest (ROI) power profiling. Detailed description of the energy measurement tools and the associated results are provided in Deliverables D3.3 and D3.4.
 
 \noindent\textbf{Header-only p3em framework.}
 The \texttt{p3em}\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 29.07.2026} library provides an RAII-based C++ interface that launches a background thread to manage subprocess energy queries. Subprocesses interface with OS/driver counters (e.g., \texttt{pyNVML}, \texttt{nvidia-smi}, Linux \texttt{perf}) to compute cumulative Joules via numerical integration or hardware energy registers across target GPU architectures. 
 
-\noindent\textbf{Scheduler and  RAPL profiling.}
+\noindent\textbf{Scheduler and RAPL profiling.}
 Alternative energy telemetry utilities at system level complement application-level instrumentation at varying granularities. The Slurm workload manager provides coarse, job-level aggregate energy summaries. LIKWID PowerMeter utilizes CPU Running Average Power Limit (RAPL) interfaces to log power draw over target intervals. Vendor System Management Interfaces (\texttt{nvidia-smi}, \texttt{rocm-smi}, \texttt{xpu-smi}) report continuous telemetry data for external orchestration.
 
 \newpage
@@ -695,10 +697,10 @@ Alternative energy telemetry utilities at system level complement application-le
 
 The objective of WP4 is to ensure that the results of the dealii-X CoE are communicated, disseminated, and exploited effectively to achieve maximum impact. Specifically, WP4 aims to:
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt] 
-\item Build awareness of the project among industry, academia, clinicians, regulators, policymakers, patients, and the general public.
-\item Promote project outcomes to the HPC, scientific, and healthcare communities.
-\item Track and facilitate exploitation of results by partners and third parties.
-\item Align with relevant European initiatives such as EuroHPC JU Pilots, Virtual Human Twins, and NextGenerationEU Consortium iNEST.
+\item build awareness of the project among industry, academia, clinicians, regulators, policymakers, patients, and the general public;
+\item promote project outcomes to the HPC, scientific, and healthcare communities;
+\item track and facilitate exploitation of results by partners and third parties;
+\item align with relevant European initiatives such as EuroHPC JU Pilots and Virtual Human Twins.
 \end{itemize}
 
 \subsection{WP4.2: Communication and dissemination strategy, branding, and tools}
@@ -715,7 +717,7 @@ The summary and the status of the communication and dissemination activities ori
 \centering
 \caption{Implementation of the communication and dissemination plan timeline.}\label{tab:commdiss}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|p{6cm}|c|c|} % Forces 1st column to wrap at 6cm width
+\begin{tabular}{|p{8cm}|c|c|} % Forces 1st column to wrap at 6cm width
 \toprule
 \textbf{Task} & \textbf{Planned} & \textbf{Delivered} \\
 \midrule
@@ -772,19 +774,16 @@ Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/
 \subsection{WP4.3: Dissemination activities}
 
 
-\subsubsection*{Ecosystem Synergies and Community Engagement}
+\subsubsection*{Ecosystem Synergies through VPH}
 
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item \textbf{VPH Institute Partnership:} Formal collaboration established with the VPH Institute communication office to cross-promote news, issue joint press releases, and feature dealiiX in their monthly EU-project newsletter.
-\item \textbf{Slack Community of Practice (CoP):} Leveraging the established VPH CoP (700+ vetted in silico medicine experts across academia, industry, and healthcare) by creating a dedicated dealiiX channel to broaden project reach and engagement.
-\end{itemize}
+Formal collaboration established with the VPH Institute communication office to cross-promote news, issue joint press releases, and feature dealii-X in their monthly EU-project newsletter.
 
 \subsubsection*{Main dissemination activities}
 
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item There has been a strong presence of the project partners at international conferences and workshops, including WCCM--ECCOMAS Congress 2026, SIAM PP 2026, ISC 2026 , HiPEAC 2026, PD2026:EuroMicro Conference, GAMM 2026 among others.
-\item The dealii-X participated in the EuroHPC community building activities: HiDALGO2 clustering event, panel discussion within the track ``Rethinking scientific applications for exascale and emerging architectures: the Centre of Excellence challenge'' at HiPEAC 2026, the EuroHPC JU stand at ISC 2026 and a minisimuposum at SIAM PP 2026 jointly organized with EoCoE.
+\item There has been a strong presence of the project partners at international conferences and workshops, including WCCM--ECCOMAS Congress 2026, SIAM PP 2026, ISC 2026, HiPEAC 2026, PD2026:EuroMicro Conference, GAMM 2026 among others.
+\item The dealii-X participated in the EuroHPC community building activities: HiDALGO2 clustering event, panel discussion within the track ``Rethinking scientific applications for exascale and emerging architectures: the Centre of Excellence challenge'' at HiPEAC 2026, the EuroHPC JU stand at ISC 2026 and a minisimposium at SIAM PP 2026 jointly organized with EoCoE.
 \item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.~Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
 \item dealii-X consortium fully contributed to the Research School ``Digital Twins of the Human Body'' in December 2025 in Trieste, Italy in conjunction with the project annual all--hands meeting.
 \item The project has been represented at CASTIEL2's all-hands meeting in September 2025 in Tallinn, Estonia.  
@@ -797,7 +796,7 @@ Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/
 Intense event attendance, workshops, and cross-work-package dialogue successfully served to:
 
 \begin{itemize}
-\item Raise general awareness of the dealiiX mission and goals.
+\item Raise general awareness of the dealii-X mission and goals.
 
 \item Build consensus among experts on technical standards.
 
@@ -806,7 +805,7 @@ Intense event attendance, workshops, and cross-work-package dialogue successfull
 \item Engage key stakeholders to maximize long-term project impact.
 \end{itemize}
 
-Figure~\ref{fig:dissportfolio} shows the dealii-X Dissemination Portfolio achieved in the Reporting Period RP1 demosonstrative the core narative of a coherent full--stack profile: numerical methods $\rightarrow$ software $\rightarrow$ applications. 
+Figure~\ref{fig:dissportfolio} shows the dealii-X Dissemination Portfolio achieved at the of Reporting Period RP1 demonstrating the coherent full--stack profile: numerical methods $\rightarrow$ software $\rightarrow$ applications. 
 
 \begin{figure}[htbp]
 \centering
@@ -820,7 +819,7 @@ Figure~\ref{fig:dissportfolio} shows the dealii-X Dissemination Portfolio achiev
 dealii-X project strictly follows the Article 17 of the Grant Agreement regarding communication, dissemination, promotion and visibility actions. In particular, all the dissemination results include both EU and EuroHPC logos and the following acknowledgment disclaimer: 
 
 
-\noindent\emph{The European Union funded this study through the HORIZON-EUROHPC project “dealii-X: an Exascale Framework for Digital Twins of the Human Body” (topic HORIZON-EUROHPC-JU-2023-COE-03-01). Project Grant 101172493. Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+\noindent\emph{The European Union funded this study through the HORIZON-EUROHPC project ``dealii-X: an Exascale Framework for Digital Twins of the Human Body'' (topic HORIZON-EUROHPC-JU-2023-COE-03-01). Project Grant 101172493. Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
 }
 
 As an example, Figure~\ref{fig:article17} displays the snapshot of the Article 17 implementation on the dealii-X webpage.
@@ -834,7 +833,7 @@ As an example, Figure~\ref{fig:article17} displays the snapshot of the Article 1
 %\subsection{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} 
 
 
-\subsection{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} 
+\subsection{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} \label{sec:wp4.4}
 
 
 
@@ -843,8 +842,7 @@ in silico medicine and HPC communities (see WP4.3) rather than through project-s
 channels, in order to maximise reach at limited cost. During the current reporting period
 the emphasis has been on the professional stakeholder groups closest to the project's
 technical results (clinical researchers, industry, HPC and modelling communities), while
-engagement with patients, payers and policymakers remains at an early stage. The
-current status per stakeholder group is summarised in Table~\ref{tab:stakeholders}.
+engagement with patients, payers and policymakers remains at an early stage.
 
 
 % Delete any row you cannot substantiate, and replace "planned" wording with concrete
@@ -856,36 +854,9 @@ current status per stakeholder group is summarised in Table~\ref{tab:stakeholder
 \item \textbf{EuroHPC JU ecosystem:} continuous alignment through CASTIEL2 (participation in the all-hands meeting, Tallinn), the HiDALGO2 clustering event, the joint minisymposium with EoCoE at SIAM PP 2026, and the CoE panel at HiPEAC 2026, ensuring exchange of good practice on exascale readiness and avoiding duplication of effort across Centres of Excellence.
 \item \textbf{Virtual Human Twin initiative:} monitoring of and alignment with the VHT roadmap and the related EDITH/VHT infrastructure activities, mediated by the VPH Institute, to position the dealii-X solvers as computational components of the emerging European digital twin ecosystem.
 % Add a concrete item if any partner attended a VHT/EDITH event or replied to a
-% consultation --- this is the alignment reviewers will look for most closely.
-\item \textbf{NextGenerationEU Consortium iNEST:} links maintained through the Italian partners, providing access to regional clinical and industrial networks complementary to the project consortium.
+% consultation --- this is the alignment reviewers will look for most closely..
 \item \textbf{In silico medicine community:} alignment with the body of practice consolidated by previous EU-funded projects (In Silico World, STriTuVaD, MOBILISE-D, PRIMAGE, CompBioMed), in particular on model credibility and verification and validation reporting.
 \end{itemize}
-
-\begin{table}[htbp]
-\centering
-\caption{Status of stakeholder engagement at M22.}\label{tab:stakeholders}
-\renewcommand{\arraystretch}{1.2}
-\footnotesize
-\begin{tabular}{|p{3cm}|p{6cm}|p{6cm}|}
-\toprule
-\textbf{Stakeholder} & \textbf{Channels used so far} & \textbf{Planned actions (M22--M27)} \\
-\midrule
-Clinical community & Clinical partners' own networks; VPH Institute membership & Structured interviews on clinical requirements; presentation of validation cases at a clinically oriented conference \\
-\midrule
-Industry & LinkedIn; VPH Community of Practice (CoP); conference presence (WCCM--ECCOMAS, ISC, HiPEAC) & Targeted outreach to software houses and medical device SMEs; industry-facing webinar \\
-\midrule
-Regulatory bodies / HTA & Indirect, via VPH Institute and the In Silico World CoP legacy & Contact with the Avicenna Alliance / regulatory working groups; alignment of V\&V reporting with credibility standards \\
-\midrule
-Patients & Not yet directly engaged & Contact with patient advocacy organisations through the VPH Institute and clinical partners \\
-\midrule
-Payers & Not yet directly engaged & To be addressed jointly with the exploitation activities of WP4.5 \\
-\midrule
-Policymakers & Indirect, via EuroHPC JU and CASTIEL2 community activities & Contribution to CoE position papers and EuroHPC JU communication actions \\
-\midrule
-Citizens / general public & Project website, LinkedIn, quarterly e-newsletter;  participation in local public science events & Non-technical visual material; participation in a public science event \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsubsection*{Follow-up on the intermediate review recommendations}
 
@@ -896,21 +867,22 @@ activities reported above were designed primarily for the technical and scientif
 communities and have not yet been translated into a systematic engagement process
 covering the full range of stakeholders named in the Grant Agreement.
 
-The following corrective measures have therefore been agreed:
+Work in the remaining period is therefore directed at converting the visibility already
+achieved into genuine two-way engagement. The engagement approach is being reworked from
+opportunistic dissemination towards a documented plan that identifies target organisations
+for each stakeholder group and assigns responsibility for them within the consortium. The
+structured instruments foreseen in the Grant Agreement --- focus groups, surveys and
+semi-structured interviews --- will be applied first to the clinical and industrial
+communities, which are closest to the project's results and where the consortium already
+has established contacts. Engagement with patients, payers and policymakers will be
+pursued through the intermediary organisations available to the consortium, in particular
+the VPH Institute and the clinical partners' own networks, rather than through channels
+the project would have to build from scratch in its final months. The outcome of these
+activities, together with the corresponding indicators, will be reported in the final
+dissemination deliverable.
 
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Revision of the stakeholder engagement strategy, moving from opportunistic dissemination to a documented plan with named target organisations, responsible partners, and measurable indicators per stakeholder group.
-\item Launch of the structured engagement instruments foreseen in the Grant Agreement (focus groups, surveys and semi-structured interviews), starting with the clinical and industrial communities.
-\item Establishment of a dedicated dealii-X channel in the VPH Community of Practice and its active moderation, to convert passive reach into two-way interaction.
-\item Tighter coupling of WP4.4 with the exploitation activities of WP4.5, so that stakeholder feedback feeds directly into the exploitation and sustainability plan.
-\item Reporting of engagement KPIs (contacts per stakeholder group, interviews conducted, feedback items incorporated) in the final dissemination deliverable.
-% Assign an owner and a month to each of the five items above before submission ---
-% an undated corrective plan reads like the same promise the reviewers already
-% rejected once.
-\end{itemize}
 
-
-\subsection{WP4.5: Exploitation}
+\subsection{WP4.5: Exploitation}\label{sec:wp4.5}
 
 Exploitation activities follow the tracking approach defined at the start of the task (M06),
 based on a living register of exploitable results maintained jointly by all partners and
@@ -935,9 +907,9 @@ Exascale-ready solver components (matrix-free kernels, multigrid, preconditioner
 \midrule
 Large-scale digital twin application codes & Application partners & Open source + use in partner research services & In development, staged releases \\
 \midrule
-Sparse direct solver technology & Relevant partners & Transfer to MUMPS & Under discussion \\
+Sparse direct solver technology & INPT, MUMPS & Transfer to MUMPS & Under discussion \\
 \midrule
-Low-code PoC platform & Relevant partners & Transfer to EXACT LAB & Under discussion \\
+Low-code PoC platform & W1 and WP2 partners & Transfer to EXACT LAB and Dualistic & Under discussion \\
 \midrule
 Benchmarking and scalability results on EuroHPC systems & All partners & Publications, EuroHPC access proposals & Ongoing \\
 \bottomrule
@@ -969,17 +941,32 @@ requiring strengthening. The consortium shares this assessment: while the exploi
 technical results through open source and HPC campaigns is proceeding well, the
 arrangements that will keep the dealii-X software stack maintained, supported and
 commercially available after the end of the project were not yet defined at the time of the
-review. The following actions are therefore in progress:
+review. 
 
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item \textbf{Clarification of exploitation claims.} Negotiations are ongoing among the participating institutions to establish the ownership, access rights and exploitation claims for each key exploitable result listed in Table~\ref{tab:exploitation}. The outcome will be consolidated in the final exploitation and sustainability plan.
-\item \textbf{Technology transfer to industrial actors.} Two concrete transfer routes are being explored: transfer of the sparse direct solver developments to MUMPS, and transfer of deployment, integration and HPC--ready PoC platform to EXACT LAB and Dualistic, so that maintenance and commercial support for these components rest with entities whose business model sustains them beyond the project's funding horizon.
-% Name the second company here as well once confirmed, and state the instrument
-% (licence, joint development agreement, MoU) and the target date.
-\item \textbf{Community-based maintenance.} Continuity of the core numerical developments is structurally ensured by their integration into deal.II, whose governance, release cycle and contributor base are independent of the dealii-X project and predate it.
-\item \textbf{Lessons-learned publications.} A set of dissemination papers documenting the successes, the performance results and the engineering experience gained in dealii-X is being prepared for submission by the end of the project (December 2026), targeting both the HPC and the computational biomedicine communities. These will consolidate the project's methodological legacy in the permanent scientific record.
-% List the planned papers with working titles, venues and lead authors if available.
-\end{itemize}
+Sustainability is therefore being addressed along three complementary lines, all of which
+are under active discussion within the consortium.
+
+Continuity of the core numerical developments is to a large extent already structural.
+These are contributed upstream to \dealii{}, whose governance, release cycle and
+contributor base are independent of dealii-X and predate it, so the exascale solver
+components remain maintained, available and usable by third parties after the end of the
+project without requiring any dedicated arrangement.
+
+For those results whose long-term maintenance and commercial support depend on an
+industrial actor, transfer routes towards partners of the consortium are being explored,
+in particular for the sparse direct solver developments and for the low-code platform
+together with its associated deployment and HPC integration know-how. These discussions
+proceed in parallel with the clarification of ownership, access rights and exploitation
+claims among the participating institutions, which is a precondition for any transfer
+arrangement and is being conducted at coordinator level.
+
+Finally, the consortium is preparing a set of publications documenting the results, the
+performance achieved and the engineering experience gained in dealii-X, which will
+consolidate the project's methodological legacy in the permanent scientific record
+independently of the fate of any individual software component.
+
+The outcome of all three lines will be consolidated in the final exploitation and
+sustainability plan.
 
 \newpage
 
@@ -1001,7 +988,6 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 	\item The management structure defined in D5.1 ``Project Management Handbook'' (M3, PM$^2$-based) remained stable and effective. The Project Management Board, chaired by the Project Coordinator, retains top-level authority; the Project Management Team handles day-to-day operations.
 	\item Monthly consortium meetings continued without interruption, complemented by WP-level technical meetings and by the annual all-hands meeting held alongside the Research School ``Digital Twins of the Human Body'' (Trieste, December 2025).
-	\item The intermediate project review for the reporting period RP1 was held during on May 13, 2026. The reviewers acknowledged the technical progress of the project and recommended strengthening the stakeholder engagement and exploitation activities; these recommendations have been taken up by the consortium and are reflected in the WP4 activities reported in Sections~\ref{sec:wp4_communication} and Section~\ref{sec"}.
 	% Add the review date; adjust the cross-reference to point at your WP4.4/WP4.5
 	% subsections if they carry their own labels.
 	\item Decision-making, escalation and risk-monitoring procedures were applied as defined, and the internal documentation repository remains the single reference for minutes, deliverables and working documents.
@@ -1029,18 +1015,47 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 \subsection{Critical Risks and Mitigation}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-	\item The risks identified during the RP1 --- deliverable delays, coordination across distributed partners, and technical dependencies between work packages --- remained under control through monthly monitoring and early escalation. They are detailed in the Technical Report (part B) of the periodic reporting for RP1.
+	\item The risks identified during the RP1 --- delays in recruitment, technical dependencies between work packages, and the strategic work refocusing --- remained under control through monthly monitoring and early escalation. They are detailed in the Technical Report (part B) of the periodic reporting for RP1.
+	\item The multigrid scalability limitation observed on JUPITER (Section~\ref{sec:wp1_dealii}) is being addressed with the support of the POP3 Centre of Excellence and by a dedicated task force established at RUB.
 	\item Following the intermediate review, limited stakeholder engagement and the absence of a consolidated post-project sustainability arrangement are tracked as active issues rather than potential risks. Mitigation consists of the revised engagement activities reported under WP4.4 and the exploitation and technology transfer discussions reported under WP4.5, both monitored at the monthly consortium meetings.
 	\item The main residual risk for the remaining period is the timely conclusion of the exploitation claims negotiation among the participating institutions, which conditions the final exploitation and sustainability plan.
+	\item  The delayed PSCToolkit GPU interface (WP1.4) remains outstanding; completion is expected in the Q3 of 2026.
+	\item Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is only partially achieved (see Section~\ref{sec:wp2_applications}); the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced. Progress is monitored at the monthly consortium meetings.
+	
+	
 	% Add any technical residual risks from WP1--WP3 that management is tracking.
 \end{itemize}
 
-\subsection{Critical Risks and Mitigation}\label{sec:finreport}
+\subsection{Periodic Reporting Period RP1}
+
+The intermediate project review for the reporting period RP1 was held on 13 May 2026, and the formal review report was received on 2 July 2026. The reviewers acknowledged the technical progress of the project and recommended strengthening the stakeholder engagement and exploitation activities; these recommendations have been taken up by the consortium and are reflected in Sections~\ref{sec:wp4.4} and~\ref{sec:wp4.5}, and in the present section. The requested changes to Deliverables D1.3, D4.4 and D4.5 are being prepared and will be submitted by September 2026.
 
 
-% \newpage 
-% \section{{Conclusion}} \label{sec:conclusion}
+\subsection{Clarification on travel costs}
 
+The reviewers observed that the travel budget appears overestimated for some partners. The partner INPT reports travel costs exceeding 15\% of its personnel costs in RP1, while remaining within the overall frame of the action at that partner. These costs correspond to trips, detailed in the Financial Statement of INPT, made by members of the MUMPS development team who are closely involved in dealii-X although not directly funded by the project. In particular, they attended the project meeting in Trieste, where the synchronisation between partners necessary to deliver the content of WP1.5 took place, and which also supported several other dealii-X activities. In addition, results achieved by the INPT team, including results obtained by members not directly funded by dealii-X, were presented at SIAM PP in Berlin, aligning the project's activities with the scientific community.
+
+
+\subsection{Gender balance}
+
+The intermediate review noted that gender balance was not addressed in the documents
+submitted for the first reporting period. The consortium reports the following situation at
+M22. Of the 13 researchers fully funded by the project across the beneficiaries, 3 are
+women. At the level of scientific leadership, 3 of the 13 principal investigators of the
+consortium are women, as are 1 of the 4 work package leaders. Recruitment for project positions followed the applicable EU and institutional guidelines, with vacancies advertised through open international calls. The consortium notes that, for the specific technical profiles required by some partners, recruitment proved challenging regardless of the gender of applicants.
+
+The consortium is aware that these figures reflect a wider structural imbalance in the
+field, and the project partners seek to contribute to addressing it through open recruitment practices and by
+giving early-career researchers a visible role in the project's training and dissemination
+activities.
+
+Following the reviewers' suggestion, the consortium has begun examining whether the organ
+simulation models could incorporate sex- or gender-specific parameters. The patient-specific
+simulators are driven by subject-derived imaging data and therefore already reflect
+individual anatomy, whereas the material parameters currently in use are not differentiated
+by sex. Whether such a differentiation is feasible within the remaining project time, and
+for which applications, is being assessed together with the application partners in WP2;
+the outcome will be reported in the final application deliverables.
 
 \label{MyLastPage}
 
