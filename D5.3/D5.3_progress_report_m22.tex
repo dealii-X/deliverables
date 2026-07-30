@@ -13,6 +13,8 @@
 
 \usepackage{xspace}
 \usepackage{lipsum}
+\usepackage{booktabs}
+\usepackage{array}
 
 \newcommand{\dealii}{\texttt{deal.II}}
 
@@ -133,14 +135,14 @@
 	\end{itemize}
 	
 	In summary, WP1 is dedicated to developing and integrating advanced algorithms and fundamental software components within the \dealii\ library and external libraries, with a strong emphasis on enabling exascale compute capabilities for the digital twin applications in WP2.
-	 %(M1–M12)
+	%(M1–M12)
 	
 	
-\subsection{WP1.1: Extending and improving the exascale capabilities in deal.II} % (M1–M22, Lead: RUB)}
+	\subsection{WP1.1: Extending and improving the exascale capabilities in deal.II} % (M1–M22, Lead: RUB)}
 
-	Work package WP11.1 focuses on enabling efficient finite element computations
-	with the deal.II finite element library, where matrix-free evaluation
-	techniques and multigrid methods are the core scientific components.
+Work package WP11.1 focuses on enabling efficient finite element computations
+with the deal.II finite element library, where matrix-free evaluation
+techniques and multigrid methods are the core scientific components.
 
 The activities of the group at RUB can be summarized as follows:
 \begin{itemize}
@@ -419,7 +421,7 @@ Current work prepares large-scale, GPU-accele\-rated simulations of detailed alv
 Replacing \texttt{FEValues} with \texttt{FEEvaluation} yields improved assembly efficiency in matrix-based solvers. On high-order structured hexahedral meshes ($p \ge 2$), matrix-based methods exhibit strong scalability degradation due to increased stiffness matrix density and inter-processor communication overheads. Conversely, matrix-free evaluation preserves strong scalability across high process counts. Linear systems arising from cardiac mechanics utilize Chebyshev polynomial preconditioning with matrix-free $p$-multigrid capabilities. The results are reported in Deliverable D2.3.
 
 \noindent\textbf{Multicompartment perfusion and partitioned fixed-stress coupling.}
- Multicompartment Darcy perfusion physics with finite-strain Guccione myocardial mechanics and Biot-type pressure coupling have been integrated in \texttt{Porosolver}. Operating modes support standalone mechanics, standalone perfusion, or fully coupled poromechanics via a fixed-stress staggered splitting scheme. The formulation incorporates deformation-induced fluid pumping, variable fluid properties, Kozeny--Carman porosity\-dependent permeability corrections, and rule-based fiber generation with anisotropic permeability tensors aligned along fiber, sheet, and normal directions. More details are available in Deliverable D2.4.
+Multicompartment Darcy perfusion physics with finite-strain Guccione myocardial mechanics and Biot-type pressure coupling have been integrated in \texttt{Porosolver}. Operating modes support standalone mechanics, standalone perfusion, or fully coupled poromechanics via a fixed-stress staggered splitting scheme. The formulation incorporates deformation-induced fluid pumping, variable fluid properties, Kozeny--Carman porosity\-dependent permeability corrections, and rule-based fiber generation with anisotropic permeability tensors aligned along fiber, sheet, and normal directions. More details are available in Deliverable D2.4.
 
 \subsubsection*{Monolithic Block Preconditioning and High-Resolution Performance}
 
@@ -456,7 +458,7 @@ The repository has been merged into the central project repository\footnote{\url
 The full-brain simulations matching maximum MRI data resolution require $\approx 9 \times 10^5$ elements and $2.4 \times 10^7$ DoFs with associated system matrices having $\approx 5 \times 10^9$ non-zero matrix entries, which highlights the strong coupling of the underlying poro--viscoelastic model. To overcome the memory bottlenecks and bridging the gap towards full--brain simulations, the framework transitioned from \texttt{parallel::shared} to \texttt{parallel::distributed} triangulations. Together with MUMPS partner, preconditioner reuse strategies were extended across multiple time steps (e.g., computing a direct BLR factorization once every 5 time steps), substantially reducing overall solver time during non-linear relaxation steps. The results are reported in Deliverables D2.3 and D2.4. 
 
 \noindent\textbf{MUMPS low-rank accuracy for MRI indentation simulations.}
- Realistic brain indentation simulations reconstructed from MRI geometries evaluate the interplay between BLR compression accuracy and solver convergence. Increasing BLR compression (lowering accuracy threshold $\varepsilon$) systematically reduces memory consumption (from $180\text{ GB}$ to $100\text{ GB}$ per node across 2 to 8 nodes) and preconditioner factorization times. However, reducing precision beyond $\varepsilon \approx 10^{-5}$ significantly increases GMRES iteration counts, counteracting gains in factorization efficiency. An optimal operating window of $\varepsilon \in [10^{-6}, 10^{-5}]$ balances preconditioner build times with Krylov subspace convergence. This is detailed in Deliverable D2.3.
+Realistic brain indentation simulations reconstructed from MRI geometries evaluate the interplay between BLR compression accuracy and solver convergence. Increasing BLR compression (lowering accuracy threshold $\varepsilon$) systematically reduces memory consumption (from $180\text{ GB}$ to $100\text{ GB}$ per node across 2 to 8 nodes) and preconditioner factorization times. However, reducing precision beyond $\varepsilon \approx 10^{-5}$ significantly increases GMRES iteration counts, counteracting gains in factorization efficiency. An optimal operating window of $\varepsilon \in [10^{-6}, 10^{-5}]$ balances preconditioner build times with Krylov subspace convergence. This is detailed in Deliverable D2.3.
 
 \subsubsection*{Inverse Parameter Identification and Pre-Exascale Roadmap}
 
@@ -699,45 +701,212 @@ The objective of WP4 is to ensure that the results of the dealii-X CoE are commu
 \item Align with relevant European initiatives such as EuroHPC JU Pilots, Virtual Human Twins, and NextGenerationEU Consortium iNEST.
 \end{itemize}
 
-\subsection{Progress Achieved in Year 1} %(M1–M12)
-
-\noindent\textbf{WP4.1: Develop a data management plan}
-
-The Data Management Plan (DMP) was prepared under the leadership of RUB in close collaboration with all partners and submitted as Deliverable D4.3 in M6. The DMP defines the project-wide framework for managing data, including data formats, storage, access policies, and preservation procedures, and it provides concrete strategies to ensure compliance with FAIR principles (Findable, Accessible, Interoperable, Reusable).  
-
-The process of drafting the DMP included extensive partner consultations to capture data needs across work packages. This allowed the consortium to identify suitable formats, common repositories, and licensing approaches that facilitate both intra--consortium sharing and secondary use by the broader community.  
-
-In addition, the consortium has benefited from the expertise of WIAS, which is leading the German National Research Data Infrastructure (NFDI) consortium for mathematics (MaRDI). This connection has provided valuable input and best practices on standards, metadata, and interoperability relevant to computational science.  
+\subsection{WP4.2: Communication and dissemination strategy, branding, and tools}
 
 
+\subsubsection*{Communication and Dissemination intermediate report (D4.5)}
 
-\noindent\textbf{WP4.2: Communication and dissemination strategy, branding, and tools}
+Deliverable D4.5 ``Communication and Dissemination intermediate report'' was submitted in December 2025 (Month 15). It details the implementation, performance, and stakeholder reach of all project communication activities during the reporting period. Supported by a systematic monitoring framework, all planned channels and tools --- including the project website, social media, newsletters, and stakeholder engagement strategies—are fully operational and progressing according to schedule. Early performance indicators demonstrate robust reach across the in silico medicine and computational modelling ecosystems, establishing a solid infrastructure that will further amplify the project's impact and visibility as intermediate results emerge.
 
+\subsubsection*{Implementation of the communication and dissemination plan (D4.1)}
+The summary and the status of the communication and dissemination activities originally defined in Communication and Dissemination Plan (D1.4) are listed in Table~\ref{tab:commdiss}.
+
+\begin{table}[htbp]
+\centering
+\caption{Implementation of the communication and dissemination plan timeline.}\label{tab:commdiss}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{6cm}|c|c|} % Forces 1st column to wrap at 6cm width
+\toprule
+\textbf{Task} & \textbf{Planned} & \textbf{Delivered} \\
+\midrule
+Internal communication infrastructures & 31/01/2025 & 30/01/2025 \\
+\midrule
+Project Visual Identity & 31/01/2025 & 30/01/2025  \\
+\midrule
+Project website and social networks & 31/01/2025 & 30/01/2025 \\
+\midrule
+Project E-newsletter & 31/01/2025 & 20/04/2025 \\		\midrule
+Dissemination and Communication Plan (D4.1) & 31/01/2025 & 30/01/2025 \\
+\midrule
+Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/2025 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Tools, channels and visual identity}
+
+\begin{itemize}
+\item \textbf{Internal Communication Infrastructure:}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item A comprehensive Communication and Dissemination Strategy was developed and approved in M4.
-\item A stakeholder mapping was carried out, identifying six primary target groups: clinicians, ICT researchers, industry, regulators, patients, policymakers/public.
-\item A full visual identity was created, including project logo, templates, infographics, and EU acknowledgement banner.
-\item Communication channels established:
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Project website (live since M6; regularly updated).
-\item Social media (LinkedIn; active since M5 with 219 followers). More detailed stats will be provided in the first dissemination and communication report.
+\item Fully operational Google Drive collaboration workspace (since M03) featuring structured WP repositories and shared consortium tools.
+\item Integrated communication setup including a general consortium mailing list (\texttt{dealiix-project@vph-institute.org}), WP-specific lists, the EU--based open network \texttt{[matrix]}\footnote{\url{https://matrix.org/}, retrieved on 30.07.2026} for instant messaging and group chats, conference call tools, and project calendars.
 \end{itemize}
-\item First communication materials produced: project flyer, presentation template, social media kit and a project poster.
-\item The VPH Institute is currently undergoing a rebranding process and will soon become \textit{VPH – The Society for In Silico Medicine}, reflecting a broader and more inclusive vision for the community.
+
+\item \textbf{Project Visual Identity:}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item Established cohesive branding comprising a dedicated logo (in multiple formats), preset document/presentation templates, and a specific color palette paired with the Poppins font.
+\item Website design employs a minimal, parallax-scrolling layout with a white background to convey innovation, technological expertise, and medical sector focus.
+\item Partner-contributed media (venue/lab photography) utilized for public dissemination; visual elements are currently being expanded to engage non-technical audiences on social media.
 \end{itemize}
 
-\noindent\textbf{WP4.3: Dissemination activities}
+\item \textbf{Project Website\footnote{\url{https://www.dealii-x.eu/}, retrieved on 30.07.2026}:}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item Built on WordPress for efficient content and media management, featuring structured navigation, clear page categorizations, and an integrated footer newsletter subscription form.
+\item 1.3K visitors as of May 2026.
+\end{itemize}
+
+\item \textbf{Project LinkedIn account\footnote{\url{https://www.linkedin.com/company/dealii-x/}, retrieved on 30.07.2026}:}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item Selected LinkedIn as the primary platform  to effectively target industry, governmental, non-profit, and academic professionals.
+\item Maintained an active publication frequency of 1--2 posts per week since mid-January 2025, supported by custom header branding and an editorial calendar.
+\item As of May 2026: 350 followers, 1K page views, 40K impressions, 11.7\% (5\% on average) engagement rate.
+\end{itemize}
+
+\item \textbf{Quarterly E-Newsletter:}
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item Managed via Mailchimp with a structured format (editorial, highlight articles, news snippets, upcoming events/job openings, and direct links/privacy footers).
+\item Successfully released six issues reaching 39 subscribers, demonstrating high engagement with open rates reaching up to 85\% as of May 2026.
+\end{itemize}
+\end{itemize}
+
+\subsection{WP4.3: Dissemination activities}
+
+
+\subsubsection*{Ecosystem Synergies and Community Engagement}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item There has been a strong presence of the project partners at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
-\item deal.II was presented by the dealii-X consortium as the “Code of the Month” by CASTIEL2, highlighting its impact and relevance within the European HPC ecosystem. 
+\item \textbf{VPH Institute Partnership:} Formal collaboration established with the VPH Institute communication office to cross-promote news, issue joint press releases, and feature dealiiX in their monthly EU-project newsletter.
+\item \textbf{Slack Community of Practice (CoP):} Leveraging the established VPH CoP (700+ vetted in silico medicine experts across academia, industry, and healthcare) by creating a dedicated dealiiX channel to broaden project reach and engagement.
+\end{itemize}
+
+\subsubsection*{Main dissemination activities}
+
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item There has been a strong presence of the project partners at international conferences and workshops, including WCCM--ECCOMAS Congress 2026, SIAM PP 2026, ISC 2026 , HiPEAC 2026, PD2026:EuroMicro Conference, GAMM 2026 among others.
+\item The dealii-X participated in the EuroHPC community building activities: HiDALGO2 clustering event, panel discussion within the track ``Rethinking scientific applications for exascale and emerging architectures: the Centre of Excellence challenge'' at HiPEAC 2026, the EuroHPC JU stand at ISC 2026 and a minisimuposum at SIAM PP 2026 jointly organized with EoCoE.
 \item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.~Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
-\item The dissemination events partecipated by the dealii-X consortium were promoted via project's social media channels. 
-\item Dissemination was supported via VPH and partner institutional channels (websites, newsletters, social media).
+\item dealii-X consortium fully contributed to the Research School ``Digital Twins of the Human Body'' in December 2025 in Trieste, Italy in conjunction with the project annual all--hands meeting.
+\item The project has been represented at CASTIEL2's all-hands meeting in September 2026 in Tallinn, Estonia.  
 \end{itemize}
 
-\noindent\textbf{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} % (M1–M27, Lead: VPH).}  
+\subsubsection*{Key Objectives Achieved Through Dissemination}
 
+
+Intense event attendance, workshops, and cross-work-package dialogue successfully served to:
+
+\begin{itemize}
+\item Raise general awareness of the dealiiX mission and goals.
+
+\item Build consensus among experts on technical standards.
+
+\item Establish strategic collaborations with external partners.
+
+\item Engage key stakeholders to maximize long-term project impact.
+\end{itemize}
+
+Figure~\ref{fig:dissportfolio} shows the dealii-X Dissemination Portfolio achieved in the Reporting Period RP1 demosonstrative the core narative of a coherent full--stack profile: numerical methods $\rightarrow$ software $\rightarrow$ applications. 
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{dissportfolio}
+\caption{dealii-X Dissemination Portfolio.}\label{fig:dissportfolio}
+\end{figure}
+
+
+\subsubsection*{Article 17 of the Grant Agreement}
+
+dealii-X project strictly follows the Article 17 of the Grant Agreement regarding communication, dissemination, promotion and visibility actions. In particular, all the dissemination results include both EU and EuroHPC logos and the following acknowledgment disclaimer: 
+
+
+\noindent\emph{The European Union funded this study through the HORIZON-EUROHPC project “dealii-X: an Exascale Framework for Digital Twins of the Human Body” (topic HORIZON-EUROHPC-JU-2023-COE-03-01). Project Grant 101172493. Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+}
+
+As an example, Figure~\ref{fig:article17} displays the snapshot of the Article 17 implementation on the dealii-X webpage.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.5\textwidth]{article17}
+\caption{Implementation of Article 17 on the dealii-X webpage. }\label{fig:article17}
+\end{figure}
+
+%\subsection{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} 
+
+
+\subsection{WP4.4: Stakeholder outreach and alignment with relevant EU initiatives and projects} 
+
+
+
+Outreach under this task is deliberately routed through the established networks of the
+in silico medicine and HPC communities (see WP4.3) rather than through project-specific
+channels, in order to maximise reach at limited cost. During the current reporting period
+the emphasis has been on the professional stakeholder groups closest to the project's
+technical results (clinical researchers, industry, HPC and modelling communities), while
+engagement with patients, payers and policymakers remains at an early stage. The
+current status per stakeholder group is summarised in Table~\ref{tab:stakeholders}.
+
+
+% Delete any row you cannot substantiate, and replace "planned" wording with concrete
+% names/dates wherever you have them --- one named contact beats three generic promises.
+
+\subsubsection*{Alignment with relevant EU initiatives and projects}
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item \textbf{EuroHPC JU ecosystem:} continuous alignment through CASTIEL2 (participation in the all-hands meeting, Tallinn), the HiDALGO2 clustering event, the joint minisymposium with EoCoE at SIAM PP 2026, and the CoE panel at HiPEAC 2026, ensuring exchange of good practice on exascale readiness and avoiding duplication of effort across Centres of Excellence.
+\item \textbf{Virtual Human Twin initiative:} monitoring of and alignment with the VHT roadmap and the related EDITH/VHT infrastructure activities, mediated by the VPH Institute, to position the dealii-X solvers as computational components of the emerging European digital twin ecosystem.
+% Add a concrete item if any partner attended a VHT/EDITH event or replied to a
+% consultation --- this is the alignment reviewers will look for most closely.
+\item \textbf{NextGenerationEU Consortium iNEST:} links maintained through the Italian partners, providing access to regional clinical and industrial networks complementary to the project consortium.
+\item \textbf{In silico medicine community:} alignment with the body of practice consolidated by previous EU-funded projects (In Silico World, STriTuVaD, MOBILISE-D, PRIMAGE, CompBioMed), in particular on model credibility and verification and validation reporting.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Status of stakeholder engagement at M22.}\label{tab:stakeholders}
+\renewcommand{\arraystretch}{1.2}
+\footnotesize
+\begin{tabular}{|p{3cm}|p{6cm}|p{6cm}|}
+\toprule
+\textbf{Stakeholder} & \textbf{Channels used so far} & \textbf{Planned actions (M22--M27)} \\
+\midrule
+Clinical community & Clinical partners' own networks; VPH Institute membership & Structured interviews on clinical requirements; presentation of validation cases at a clinically oriented conference \\
+\midrule
+Industry & LinkedIn; VPH Community of Practice (CoP); conference presence (WCCM--ECCOMAS, ISC, HiPEAC) & Targeted outreach to software houses and medical device SMEs; industry-facing webinar \\
+\midrule
+Regulatory bodies / HTA & Indirect, via VPH Institute and the In Silico World CoP legacy & Contact with the Avicenna Alliance / regulatory working groups; alignment of V\&V reporting with credibility standards \\
+\midrule
+Patients & Not yet directly engaged & Contact with patient advocacy organisations through the VPH Institute and clinical partners \\
+\midrule
+Payers & Not yet directly engaged & To be addressed jointly with the exploitation activities of WP4.5 \\
+\midrule
+Policymakers & Indirect, via EuroHPC JU and CASTIEL2 community activities & Contribution to CoE position papers and EuroHPC JU communication actions \\
+\midrule
+Citizens / general public & Project website, LinkedIn, quarterly e-newsletter;  participation in local public science events & Non-technical visual material; participation in a public science event \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Follow-up on the intermediate review recommendations}
+
+The reviewers of the intermediate project review identified stakeholder engagement and
+exploitation as the weakest aspects of the project's planning and of the initial and
+intermediate dissemination deliverables. The consortium accepts this assessment. The
+activities reported above were designed primarily for the technical and scientific
+communities and have not yet been translated into a systematic engagement process
+covering the full range of stakeholders named in the Grant Agreement.
+
+The following corrective measures have therefore been agreed:
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+\item Revision of the stakeholder engagement strategy, moving from opportunistic dissemination to a documented plan with named target organisations, responsible partners, and measurable indicators per stakeholder group.
+\item Launch of the structured engagement instruments foreseen in the Grant Agreement (focus groups, surveys and semi-structured interviews), starting with the clinical and industrial communities.
+\item Establishment of a dedicated dealii-X channel in the VPH Community of Practice and its active moderation, to convert passive reach into two-way interaction.
+\item Tighter coupling of WP4.4 with the exploitation activities of WP4.5, so that stakeholder feedback feeds directly into the exploitation and sustainability plan.
+\item Reporting of engagement KPIs (contacts per stakeholder group, interviews conducted, feedback items incorporated) in the final dissemination deliverable.
+% Assign an owner and a month to each of the five items above before submission ---
+% an undated corrective plan reads like the same promise the reviewers already
+% rejected once.
+\end{itemize}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Initial contacts established with key stakeholder groups, including clinicians, patients, industry, regulatory bodies, HTA organisations, payers, citizens, and policymakers.
@@ -746,52 +915,76 @@ In addition, the consortium has benefited from the expertise of WIAS, which is l
 \item Preparation of structured engagement activities (focus groups, surveys, interviews) to be launched in the next reporting period.
 \end{itemize}
 
+\subsection{WP4.5: Exploitation}
 
+Exploitation activities follow the tracking approach defined at the start of the task (M06),
+based on a living register of exploitable results maintained jointly by all partners and
+reviewed at the consortium all-hands meetings. The register distinguishes between
+(i) open-source software results, exploited through the deal.II ecosystem and its user
+community, (ii) methodological and performance results, exploited through scientific
+publications and HPC access campaigns, and (iii) results with a direct industrial
+exploitation path, exploited through integration into partner products and services. The
+current status of the main exploitable results is summarised in
+Table~\ref{tab:exploitation}.
 
-\noindent\textbf{WP4.5: Exploitation}
+\begin{table}[htbp]
+\centering
+\caption{Key exploitable results and their exploitation routes at M22.}\label{tab:exploitation}
+\renewcommand{\arraystretch}{1.2}
+\footnotesize
+\begin{tabular}{|p{3.4cm}|p{2.2cm}|p{3.0cm}|p{3.8cm}|}
+\toprule
+\textbf{Exploitable result} & \textbf{Owner(s)} & \textbf{Route} & \textbf{Status at M22} \\
+\midrule
+Exascale-ready solver components (matrix-free kernels, multigrid, preconditioners) & Academic partners & Open source, upstream contribution to deal.II & Released and available to the deal.II user community \\
+\midrule
+Large-scale digital twin application codes & Application partners & Open source + use in partner research services & In development, staged releases \\
+\midrule
+Sparse direct solver technology & Relevant partners & Transfer to MUMPS & Under discussion \\
+\midrule
+HPC deployment, containerisation and workflow know-how & exactlab and partners & Commercial services & Under discussion \\
+\midrule
+Benchmarking and scalability results on EuroHPC systems & All partners & Publications, EuroHPC access proposals & Ongoing \\
+\bottomrule
+\end{tabular}
+\end{table}
+% Replace "Relevant partners"/"Under discussion" with the real owners and the actual
+% stage once the claims discussion closes; and check the exact legal names of the
+% receiving entities (MUMPS Technologies, exactlab s.r.l. and the second company you
+% mentioned) before submission --- reviewers do check these.
 
-The first step toward systematic exploitation was the preparation and submission of Deliverable D4.4 ``Table of Exploitable Results'' in M6, coordinated by RUB with contributions from all partners. This deliverable established an initial inventory of project outputs with potential for exploitation, including software, workflows, training resources, and integration pathways into partner tools.  
+\subsubsection*{Exploitation of technical results and HPC access}
 
-The exploitation framework is designed to ensure that results are captured early and monitored throughout the project lifetime. Key measures include:  
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Regularly updating the exploitable results table as new outputs emerge.  
-\item Supporting open--source releases under appropriate licenses, to maximize uptake and community impact.  
-\item Facilitating integration of developed tools into existing partner platforms and software products.  
-\item Engaging with external stakeholders (academia, HPC centres, industry, and clinical users) to explore adoption and sustainability pathways.  
+\item \textbf{Open source first:} all core numerical developments are contributed upstream to the deal.II library and released under its open licence, which guarantees immediate availability to third parties, continuity beyond the project lifetime through an established maintainer community, and compliance with the Grant Agreement provisions on open science.
+\item \textbf{HPC access campaigns:} the consortium has successfully obtained and used allocations on EuroHPC supercomputers, which have been exploited both for the scaling and performance campaigns reported in WP1--WP3 and as a demonstration of readiness of the dealii-X stack on European pre-exascale and exascale infrastructure.
+% Insert: system names, call types (Extreme Scale / Regular / Benchmark), total core
+% hours awarded and consumed. A single number here is the strongest exploitation
+% evidence in the whole subsection.
+\item \textbf{Uptake by third parties:} improvements contributed to deal.II benefit the wider user base of the library beyond the consortium, extending the reach of the project's results well past the biomedical application domain targeted by dealii-X.
+% If you have download/clone statistics, releases containing dealii-X contributions,
+% or external users/citations, add them here.
+\item \textbf{Integration into partner software:} developed components are being integrated into the simulation workflows and toolchains maintained by the industrial and clinical partners, in line with the exploitation intentions declared in the Grant Agreement.
 \end{itemize}
 
-Moving forward, WP4.5 will develop a detailed exploitation roadmap to secure the long-term sustainability of project outputs, including software maintenance, training material reuse, and possible transfer of knowledge and tools to industrial or clinical partners.
+\subsubsection*{Sustainability beyond the project}
 
-
-
-\subsection{Key Performance Indicators} %(M1–M12)
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Website launched (M6), achieving $\sim$2600 visits and $\sim$800 unique visitors in the first 6 months.
-\item Social media growth: $\sim$200 followers on LinkedIn; reach of $\sim$25,000 impressions to date, with steady monthly growth.
-\item Data management: Data Management Plan submitted (M6); 100\% of partners consulted in its preparation. Initial data formats and repositories aligned with FAIR principles.
-\item Exploitation: Initial Table of Exploitable Results submitted (M6), with 20 identified results covering software, workflows, and training resources.
-\item The 2025 SIAM/ACM Prize in Computational Science and Engineering was awarded to the principal authors (among whom are the dealii-X PCs M. Kron\-bichler and L. Heltai) of the deal.II Project in recognition of their contributions to finite element calculations.
-\item deal.II was presented by the dealii-X consortium within CASTIEL2's series ``Code of the Month'', highlighting its impact and relevance within the European HPC ecosystem. 
-\item Dissemination: Strong presence at international conferences and workshops, including SIAM CSE 2025, Coupled Problems 2025, Large-Scale Scientific Computations (LSSC 2025), Domain Decomposition Methods (DD29), ICOSAHOM 2025, and ENUMATH 2025, among others.
-\end{itemize}
-
-
-\subsection{Next Steps} % (M13–M24)
+The intermediate review identified the sustainability of the project outcomes as an area
+requiring strengthening. The consortium shares this assessment: while the exploitation of
+technical results through open source and HPC campaigns is proceeding well, the
+arrangements that will keep the dealii-X software stack maintained, supported and
+commercially available after the end of the project were not yet defined at the time of the
+review. The following actions are therefore in progress:
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Strengthen communication campaigns and widen dissemination to additional HPC and clinical communities, with targeted communication material and enhanced social media presence.
-\item Organize the first project workshop: \textit{dealii-X Research School} in Trieste in December 2025, providing hands-on training and fostering early user engagement.
-\item Launch structured stakeholder engagement activities (focus groups, surveys, interviews) targeting regulators, clinicians, and patients to collect feedback on project outputs.
-\item Update the Data Management Plan to reflect new data types generated in WPs 2–3, and refine strategies for long-term preservation and reuse.
-\item Develop a detailed exploitation roadmap, including sustainability measures for software maintenance, data curation, and training materials reuse.
-% \item Monitor and expand the inventory of exploitable results % , including preparation for first open--source releases and identification of potential integration into partner tools.
-\item Deepen collaborations with EuroHPC JU and Virtual Human Twins initiatives to maximize impact and synergies with related European efforts.
+\item \textbf{Clarification of exploitation claims.} Negotiations are ongoing among the participating institutions to establish the ownership, access rights and exploitation claims for each key exploitable result listed in Table~\ref{tab:exploitation}. The outcome will be consolidated in the final exploitation and sustainability plan.
+\item \textbf{Technology transfer to industrial actors.} Two concrete transfer routes are being explored: transfer of the sparse direct solver developments to MUMPS, and transfer of deployment, integration and HPC--ready PoC platform to ExactLab/DUALISTIC, so that maintenance and commercial support for these components rest with entities whose business model sustains them beyond the project's funding horizon.
+% Name the second company here as well once confirmed, and state the instrument
+% (licence, joint development agreement, MoU) and the target date.
+\item \textbf{Community-based maintenance.} Continuity of the core numerical developments is structurally ensured by their integration into deal.II, whose governance, release cycle and contributor base are independent of the dealii-X project and predate it.
+\item \textbf{Lessons-learned publications.} A set of dissemination papers documenting the successes, the performance results and the engineering experience gained in dealii-X is being prepared for submission by the end of the project (December 2026), targeting both the HPC and the computational biomedicine communities. These will consolidate the project's methodological legacy in the permanent scientific record.
+% List the planned papers with working titles, venues and lead authors if available.
 \end{itemize}
-
-
-
-
-
 
 \newpage
 
