@@ -8,12 +8,15 @@
 
 \usepackage{xspace}
 \usepackage{subcaption}
-<<<<<<< HEAD
-=======
 \usepackage{placeins}
->>>>>>> 0429d4fefa2403189996e6bd94a666ae5ee820f5
 \usepackage{tikz}
 \usetikzlibrary{positioning,fit,arrows.meta}
+
+% Include a screenshot if present in ./figures/, otherwise render a framed
+% placeholder so the document always compiles while screenshots are collected.
+\newcommand{\figureOrPlaceholder}[2]{%
+  \IfFileExists{./figures/#1}{\includegraphics[width=400pt]{#1}}{%
+    \fbox{\parbox[c][5cm][c]{380pt}{\centering\itshape Screenshot to be added:\\ #2\\ (\texttt{figures/#1})}}}}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{2.7}
@@ -301,18 +304,6 @@ network protocol and persisted across sessions.
     \centering
     \begin{subfigure}{\textwidth}
         \centering
-<<<<<<< HEAD
-        \includegraphics[width=\textwidth]{subnetwork-collapsed.png}
-        \caption{a collapsed high-level node}
-        \label{subnetwork-collapsed}
-    \end{subfigure}\par\medskip
-    \begin{subfigure}{\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{subnetwork-internal.png}
-        \caption{the internal lower level definition of the subnetwork node
-            shown in Fig.~\ref{subnetwork-collapsed}}
-        \label{subnetwork-internal}
-=======
         \figureOrPlaceholder{subnetwork-collapsed.png}{a subnetwork node
             collapsed on the canvas, exposing only its external interface}
         \caption{a collapsed high-level node}
@@ -329,7 +320,6 @@ network protocol and persisted across sessions.
         \caption{the internal lower-level definition of the subnetwork node
             shown in (\subref{subnetwork-a})}
         \label{subnetwork-b}
->>>>>>> 0429d4fefa2403189996e6bd94a666ae5ee820f5
     \end{subfigure}
     \caption{Subnetwork nodes}
     \label{subnetwork}
@@ -442,17 +432,6 @@ rebuilding it.
 
 \begin{figure}
     \centering
-<<<<<<< HEAD
-    \includegraphics[width=\textwidth]{visualizer.png}
-    \caption{Poisson solution in the Coral Visualizer as a result of the
-        workflow in Fig.~\ref{canvas}}
-    \label{visualizer}
-\end{figure}
-
-Simulation results are inspected through the Coral Visualizer, a web-based
-viewer for VTK/deal.II output formats (\texttt{.vtk}, \texttt{.vtu}),
-reachable directly from the application. During the reporting period the
-=======
     \figureOrPlaceholder{visualizer-poisson.png}{the Poisson solution
         produced by the graph of Fig.~\ref{canvas}, rendered in the Coral
         Visualizer}
@@ -464,7 +443,6 @@ reachable directly from the application. During the reporting period the
 Simulation results are inspected through the Coral Visualizer
 (Fig.~\ref{visualizer}), a web-based viewer for VTK/deal.II output formats
 (\texttt{.vtk}, \texttt{.vtu}), reachable directly from the application. During the reporting period the
->>>>>>> 0429d4fefa2403189996e6bd94a666ae5ee820f5
 visualizer has been substantially extended with a ParaView-based rendering
 backend providing filters, visualization pipelines, solution field
 rendering, cell manipulation and edit sessions, while retaining a
