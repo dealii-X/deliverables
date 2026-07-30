@@ -33,7 +33,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{D2.7: Deployment of the PoC platform}
     \tableEntry{Deliverable number}{D2.7}
-    \tableEntry{Deliverable version}{0.4}
+    \tableEntry{Deliverable version}{0.5}
     \tableEntry{Date of delivery}{31/07/2026}
     \tableEntry{Actual date of delivery}{[TBD]}
     \tableEntry{Nature of deliverable}{Report}
@@ -85,6 +85,7 @@
     tagging}
   \addVersion{0.4}{30/07/2026}{P. Colturi, M. Franzon}{Flow and consistency
     revision}
+  \addVersion{0.5}{30/07/2026}{P. Colturi}{Brain figures; float placement}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -440,7 +441,7 @@ permissions. This allows, for instance, an expert user to prepare and share
 a validated simulation workflow that a colleague can open and run without
 rebuilding it.
 
-\begin{figure}
+\begin{figure}[!htb]
     \centering
     \figureOrPlaceholder{visualizer-poisson.png}{the Poisson solution
         produced by the graph of Fig.~\ref{canvas}, rendered in the Coral VTK
@@ -475,9 +476,19 @@ piecewise-linear approximation given by the coarse mesh. Tagging a mesh in
 this way therefore defines part of the problem that the simulation will
 solve, and it can be done from the interface without writing any code. The
 tool has been exercised both on the organ-scale meshes targeted by the
-project, such as the brain mesh of Fig.~\ref{brain}, and on reference meshes
-of several million cells used to characterize the performance of the editing
-session.
+project, such as the brain mesh of Fig.~\ref{brain-tagging}, and on reference
+meshes of several million cells used to characterize the performance of the
+editing session.
+
+\begin{figure}[!htb]
+    \centering
+    \figureOrPlaceholder{brain-tagging.png}{an edit session on the brain mesh,
+        with a selected group of surface cells carrying its own identifier}
+    \caption{An edit session on the brain mesh opened in the Coral VTK
+        Manipulator, where a group of surface cells has been given its own
+        integer identifier}
+    \label{brain-tagging}
+\end{figure}
 
 What the tool adds is the combination of two capabilities in one place. Tags
 are normally assigned when the mesh is generated: in a mesh generator such as
@@ -514,18 +525,37 @@ development per application, support in executable mode is a property of the
 mechanism rather than of a per-application integration effort: the heart
 application of POLIMI (\texttt{.prm} input) and the lungs application of TUM
 (JSON input) comply with the same parameter-file convention and are expected
-to work without changes to the platform.
+to work without changes to the platform. Fig.~\ref{executable-brain} shows the
+parameter tree of the brain application as the platform presents it in this
+mode.
+
+\begin{figure}[!htb]
+    \centering
+    \figureOrPlaceholder{executable-brain.png}{the parameter tree of the brain
+        application shown in the parameters panel in executable mode}
+    \caption{The parameter tree of the brain lighthouse application, presented
+        in the parameters panel in executable mode. The grid prepared upstream
+        (Fig.~\ref{brain-tagging}) is named in the grid generation entries, and
+        the identifiers it carries reappear as the boundary ids on which the
+        boundary conditions are set}
+    \label{executable-brain}
+\end{figure}
 
 These runs also show that the Coral VTK Manipulator of
 Sec.~\ref{sec:services} is not an accessory to the workflow but one of its
 first stages. The grid is the first input that has to be settled: it is
 prepared and tagged in the manipulator, and its path is then one of the
 entries of the parameter file that the executable reads, alongside the
-physical and numerical parameters. The same tool therefore takes part twice in
+physical and numerical parameters. The identifiers assigned to the mesh are
+consumed in the same file, as the boundary ids to which the boundary
+conditions are attached, so that the upstream tagging and the parameters of
+the run describe one and the same problem. The same tool therefore takes part
+twice in
 a single simulation, upstream, where tagging the mesh defines the geometry,
-the materials and the boundaries of the problem to be solved, and downstream,
-where the results are inspected once the run has completed;
-Fig.~\ref{brain} shows the brain application at that second stage.
+the materials and the boundaries of the problem to be solved
+(Fig.~\ref{brain-tagging}), and downstream, where the results are inspected
+once the run has completed; Fig.~\ref{brain} shows the brain application at
+that second stage.
 
 \begin{figure}[!htb]
     \centering
@@ -640,7 +670,7 @@ the project partners during the testing period. The main directions are:
         non-expert users.
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[!htb]
     \centering
     \figureOrPlaceholder{gantt.png}{the Gantt chart of task 2.6, as published
         in D2.6}
@@ -648,6 +678,10 @@ the project partners during the testing period. The main directions are:
         the deployment phase (task 2.6.4)}
     \label{gantt}
 \end{figure}
+
+% Flush the figure before the closing paragraph: otherwise it is deferred past
+% \label{MyLastPage} and the page counter in the header reports one page short.
+\FloatBarrier
 
 The PoC platform is one of the main exploitable results of the dealii-X
 project: it demonstrates, end to end, that the simulation capabilities
