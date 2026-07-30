@@ -342,9 +342,15 @@ Communication APIs: NCCL, RCCL, NVSHMEM
 \section{{Energy Efficiency of High Order Finite Element Kernels}}
 \label{sec:section2}
 
-
+This section described ongoing work from the sub-task WP3.4
 % TODO: rewording
-We describe ongoing work from the task WP3.4
+We describe ongoing work from the task WP3.4 on Energy and Performance Profiling.
+
+The massive parallelism and low frequency of GPUs can offer significant advantages for scientific codes in comparison to CPUs.
+
+
+
+
 
 Runs scanning available power limits and frequency settings asses the energy consumption and performance characteristics of a code on a specific system.
 Key components of this process include:
@@ -356,6 +362,77 @@ Key components of this process include:
     relevant metrics.
 \end{itemize}
 By systematically analyzing power limits and frequency settings, organizations can make informed decisions about optimizing energy efficiency while maintaining satisfactory performance levels.
+
+% EuroHPC GPUs
+%---------------------------
+% JUPITER - GH200
+% LUMI - AMD EPYC + AMD Instinct MI250X
+% LEONARDO - Intel Xeon (ICX, SPR) + Nvidia Ampere "Da Vinci"
+% MARENOSTRUM5 - Intel Xeon (SPR) + Nvidia Grace + Nvidia H100
+% MELUXINA - AMD EPYC + Nvidia Ampere A100
+% KAROLINA - AMD EPYC, Intel Xeon + Nvidia A100
+% VEGA - AMD EPYC + Nvidia A100
+% DISCOVERER - AMD EPYC + Nvidia DGX H200
+% DEUCALION - Arm A64FX, AMD EPYC, Nvidia A100
+% DAEDALUS - Nvidia GH200
+% ARRHENIUS - AMD EPYC Turin, GH200
+% ALICE RECOQUE - AMD EPYC Venice + AMD Instinct MI430X
+
+\begin{center}
+\begin{table}[h!]
+\centering
+\small
+\caption{Characteristics of Nvidia GPUs of interest}
+\medskip
+\begin{tabular}{l|cccccc}
+                 & A100  & H100 NVL & GH200           & Intel® Data Center GPU Max 1550 \\ \hline
+TDP [W]          & 440   & 350-400  & 680 (superchip) & 600    \\
+FP32 [TFLOPS]    & 22.4  & 60       & 67              & 52.4   \\
+Bandwidth [TB/s] & 1.64  & 3.9      & 4               & 3.2    \\
+Base Frequency   & 1245  &          &                 & 900    \\
+Boost Frequency  & 1395  &          &                 & 1600   \\
+Memory Size [GB] & 64 GB & 64 GB    & 96 GB           & 128    \\
+Memory Type      & HBM2  & HBM2e    & HBM3            & HBM2e  \\
+\end{tabular}
+\end{table}
+\end{center}
+
+% A100 data is provided for the system in LEONARDO (CINECA)
+% The values are taken from the work
+%  https://jlsrf.org/index.php/lsf/article/view/186/345
+% Frequencies for the A100 are taken from the work of Amati and Turisini,
+%  https://arxiv.org/pdf/2406.11498
+
+% H100 data is taken for Marenostrum5
+%  https://arxiv.org/pdf/2503.09917v1
+
+% GH200 data for JUPITER Booster
+% https://www.fz-juelich.de/en/jsc/jupiter/tech
+% https://apps.fz-juelich.de/jsc/hps/jupiter/configuration.html#jupiter-booster-design
+%
+% In general GH200 power is configurable from 450 to 1000 (Memory + CPU + GPU)
+% https://nvdam.widen.net/s/rrgqqnpbz8/grace-datasheet-gh200-grace-hopper-superchip-3773000%20
+
+\begin{center}
+\begin{table}[h!]
+\centering
+\small
+\caption{Characteristics of AMD GPUs of interest}
+\medskip
+\begin{tabular}{l|ccc}
+                          & AMD MI250X & AMD MI300X & AMD MI430X  \\ \hline
+TDP [W]                   & 500        & 750        & 2500 (est.) \\
+Peak Performance [TFLOPS] & 47.9       & 81.72      & 288 (fp64)  \\
+Peak Bandwidth [TB/s]     & 3.28       & 5.32       & 19.6        \\
+Base Frequency            & 1000       & 1000       &  /          \\
+Boost Frequency           & 1700       & 2100       &  /          \\
+Memory Size [GB]          & 128        & 192        & 432         \\
+Memory Type               & HBM2e      & HBM3       & HBM4        \\
+Memory Clock [MHz]        & 1600 MHz   & 1300 MHz   & /           \\
+\end{tabular}
+\end{table}
+\end{center}
+
 
 
 \begin{figure}[htbp]
