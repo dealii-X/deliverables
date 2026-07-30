@@ -77,10 +77,25 @@ Approval Date: [Date]
 
 \section{{Introduction}}
 
-\lipsum[1-2]
+Comprehensive report on co-design activities, technology exploitation, and energy efficiency, including profiling runs
+and hardware benchmarking.
 
 \subsection{{Purpose of the Document}}
 \lipsum[3]
+
+% TODO: rewording
+
+Concomitant to the previous task we will ensure that programs deliver good performance across diverse computing architectures and require only minor platform and simulations specific tuning.
+Achieving performance portability involves several considerations and practices such as:
+
+\begin{itemize}
+    \item Utilizing high-level programming models, such as OpenMP or OpenACC, to express parallelism and optimize
+    performance without extensive modification for different hardware.
+    \item Leveraging compiler optimizations to automatically adapt code for specific architectures, enhancing performance
+    across a variety of platforms.
+    \item Designing and tuning computational kernels to be efficient across different hardware, considering factors like
+    vectorization and parallelization
+\end{itemize}
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
@@ -321,9 +336,27 @@ These JIT mechanisms ensure that we can leverage the performance benefits of sta
 
 % ph-MG solver: overlap of communication with computation
 
+% TODO:
+Communication APIs: NCCL, RCCL, NVSHMEM
 
 \section{{Energy Efficiency of High Order Finite Element Kernels}}
 \label{sec:section2}
+
+
+% TODO: rewording
+We describe ongoing work from the task WP3.4
+
+Runs scanning available power limits and frequency settings asses the energy consumption and performance characteristics of a code on a specific system.
+Key components of this process include:
+\begin{itemize}
+    \item Investigating the available frequency settings for the CPU and other components, including options for clock speed
+    adjustments.
+    \item Performing measurements to quantify the energy consumption of the system under different workloads and scenarios.
+    \item Profiling the performance of the system to understand its behaviour in terms of execution time, throughput, and other
+    relevant metrics.
+\end{itemize}
+By systematically analyzing power limits and frequency settings, organizations can make informed decisions about optimizing energy efficiency while maintaining satisfactory performance levels.
+
 
 \begin{figure}[htbp]
     \centering
