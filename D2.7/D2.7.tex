@@ -15,7 +15,7 @@
 % Include a screenshot if present in ./figures/, otherwise render a framed
 % placeholder so the document always compiles while screenshots are collected.
 \newcommand{\figureOrPlaceholder}[2]{%
-  \IfFileExists{./figures/#1}{\includegraphics[width=400pt]{#1}}{%
+  \IfFileExists{./figures/#1}{\includegraphics[width=\textwidth]{#1}}{%
     \fbox{\parbox[c][5cm][c]{380pt}{\centering\itshape Screenshot to be added:\\ #2\\ (\texttt{figures/#1})}}}}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
@@ -33,7 +33,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{D2.7: Deployment of the PoC platform}
     \tableEntry{Deliverable number}{D2.7}
-    \tableEntry{Deliverable version}{0.3}
+    \tableEntry{Deliverable version}{0.4}
     \tableEntry{Date of delivery}{31/07/2026}
     \tableEntry{Actual date of delivery}{[TBD]}
     \tableEntry{Nature of deliverable}{Report}
@@ -55,11 +55,14 @@
         The platform transparently targets computational resources ranging
         from the local machine to remote HPC systems managed by the Slurm
         scheduler, including MPI-parallel executions, and integrates a
-        collaborative project server and a visualization service. This
-        deliverable describes the architecture and the main features of the
-        deployed platform, its packaging, testing and continuous integration
-        infrastructure, and outlines the activities planned for the final
-        development phase of the project. }
+        collaborative project server together with a web tool for the
+        visualization of results and for the tagging of the meshes on which
+        the simulated problem is defined. This deliverable describes the
+        architecture and the main features of the deployed platform, its
+        packaging, testing and continuous integration infrastructure, reports
+        on the testing carried out with the dealii-X lighthouse applications
+        and on the feedback collected from the early users, and outlines the
+        activities planned for the final development phase of the project. }
         \tableEntry{Keywords}{
             PoC platform;
             low-code interface;
@@ -80,6 +83,8 @@
     Outlook update}
   \addVersion{0.3}{30/07/2026}{P. Colturi, M. Franzon}{VTK Manipulator rename;
     tagging}
+  \addVersion{0.4}{30/07/2026}{P. Colturi, M. Franzon}{Flow and consistency
+    revision}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -123,7 +128,7 @@ The present deliverable reports on the deployment of the first version of
 the PoC platform, named \emph{DealiiX Platform}. Following the development
 plan outlined in D2.6, the implementation activities of tasks 2.6.2
 (development of the no-code/low-code graphical user interface) and 2.6.3
-(development of a meta-scheduler system) started in M7 and proceeded
+(development of a metascheduler system) started in M7 and proceeded
 iteratively, with a first version of the platform available at M17 and the
 deployment and testing phase (task 2.6.4) carried out between M18 and M22.
 The platform has been developed in the open, with an iterative release
@@ -136,11 +141,11 @@ architecture of the platform and its components. Section 3 describes the
 low-code node editor, the concrete realization of the design sketched in
 section 2 of D2.6. Section 4 describes the no-code layer, based on
 subnetwork nodes. Section 5 covers the execution modes and the
-meta-scheduling functionality, which transparently target local and remote
-computational resources. Section 6 presents the collaborative and
-visualization services. Section 7 reports on the testing of the platform
-with the dealii-X lighthouse applications and on the feedback collected
-during the deployment phase. Section 8 reports on packaging, deployment and
+metascheduling functionality, which transparently target local and remote
+computational resources. Section 6 presents the collaborative services and
+the visualization and mesh tagging tool. Section 7 reports on the testing of
+the platform with the dealii-X lighthouse applications and on the feedback
+collected during the deployment phase. Section 8 reports on packaging, deployment and
 quality assurance, and section 9 outlines the activities planned for the
 final phase of the project.
 
@@ -246,7 +251,8 @@ well-formed graphs reach the execution engine.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{canvas.png}
+    \figureOrPlaceholder{canvas.png}{a computational graph equivalent to
+        deal.II's step-4 tutorial, built in the low-code editor}
     \caption{A computational graph built in the DealiiX Platform's
         node-based low-code editor, executed by CORAL and equivalent to
         deal.II's step-4 tutorial in three dimensions}
@@ -345,11 +351,11 @@ without ever seeing the underlying logic.
 % Confine the subnetwork figure to this section.
 \FloatBarrier
 
-\section{\textcolor{EUblue}{Execution modes and meta-scheduling}}
+\section{\textcolor{EUblue}{Execution modes and metascheduling}}
 \label{sec:execution}
 
 The design requirement of a transparent usage of computational resources is
-implemented by a meta-scheduling layer that supports four execution modes,
+implemented by a metascheduling layer that supports four execution modes,
 selected in the application settings and always visible through a dedicated
 execution badge:
 
@@ -391,7 +397,8 @@ of the job can be opened directly in the application.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{jobs.png}
+    \figureOrPlaceholder{jobs.png}{the jobs table and the per-node execution
+        status of a completed run}
     \caption{Job monitoring: jobs table and per-node execution status}
     \label{jobs}
 \end{figure}
@@ -419,10 +426,11 @@ resulting graph into a chain of dependent scheduler jobs, while the
 implementation is deliberately left to the final phase of the project, so
 that it can be shaped by the feedback of the users who will operate it.
 
-\section{\textcolor{EUblue}{Collaborative and visualization services}}
+\section{\textcolor{EUblue}{Collaborative services, visualization and mesh
+tagging}}
 \label{sec:services}
 
-The collaborative space requirement is served by the Coral Remote Server, a
+The collaborative space requirement is met by the Coral Remote Server, a
 lightweight REST service with JWT-based authentication. From the
 application, users can register and log in, create projects, and save and
 load computational graphs to and from the server. Projects can be renamed,
@@ -471,6 +479,17 @@ project, such as the brain mesh of Fig.~\ref{brain}, and on reference meshes
 of several million cells used to characterize the performance of the editing
 session.
 
+What the tool adds is the combination of two capabilities in one place. Tags
+are normally assigned when the mesh is generated: in a mesh generator such as
+Gmsh they are attached to the surfaces and volumes of the geometry, before any
+cell exists. Organ meshes reconstructed from medical images have no such
+geometry, so the tags must be written onto the cells themselves, through a
+loop over them in the application code or in a conversion script; such loops
+are easy to get wrong and give no visual confirmation. ParaView, conversely,
+offers the filters and the capacity for large datasets, but no way to assign a
+value to a picked selection. The manipulator does both, so the tags can be
+assigned and checked where the mesh is already being inspected.
+
 \section{\textcolor{EUblue}{Testing with the lighthouse applications and
 early-user feedback}}
 \label{sec:validation}
@@ -483,18 +502,18 @@ Sec.~\ref{sec:execution} realizes this goal directly: given a program that
 follows the executable contract, the platform probes it for its parameter
 tree, presents that tree in the parameters panel in either JSON or
 \texttt{.prm} form, and dispatches the run to the selected local or remote
-target through the meta-scheduling layer, with monitoring and output
+target through the metascheduling layer, with monitoring and output
 retrieval available from the same interface. The interaction is reduced to
 editing parameters and pressing run.
 
-This path has been tested on two of the dealii-X lighthouse applications,
-brain and liver (\texttt{immersx}, elasticity solver), and on the deal.II
+This path has been tested on two of the dealii-X lighthouse applications, the
+brain simulator of FAU and the liver simulator of FVB-WIAS, and on the deal.II
 tutorial program step-70, which is included in the repository as a reference
 example of the contract. Because the contract requires no platform-side
 development per application, support in executable mode is a property of the
 mechanism rather than of a per-application integration effort: the heart
-(\texttt{lifex}, \texttt{.prm} input) and lungs (\texttt{exadg}, JSON input)
-applications comply with the same parameter-file convention and are expected
+application of POLIMI (\texttt{.prm} input) and the lungs application of TUM
+(JSON input) comply with the same parameter-file convention and are expected
 to work without changes to the platform.
 
 These runs also show that the Coral VTK Manipulator of
@@ -507,22 +526,6 @@ a single simulation, upstream, where tagging the mesh defines the geometry,
 the materials and the boundaries of the problem to be solved, and downstream,
 where the results are inspected once the run has completed;
 Fig.~\ref{brain} shows the brain application at that second stage.
-
-What the tool adds is the combination of the two capabilities in one place.
-Tagging a mesh is well established practice: a mesh generator such as Gmsh
-lets the identifiers be defined together with the geometry, through its
-physical groups, and this is the usual route when a mesh is built from a
-geometric description. That route is not available when the mesh comes from
-elsewhere, as is the case for the organ geometries reconstructed from medical
-images, and the tags then have to be assigned by iterating over the cells with
-geometric predicates, in the application code or in a conversion script, which
-is easy to get wrong and gives no visual confirmation of the result.
-Conversely a ParaView-based backend brings a rich and composable set of
-filters, and the ability to work on datasets larger than a single workstation
-can hold, but it offers no direct way to write a value onto an interactively
-picked selection. Combining the two makes the tags assignable, and immediately
-verifiable, in the same environment in which the mesh is filtered and
-inspected.
 
 \begin{figure}[!htb]
     \centering
@@ -543,7 +546,7 @@ directed acyclic graph is built whose nodes are entire computational units:
 either a complete CORAL graph or a standalone executable. Edges express
 execution order, and the resulting graph is topologically sorted and
 submitted to the scheduler as a chain of dependent jobs, giving the
-meta-scheduler an orchestration capability that neither CORAL nor a single
+metascheduler an orchestration capability that neither CORAL nor a single
 executable provides on its own. Pipeline mode is a node editor in its own
 right, built on the same canvas technology as the low-code editor, and is
 therefore positioned to reuse the interaction features already available
@@ -639,7 +642,8 @@ the project partners during the testing period. The main directions are:
 
 \begin{figure}
     \centering
-    \includegraphics[width=400pt]{gantt.png}
+    \figureOrPlaceholder{gantt.png}{the Gantt chart of task 2.6, as published
+        in D2.6}
     \caption{Timeline of the activities of task 2.6; D2.7 marks the end of
         the deployment phase (task 2.6.4)}
     \label{gantt}
