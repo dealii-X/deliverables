@@ -33,7 +33,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{D2.7: Deployment of the PoC platform}
     \tableEntry{Deliverable number}{D2.7}
-    \tableEntry{Deliverable version}{0.1}
+    \tableEntry{Deliverable version}{0.3}
     \tableEntry{Date of delivery}{31/07/2026}
     \tableEntry{Actual date of delivery}{[TBD]}
     \tableEntry{Nature of deliverable}{Report}
@@ -76,10 +76,10 @@
 
 \begin{documentControl}
   \addVersion{0.1}{16/07/2026}{M. Franzon}{Initial draft}
-  \addVersion{0.2}{29/07/2026}{P. Colturi, M. Franzon}{Added the section on
-    testing with the lighthouse applications and early-user feedback; revised
-    the description of the HPC deployment and of the planned orchestration
-    layer; updated the Outlook}
+  \addVersion{0.2}{29/07/2026}{P. Colturi, M. Franzon}{Lighthouse testing;
+    Outlook update}
+  \addVersion{0.3}{30/07/2026}{P. Colturi, M. Franzon}{VTK Manipulator rename;
+    tagging}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -164,8 +164,9 @@ Fig.~\ref{architecture}:
     \item \textbf{Coral Remote Server}, a REST API server written in Go
         that provides user authentication and collaborative project
         management, backed by an SQLite database.
-    \item \textbf{Coral Visualizer}, a Python web application for the
-        visualization of simulation results in VTK formats, built on the
+    \item \textbf{Coral VTK Manipulator}, a Python web application for the
+        visualization of simulation results in VTK formats and for the
+        tagging of meshes with the identifiers used by deal.II, built on the
         Trame framework with a ParaView-based rendering backend.
 \end{itemize}
 
@@ -186,7 +187,7 @@ Fig.~\ref{architecture}:
 
         % Right column: services
         \node[box, right=2.6cm of canvas] (server) {Coral Remote Server\\ (projects, auth, sharing)};
-        \node[box, right=2.6cm of params] (viz) {Coral Visualizer\\ (VTK / ParaView)};
+        \node[box, right=2.6cm of params] (viz) {Coral VTK Manipulator\\ (VTK / ParaView)};
 
         % Bottom right: execution
         \node[box, right=2.6cm of main, fill=green!7] (coral) {CORAL engine\\ + deal.II backend};
@@ -419,6 +420,7 @@ implementation is deliberately left to the final phase of the project, so
 that it can be shaped by the feedback of the users who will operate it.
 
 \section{\textcolor{EUblue}{Collaborative and visualization services}}
+\label{sec:services}
 
 The collaborative space requirement is served by the Coral Remote Server, a
 lightweight REST service with JWT-based authentication. From the
@@ -433,22 +435,41 @@ rebuilding it.
 \begin{figure}
     \centering
     \figureOrPlaceholder{visualizer-poisson.png}{the Poisson solution
-        produced by the graph of Fig.~\ref{canvas}, rendered in the Coral
-        Visualizer}
-    \caption{Poisson solution in the Coral Visualizer as a result of the
+        produced by the graph of Fig.~\ref{canvas}, rendered in the Coral VTK
+        Manipulator}
+    \caption{Poisson solution in the Coral VTK Manipulator as a result of the
         workflow of Fig.~\ref{canvas}}
     \label{visualizer}
 \end{figure}
 
-Simulation results are inspected through the Coral Visualizer
-(Fig.~\ref{visualizer}), a web-based viewer for VTK/deal.II output formats
-(\texttt{.vtk}, \texttt{.vtu}), reachable directly from the application. During the reporting period the
-visualizer has been substantially extended with a ParaView-based rendering
-backend providing filters, visualization pipelines, solution field
-rendering, cell manipulation and edit sessions, while retaining a
-lightweight VTK backend for local usage. The visualizer has been tested with
-project-relevant datasets, including vascular geometries such as carotid
-artery meshes.
+Simulation results are inspected through the Coral VTK Manipulator
+(Fig.~\ref{visualizer}), a web-based application for VTK/deal.II formats
+(\texttt{.vtk}, \texttt{.vtu}), reachable directly from the desktop
+application. During the reporting period it has been substantially extended
+with a ParaView-based rendering backend providing filters, visualization
+pipelines and solution field rendering.
+
+Beyond inspecting results, the tool has acquired mesh editing capabilities
+that make it useful as a pre-processing step and not only as a
+post-processing one. Within an edit session both volume and surface cells can
+be picked interactively, the selection can be grown according to a feature
+angle, and an integer tag can be assigned to the whole selection. The tags
+are the ones that deal.II reads back from a VTK mesh, \texttt{MaterialID} and
+\texttt{ManifoldID}, and the meaning of the first depends on the dimension of
+the entity it is attached to: on a volume cell the material id identifies the
+material, and therefore the coefficients or the constitutive law used there,
+whereas on a surface cell the same number acts as the boundary indicator to
+which boundary conditions are applied. The manifold id, in turn, associates
+cells and faces with a \emph{Manifold} object describing the exact geometry,
+so that the vertices created when the mesh is refined, and the higher-order
+mappings used in the assembly, follow the true curved geometry instead of the
+piecewise-linear approximation given by the coarse mesh. Tagging a mesh in
+this way therefore defines part of the problem that the simulation will
+solve, and it can be done from the interface without writing any code. The
+tool has been exercised both on the organ-scale meshes targeted by the
+project, such as the brain mesh of Fig.~\ref{brain}, and on reference meshes
+of several million cells used to characterize the performance of the editing
+session.
 
 \section{\textcolor{EUblue}{Testing with the lighthouse applications and
 early-user feedback}}
@@ -469,21 +490,46 @@ editing parameters and pressing run.
 This path has been tested on two of the dealii-X lighthouse applications,
 brain and liver (\texttt{immersx}, elasticity solver), and on the deal.II
 tutorial program step-70, which is included in the repository as a reference
-example of the contract. Output from these runs was inspected through the
-Coral Visualizer; Fig.~\ref{brain} shows results from the brain application.
-Because the contract requires no platform-side development per application,
-support in executable mode is a property of the mechanism rather than of a
-per-application integration effort: the heart (\texttt{lifex},
-\texttt{.prm} input) and lungs (\texttt{exadg}, JSON input) applications
-comply with the same parameter-file convention and are expected to work
-without changes to the platform.
+example of the contract. Because the contract requires no platform-side
+development per application, support in executable mode is a property of the
+mechanism rather than of a per-application integration effort: the heart
+(\texttt{lifex}, \texttt{.prm} input) and lungs (\texttt{exadg}, JSON input)
+applications comply with the same parameter-file convention and are expected
+to work without changes to the platform.
+
+These runs also show that the Coral VTK Manipulator of
+Sec.~\ref{sec:services} is not an accessory to the workflow but one of its
+first stages. The grid is the first input that has to be settled: it is
+prepared and tagged in the manipulator, and its path is then one of the
+entries of the parameter file that the executable reads, alongside the
+physical and numerical parameters. The same tool therefore takes part twice in
+a single simulation, upstream, where tagging the mesh defines the geometry,
+the materials and the boundaries of the problem to be solved, and downstream,
+where the results are inspected once the run has completed;
+Fig.~\ref{brain} shows the brain application at that second stage.
+
+What the tool adds is the combination of the two capabilities in one place.
+Tagging a mesh is well established practice: a mesh generator such as Gmsh
+lets the identifiers be defined together with the geometry, through its
+physical groups, and this is the usual route when a mesh is built from a
+geometric description. That route is not available when the mesh comes from
+elsewhere, as is the case for the organ geometries reconstructed from medical
+images, and the tags then have to be assigned by iterating over the cells with
+geometric predicates, in the application code or in a conversion script, which
+is easy to get wrong and gives no visual confirmation of the result.
+Conversely a ParaView-based backend brings a rich and composable set of
+filters, and the ability to work on datasets larger than a single workstation
+can hold, but it offers no direct way to write a value onto an interactively
+picked selection. Combining the two makes the tags assignable, and immediately
+verifiable, in the same environment in which the mesh is filtered and
+inspected.
 
 \begin{figure}[!htb]
     \centering
     \figureOrPlaceholder{brain.png}{results of the brain lighthouse
-        application rendered in the Coral Visualizer}
+        application rendered in the Coral VTK Manipulator}
     \caption{Results of the brain lighthouse application, inspected in the
-        Coral Visualizer}
+        Coral VTK Manipulator}
     \label{brain}
 \end{figure}
 
@@ -507,10 +553,11 @@ it.
 
 Feedback collected from project partners during the testing phase was
 consistently positive on the central proposition of D2.6, and converged with
-the development team's own findings on the priorities for the final phase,
-in particular MPI support in executable mode, the enrichment of the node
-registries, and the consolidation of pipeline mode described above, which
-originated as a suggestion during this phase.
+the development team's own findings. It concerned both the platform and the
+Coral VTK Manipulator, and ranged from the ergonomics of the tagging workflow
+to the behaviour of the tools on the deployed environments; the improvements
+it calls for are taken up as the activities of the final phase, listed in
+Sec.~\ref{sec:outlook}.
 
 \FloatBarrier
 
@@ -522,7 +569,7 @@ pipeline: tagging a version on the main branch triggers GitHub Actions
 workflows that run the full check and test suite, build the application, and
 attach the installers to a public GitHub release. For evaluation and
 testing, the full server-side stack (CORAL with Slurm and SSH, the remote
-server, and the visualizer) is started with a single
+server, and the VTK manipulator) is started with a single
 \texttt{docker compose up} command.
 
 Six versions have been released during the reporting period, following the
@@ -580,8 +627,14 @@ the project partners during the testing period. The main directions are:
         released, and a short path to edit the parameters of an individual stage of a
         pipeline directly from the orchestrator canvas;
     \item MPI support in executable mode;
-    \item continued improvement of the visualization service and of the
-        no-code user experience for non-expert users.
+    \item improvements to the Coral VTK Manipulator: a clearer visual feedback
+        in the selection and assignment of cells, a more systematic testing of
+        the visualization filters, an assessment of the responsiveness of the
+        editing session on large meshes in the deployed environments, and a
+        verification of the formats in which a tagged grid is best saved for
+        consumption by the applications;
+    \item continued improvement of the no-code user experience for
+        non-expert users.
 \end{itemize}
 
 \begin{figure}
