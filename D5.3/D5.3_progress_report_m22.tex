@@ -118,29 +118,29 @@
 	\begin{itemize}
 		\item extending and improving the exascale capabilities for the main
 		algorithmic kernels of \dealii;
-		\item improving pre-exascale modules of the \dealii\ library;
+		\item improving pre-exascale modules of the \dealii{} library;
 		\item developing an experimental polygonal discretization module for \dealii;
-		\item integrating PSCToolkit within \dealii;
-		\item integrating MUMPS within \dealii.
+		\item integrating PSCToolkit within \dealii{};
+		\item integrating MUMPS within \dealii{}.
 	\end{itemize}
 	
 	Specifically, the sub-work packages aim to:
 	\begin{itemize}
 		\item \textbf{WP1.1 (Lead RUB)}: Develop matrix-free algorithms for GPU
-		architectures and enhance \dealii's performance on exascale systems; design and implement scalable algorithms for multiphysics problems; optimize performance and enhance scalability of matrix--free and matrix--based solvers in \dealii\ for large-scale EuroHPC systems;  
-		\item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators in \dealii\, enhance \dealii's reduced order modeling capabilities, integrate low-rank approximation methods, and develop block preconditioners for coupled problems;
-		\item \textbf{WP1.3 (Lead SISSA)}: Introduce and enable polygonal discretization methods within \dealii\ at large scale;  develop methods for construction of coarse grid hierarchies and agglomeration--based multigrid techniques; explore the use of polygonal discretization methods as preconditioners for multiphysics problems;
+		architectures and enhance \dealii's performance on exascale systems; design and implement scalable algorithms for multiphysics problems; optimize performance and enhance scalability of matrix--free and matrix--based solvers in \dealii{} for large-scale EuroHPC systems;  
+		\item \textbf{WP1.2 (Lead UNIPI)}: Improve the gmsh API, develop a generalized interface for coupling operators in \dealii{}, enhance \dealii's reduced order modeling capabilities, integrate low-rank approximation methods, and develop block preconditioners for coupled problems;
+		\item \textbf{WP1.3 (Lead SISSA)}: Introduce and enable polygonal discretization methods within \dealii{} at large scale;  develop methods for construction of coarse grid hierarchies and agglomeration--based multigrid techniques; explore the use of polygonal discretization methods as preconditioners for multiphysics problems;
 		\item \textbf{WP1.4 (Lead UNITOV)}: integrate PSCToolkit into deal.II, utilize GPU computing with integrated framework; develop and implement efficient preconditioners for multiphysics problems;
-		\item \textbf{WP1.5 (Lead INPT)}: integrate the MUMPS solver directly into \dealii\ for use in multigrid and domain decomposition methods; utilize MUMPS as a coarse grid solver in multigrid methods implemented in PSCToolkit; optimize MUMUPS for use with GPU systems; explore low-rank and mixed-precision techniques to improve computational efficiency.
+		\item \textbf{WP1.5 (Lead INPT)}: integrate the MUMPS solver directly into \dealii{} for use in multigrid and domain decomposition methods; utilize MUMPS as a coarse grid solver in multigrid methods implemented in PSCToolkit; optimize MUMPS for use with GPU systems; explore low-rank and mixed-precision techniques to improve computational efficiency.
 	\end{itemize}
 	
-	In summary, WP1 is dedicated to developing and integrating advanced algorithms and fundamental software components within the \dealii\ library and external libraries, with a strong emphasis on enabling exascale compute capabilities for the digital twin applications in WP2.
+	In summary, WP1 is dedicated to developing and integrating advanced algorithms and fundamental software components within the \dealii{} library and external libraries, with a strong emphasis on enabling exascale compute capabilities for the digital twin applications in WP2.
 	%(M1–M12)
 	
 	
 	\subsection{WP1.1: Extending and improving the exascale capabilities in deal.II} % (M1–M22, Lead: RUB)}
 
-Work package WP11.1 focuses on enabling efficient finite element computations
+Work package WP1.1 focuses on enabling efficient finite element computations
 with the deal.II finite element library, where matrix-free evaluation
 techniques and multigrid methods are the core scientific components.
 
@@ -166,7 +166,7 @@ The Kokkos-based CEED\footnote{\url{https://ceed.exascaleproject.org/bps}, retri
 On the NVIDIA GH200 Grace Hopper Superchip, the Kokkos-based Stream Triad benchmark established an effective reference memory bandwidth of $3.65\text{ TB/s}$. Across evaluated GPU architectures, the AMD MI210 nearly doubled the throughput compared to the Intel Max 1550, despite similar bandwidth figures ($\sim 1.25\text{ TB/s}$ vs.\ $1.0\text{ TB/s}$). Peak single-precision (FP32) throughputs on the GH200 reached nearly $90\text{ GDOF/s}$ for BK1 and BK5, while BK3 plateaued at approximately $25\text{ GDOF/s}$. Critically, the new batched processing technique yielded a $2\times$ speedup for $p=1$ on the NVIDIA GH200 (JUPITER supercomputer). The results are reported in Deliverables D1.7, D1.9, D3.3 and D3.4.
 
 \noindent\textbf{CEED benchmark Problems.}
-The operator evaluation framework was further extended to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem (BP) benchmarks. Implemented within \texttt{deal.II}, the solver was evaluated on single- and multi-GPU configurations of the GH200 Superchip using MPI with peer-to-peer (P2P) communication enabled. Results indicate that performance differences between standalone operator evaluations (BK) and full solvers (BP) are primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the evaluations confirm the high computational efficiency of high-order elements, which leverage tensor-product formulations of shape functions to increase arithmetic intensity. The results are reported in Deliverables D1.7, D1.9, D3.3 and D3.4.
+The operator evaluation framework was further extended to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem (BP) benchmarks. Implemented within \dealii{}, the solver was evaluated on single- and multi-GPU configurations of the GH200 Superchip using MPI with peer-to-peer (P2P) communication enabled. Results indicate that performance differences between standalone operator evaluations (BK) and full solvers (BP) are primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the evaluations confirm the high computational efficiency of high-order elements, which leverage tensor-product formulations of shape functions to increase arithmetic intensity. The results are reported in Deliverables D1.7, D1.9, D3.3 and D3.4.
 
 
 \subsubsection*{New matrix--free kernels for various Finite Elements.}
@@ -174,22 +174,22 @@ The operator evaluation framework was further extended to a complete linear solv
 Recent developments expand the matrix-free evaluation capabilities to $H(\text{div})$--confor\-ming Raviart--Thomas spaces and Discontinuous Galerkin (DG) formulations across modern accelerator platforms.
 
 \noindent\textbf{Raviart--Thomas elements and tensor core integration.}
-Core operators for $H(\text{div})$--conforming Raviart--Thomas elements---including vector mass, mixed divergence, and mixed gradient operators. On the NVIDIA GH200 (JUPITER), batch processing yields consistent throughput across polynomial orders in both FP32 and FP64 precision. Similar high throughput is observed on the AMD MI250X GPU (LUMI supercomputer), with a performance drop restricted to $p=8$ due to register file capacity constraints. Furthermore, target support for NVIDIA Tensor Cores was introduced for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) matrix multiplications. The results are reported in Deliverable Deliverables D1.9 and D3.4.
+Matrix-free kernels for the core operators of $H(\text{div})$--conforming Raviart--Thomas elements---vector mass, mixed divergence, and mixed gradient---were implemented and benchmarked. On the NVIDIA GH200 (JUPITER), batch processing yields consistent throughput across polynomial orders in both FP32 and FP64 precision. Similar high throughput is observed on the AMD MI250X GPU (LUMI supercomputer), with a performance drop restricted to $p=8$ due to register file capacity constraints. Furthermore, target support for NVIDIA Tensor Cores was introduced for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) matrix multiplications. The results are reported in Deliverables D1.9 and D3.4.
 
 \noindent\textbf{Discontinuous Galerkin kernels.}
 Matrix-free Discontinuous Galerkin (DG) face integration was developed for symmetric interior penalty (Nitsche) discretizations of the Laplace operator, handling both cell volume terms and numerical flux integrals over face interfaces via average and directed jump operators. Initial evaluations employ a face-centric loop (FCL) algorithm with global temporary storage to process face interactions across adjacent cells. Current efforts focus on communication reduction and cell-centric face integration paradigms ahead of a comprehensive scalability study. The preliminary results are reported in Deliverable D1.9. 
 
 \subsubsection*{Portable Multigrid Framework}
 
-\noindent Matrix-free algorithms were integrated into the capable multigrid infrastructure of \texttt{deal.II}, featuring GPU-accelerated polynomial and geometric transfer operators using Kokkos abstractions and device-aware MPI.
+\noindent Matrix-free algorithms were integrated into the capable multigrid infrastructure of \dealii{}, featuring GPU-accelerated polynomial and geometric transfer operators using Kokkos abstractions and device-aware MPI.
 
-\noindent\textbf{Portable multigrid infrastructure.} Incorporating the matrix--free kernels developments, a vast multigrid infrastructure supporting geometric and polynomial variants has been developed supporting a range of multigrid solvers withing the \texttt{dealii-X portable-multigrid} repository\footnote{\url{https://github.com/dealii-X/portable-multigrid}, retrieved on 28.07.2026}. Core matrix-free geometric transfer functionality has been integrated upstream into \texttt{deal.II} and included in \dealii\ release 9.8. The infrastructure was ported to the JUPITER supercomputer at the Jülich Supercomputing Centre (JSC), leveraging both Nvidia Grace CPU Neon vectorization and Hopper GPU capabilities within the GH200 Superchip. 
+\noindent\textbf{Portable multigrid infrastructure.}  Incorporating the matrix--free kernel developments, an extensive multigrid infrastructure covering both geometric and polynomial variants has been developed within the \texttt{dealii-X portable-multigrid} repository\footnote{\url{https://github.com/dealii-X/portable-multigrid}, retrieved on 28.07.2026}. Core matrix-free geometric transfer functionality has been integrated upstream into \dealii{} and included in \dealii{} upcoming release 9.8. The infrastructure was ported to the JUPITER supercomputer at the Jülich Supercomputing Centre (JSC), leveraging both Nvidia Grace CPU Neon vectorization and Hopper GPU capabilities within the GH200 Superchip. 
 
 \noindent\textbf{Mixed--precision strategies.}
 Combining a single-precision (FP32) multigrid V-cycle preconditioner with an outer double-precision (FP64) conjugate gradient solver demonstrated superior performance and robustness compared to pure FP64 implementations. Matrix-vector evaluations on continuous finite elements established high single-GPU throughput across broad problem sizes. The preliminary results are reported in Deliverables D1.7 and D1.9.
 
 \noindent\textbf{Performance and weak scaling benchmarks.}
-Weak scaling results (reported in Deliverable D1.7) on up to 128 nodes (512 GPUs) of JUPITER, using $57$--$65$ million unknowns per GPU, showed very good matrix-vector product scaling with approximately 65\% parallel efficiency. However, overall multigrid efficiency degraded significantly across scale, with runtime increasing by a factor of $2.5$ over a $128\times$ size increase despite algorithmic optimality. This behavior was traced to communication latency on the coarser levels of the multigrid hierarchy, where fixed ghost-exchange overheads ($\ge 7 \times 10^{-4}\text{ s}$ per step) for smaller message sizes. For better understanding of the communication bottlenecks, the service of the POP3 Center of Excellence has been secured and the analysis report is expected by September 2026. Additionally, a new researched with a vast experience with MPI and communication--avoiding strategies joined the project until its end in December 2026.  
+Weak scaling results (reported in Deliverable D1.7) on up to 128 nodes (512 GPUs) of JUPITER, using $57$--$65$ million unknowns per GPU, showed very good matrix-vector product scaling with approximately 65\% parallel efficiency. However, overall multigrid efficiency degraded significantly across scale, with runtime increasing by a factor of $2.5$ over a $128\times$ size increase despite algorithmic optimality. This behavior was traced to communication latency on the coarser levels of the multigrid hierarchy, where fixed ghost-exchange overheads ($\ge 7 \times 10^{-4}\text{ s}$ per step) for smaller message sizes. Following the recommendation of the intermediate review, the service of the POP3 (Performance Optimisation and Productivity) Centre of Excellence has been secured, and the analysis report is expected by September 2026. Additionally, a researcher with extensive experience in MPI and communication--avoiding strategies has joined the project for its remaining duration.
 
 \noindent\textbf{Extension to DG multigrid solvers.}
 The framework was further extended to Discontinuous Galerkin (DG) discretizations, incorporating a mixed-precision $cph$--multi\-grid solver that embeds the discontinuous space into a continuous space at the finest level. Throughput evaluations show that DG elements reach a distinct performance plateau that scales consistently across increasing GPU counts. Unlike Continuous Galerkin (CG) operators, which exhibit very strong latency effects, DG face integration demonstrates strong multi-GPU scaling potential as reported in Deliverable D1.9.
@@ -198,14 +198,7 @@ The framework was further extended to Discontinuous Galerkin (DG) discretization
 
 \subsection{WP1.2: Improvement of pre-exascale modules of the deal.II library} % (M1–M22, Lead: UNIPI)}
 
-Work package 1.2 focuses on enhancing the existing modules of the deal.II library to prepare them for the challenges of exascale computing. This includes several key activities: 
-\begin{itemize}
-\item Improving the gmsh API to support large-scale computations;
-\item Developing a generalized interface for coupling operators, which is fundamental for multiphysics and multiscale simulations, including methods for conforming and non-conforming grids and non-local coupling techniques;
-\item Enhancing the reduced-order modeling capabilities of deal.II, implementing algorithms for data analysis and reduced-order geometric modeling;
-\item Integrating low-rank approximation methods within deal.II, including low-rank and hierarchical low-rank solvers and preconditioners to tackle large-scale computational problems;
-\item Developing block preconditioners for coupled problems, which are essential for the stability and efficiency of simulations.
-\end{itemize}
+Work package 1.2 focuses on enhancing the existing modules of the deal.II library to prepare them for the challenges of exascale computing.  
 
 The overall objective is to improve the pre-exascale functionalities of deal.II,
 making it an even more robust and efficient library for a wide range of
@@ -217,21 +210,21 @@ computers.
 \noindent Robust data-ingestion utilities have been established to enable seamless interoperability between external scientific computing pipelines and the \texttt{dealii-X} framework via native Visualization Toolkit (VTK) APIs.
 
 \noindent\textbf{VTK integration and data flow.}
-Capabilities to import VTK meshes alongside point and cell fields using native VTK APIs, as well as bi-directional conversion between VTK unstructured grids and \texttt{deal.II} triangulations, have been implemented. This direct VTK API usage facilitates streamlined integration with external pre--processing tools, enables reproducible mesh and field reuse for surrogate modeling, and minimizes custom glue code across lighthouse applications. The VTK utilities workstream is coordinated under meta-issue \#19056\footnote{\url{https://github.com/dealii/dealii/issues/19056}, retrieved on 28.07.2026}.
+Capabilities to import VTK meshes alongside point and cell fields using native VTK APIs, as well as bi-directional conversion between VTK unstructured grids and \dealii{} triangulations, have been implemented. This direct VTK API usage facilitates streamlined integration with external pre--processing tools, enables reproducible mesh and field reuse for surrogate modeling, and minimizes custom glue code across lighthouse applications. The VTK utilities workstream is coordinated under meta-issue \#19056\footnote{\url{https://github.com/dealii/dealii/issues/19056}, retrieved on 28.07.2026}.
 
 \subsubsection*{New Tutorials under the \texttt{dealii-X} Label}
 
-\noindent A new tutorial framework implementing a fully coupled fluid-structure interaction (FSI) solver was developed to provide a realistic benchmark for advanced linear solvers and multiphysics workloads.
+\noindent A new tutorial framework implementing a fully coupled fluid--structure interaction (FSI) solver was developed to provide a realistic benchmark for advanced linear solvers and multiphysics workloads.
 
 \noindent\textbf{Immersed boundary FSI formulation.}
-The tutorial demonstrates a finite element immersed boundary method with distributed Lagrange multipliers for fully coupled FSI. An incompressible fluid governed by Navier--Stokes equations is coupled to a compressible, hyper-elastic solid on independent, non-matching volumetric meshes. Velocity continuity across interfaces is enforced via a multiplier field $\lambda$ rather than penalization, combining particle-based transfer, \texttt{MappingFEField}-driven solid motion, and a monolithic saddle-point solve for four--component fluid-structure-multiplier field. This framework directly targets coupled multiphysics applications such as cardiovascular flows, brain mechanics, and lung/liver mechanics.
+The tutorial demonstrates a finite element immersed boundary method with distributed Lagrange multipliers for fully coupled FSI. An incompressible fluid governed by Navier--Stokes equations is coupled to a compressible, hyper-elastic solid on independent, non-matching volumetric meshes. Velocity continuity across interfaces is enforced via a multiplier field $\lambda$ rather than penalization, combining particle-based transfer, \texttt{MappingFEField}-driven solid motion, and a monolithic saddle-point solve for four--component fluid--structure-multiplier field. This framework directly targets coupled multiphysics applications such as cardiovascular flows, brain mechanics, and lung/liver mechanics.
 
 \noindent\textbf{Preconditioning milestone completion.}
 The implementation showcases an augmented Lagrangian preconditioner designed to handle the coupled saddle-point structure, providing a realistic test bench for linear solver capabilities developed within \texttt{dealii-X}, including PSCToolkit-based preconditioning and advanced MUMPS configurations. Together, these developments mark the completion of Milestone \#7: \emph{Scalable Coupling Algorithms Framework Completion}.
 
 \subsubsection*{Hybridizable Discontinuous Galerkin Solver for Vascular Networks}
 
-\noindent An implicit Hybridizable Discontinuous Galerkin (HDG) framework was developed within \texttt{deal.II} to simulate reduced-order one-dimensional blood flow in complex arterial networks.
+\noindent An implicit Hybridizable Discontinuous Galerkin (HDG) framework was developed within \dealii{} to simulate reduced-order one-dimensional blood flow in complex arterial networks.
 
 \noindent\textbf{Governing formulation and HDG discretization.}
 The formulation models non-linear conservation laws for cross-sectional area and mean velocity parameterized along network centerlines, incorporating non-linear physical flux terms, viscous friction, and a non-linear tube law for arterial wall elasticity. The spatial discretization employs an HDG scheme utilizing the Harten--Lax--van Leer (HLL) numerical flux alongside a unified trace formulation to enforce interface continuity across interior boundaries, physiological outlets (single-resistance and three-element Windkessel RCR models), and multi-vessel vascular junctions (including bifurcations).
@@ -249,33 +242,25 @@ discretization module within the deal.II library. The deal.II library currently
 supports a wide range of finite element methods, defined on standard simplicial
 and hexahedral meshes, but does not support polygonal and polyhedral (\emph{polytopic}) meshes.
 
-The activities on this topic include:
-\begin{itemize}
-\item Develop a data structure for polytopic meshes obtained by agglomeration of standard deal.II meshes;
-\item Exploit  R-tree data structures for efficient generation of balanced and nested hierarchies of  polytopic meshes and test the use of such hierarchies of  polytopic meshes to enhance multigrid solvers;
-\item Develop an extensive library of examples of polytopic finite element methods for complex multiscale problems.  
-\end{itemize}
-
-
 \subsubsection*{Polygonal Discretization Module}
 
-\noindent The polygonal discretization activity under Work Packages 1.3 and 1.5 integrates general-mesh capabilities into \texttt{deal.II}, focusing on discontinuous Galerkin methods on agglomerated polygonal/polyhedral meshes and automatic coarse grid hierarchy construction.
+\noindent The polygonal discretization activity integrates general-mesh capabilities into \dealii{}, focusing on discontinuous Galerkin methods on agglomerated polygonal/polyhedral meshes and automatic coarse grid hierarchy construction.
 
 \noindent\textbf{Polydeal library.}
-The supporting library, \texttt{Polydeal}\footnote{\url{https://github.com/fdrmrc/Polydeal}, retrieved on 28.07.2026}, provides the computational foundation for agglomerated polytopic discretizations. It is continuously updated to align with the latest version of \texttt{deal.II}, strictly adhering to its coding style, design practices, and quality standards. Comprehensive continuous integration test suites are executed on every commit to ensure long-term codebase integrity and stability.
+The supporting library, \texttt{Polydeal}\footnote{\url{https://github.com/fdrmrc/Polydeal}, retrieved on 28.07.2026}, provides the computational foundation for agglomerated polytopic discretizations. It is continuously updated to align with the latest version of \dealii{}, strictly adhering to its coding style, design practices, and quality standards. Comprehensive continuous integration test suites are executed on every commit to ensure long-term codebase integrity and stability.
 
 \noindent\textbf{Code Gallery tutorial.}
-To showcase practical applications, a self-contained tutorial program demonstrating an agglomeration-based Poisson solver was submitted to the \texttt{deal.II} Code Gallery via pull request \#233\footnote{\url{https://github.com/dealii/code-gallery/pull/233}, retrieved on 28.07.2026}. Following review and approval, the \texttt{agglomeration\_poisson} tutorial, complete with documentation and numerical results, was published on the official \texttt{deal.II} Code Gallery page\footnote{\url{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}, retrieved on 28.07.2026}, supplemented by layout rendering enhancements in pull request \#244\footnote{\url{https://github.com/dealii/code-gallery/pull/244}, retrieved on 28.07.2026}.
+To showcase practical applications, a self-contained tutorial program demonstrating an agglomeration-based Poisson solver was submitted to the \dealii{} Code Gallery via pull request \#233\footnote{\url{https://github.com/dealii/code-gallery/pull/233}, retrieved on 28.07.2026}. Following review and approval, the \texttt{agglomeration\_poisson} tutorial, complete with documentation and numerical results, was published on the official \dealii{} Code Gallery page\footnote{\url{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}, retrieved on 28.07.2026}, supplemented by layout rendering enhancements in pull request \#244\footnote{\url{https://github.com/dealii/code-gallery/pull/244}, retrieved on 28.07.2026}.
 
 \noindent\textbf{Integration in deal.II.}
-Core reusable components from \texttt{Polydeal} were separated from application code, adapted to native \texttt{deal.II} conventions, and submitted to the main core repository via pull request \#19891\footnote{\url{https://github.com/dealii/dealii/pull/19891}, retrieved on 28.07.2026}. This contribution establishes a framework for DG discretizations on agglomerated meshes, introducing agglomeration management, standard accessor/iterator interfaces, degree-of-freedom and sparsity-pattern construction, agglomeration-aware mapping and quadrature, and R-tree-based hierarchical agglomeration (detailed in Deliverable D1.8).
+Core reusable components from \texttt{Polydeal} were separated from application code, adapted to native \dealii{} conventions, and submitted to the main core repository via pull request \#19891\footnote{\url{https://github.com/dealii/dealii/pull/19891}, retrieved on 28.07.2026}. This contribution establishes a framework for DG discretizations on agglomerated meshes, introducing agglomeration management, standard accessor/iterator interfaces, degree-of-freedom and sparsity-pattern construction, agglomeration-aware mapping and quadrature, and R-tree-based hierarchical agglomeration (detailed in Deliverable D1.8).
 
 \subsubsection*{Geometrically Informed Multilevel Preconditioning}
 
 \noindent A geometrically informed algebraic multigrid preconditioner was developed for discontinuous Galerkin (DG) discretizations of elliptic problems on complex, fine unstructured geometries.
 
 \noindent\textbf{Agglomeration-based multigrid strategies.}
-Leveraging the mesh agglomeration functionality within \texttt{Polydeal}, a hierarchy of nested agglomerated coarse polytopal grids is constructed from fine unstructured meshes. Coarse grid operators are constructed either by rediscretizing the PDE on agglomerated meshes or via triple Galerkin projections without rediscretization. The finest level retains a hexahedral structure, enabling the exploitation of tensor-product basis functions and matrix-free operator evaluation within \texttt{deal.II}.
+Leveraging the mesh agglomeration functionality within \texttt{Polydeal}, a hierarchy of nested agglomerated coarse polytopal grids is constructed from fine unstructured meshes. Coarse grid operators are constructed either by rediscretizing the PDE on agglomerated meshes or via triple Galerkin projections without rediscretization. The finest level retains a hexahedral structure, enabling the exploitation of tensor-product basis functions and matrix-free operator evaluation within \dealii{}.
 
 \noindent\textbf{Application to cardiac electrophysiology.}
 The multigrid scheme was applied as a V-cycle preconditioner within a preconditioned conjugate gradient (PCG) solver for the DG discretization of the cardiac electrophysiology monodomain model across high-order polynomial degrees ($p=1, 2$) on a realistic 3D ventricular mesh. Benchmarks against Trilinos ML algebraic multigrid (AMG) demonstrated lower PCG iteration counts and significant reductions in wall-clock time per iteration. Ongoing research aims to integrate this approach into established AMG frameworks and construct matrix-free implementations for coarse operators. The results are reported in Deliverable D1.7.
@@ -285,21 +270,15 @@ The multigrid scheme was applied as a V-cycle preconditioner within a preconditi
 \noindent Theoretical developments extend the general-mesh DG philosophy to parabolic problems posed on time-dependent physical domains embedded within fixed background space--time meshes.
 
 \noindent\textbf{Space--time agglomeration strategy.}
-The evolving physical domain is tracked via a time-dependent level-set function on a fixed background mesh, avoiding full-domain remeshing at each time step. To eliminate small-cut cell instabilities, background elements with minimal domain intersections are agglomerated with neighboring elements, yielding robust polytopic space--time elements that satisfy uniform geometric bounds independent of the cut configuration.
+The evolving physical domain is tracked via a time-dependent level-set function on a fixed background mesh, avoiding full-domain remeshing at each time step. To eliminate small-cut cell instabilities, background elements with minimal domain intersections are agglomerated with neighboring elements, yielding robust polytopic space--time elements that satisfy uniform geometric bounds independent of the cut configuration. More details are available in Deliverable D1.9.
 
 \noindent\textbf{Formulation and theoretical stability.}
-A space--time DG formulation was established on the agglomerated space--time mesh. Theoretical analysis verified coercivity and inf-sup stability estimates that remain uniform relative to the moving boundary position, alongside optimal a priori error bounds in a DG energy norm controlling the broken $H^1$-seminorm.
+A space--time DG formulation was established on the agglomerated space--time mesh. Theoretical analysis verified coercivity and inf-sup stability estimates that remain uniform relative to the moving boundary position, alongside optimal a priori error bounds in a DG energy norm controlling the broken $H^1$-seminorm. More details are available in Deliverable D1.9.
 
 \subsection{WP1.4: Integration of PSCToolkit within deal.II} % (M1–M22, Lead: UNITOV)}
 
 The primary objective of WP1.4 is to integrate the PSCToolkit (Parallel Sparse Computing Toolkit) into the deal.II library and enhance the capability of PSCToolkit. This integration aims to leverage GPU computing to enhance performance and develop efficient preconditioners for multiphysics problems. PSCToolkit provides advanced routines for sparse matrix operations optimized for GPU architectures, which are critical for large-scale simulations.
 
-Planned activities include:
-\begin{itemize}
-\item Developing a GPU-accelerated interface for PSCToolkit within deal.II;
-\item Implementing efficient preconditioners tailored for multiphysics problems;
-\item Benchmarking the performance of the integrated toolkit on exascale systems.
-\end{itemize}
 
 \subsubsection*{Integration of PSCToolkit}
 
@@ -307,10 +286,10 @@ Planned activities include:
 \textcolor{red}{NEED NEW INPUT!!}
 
 
-\noindent The integration of the Parallel Sparse Computing Toolkit (PSCToolkit) into \texttt{deal.II} aims to provide scalable algebraic multigrid (AMG) preconditioning through its AMG4PSBLAS package, targeting PSBLAS v3.9 and AMG4PSBLAS v1.2.
+\noindent The integration of the Parallel Sparse Computing Toolkit (PSCToolkit) into \dealii{} aims to provide scalable algebraic multigrid (AMG) preconditioning through its AMG4PSBLAS package, targeting PSBLAS v3.9 and AMG4PSBLAS v1.2.
 
 \noindent\textbf{Integration status.}
-The integration into the \texttt{deal.II} main repository is actively tracked via pull requests \#19050\footnote{\url{https://github.com/dealii/dealii/pull/19050}, retrieved on 28.07.2026} and \#18938\footnote{\url{https://github.com/dealii/dealii/pull/18938}, retrieved on 28.07.2026}, while a complete working interface resides on a dedicated repository branch\footnote{\url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas}, retrieved on 28.07.2026}. Designed to mirror existing Trilinos and PETSc wrappers, the \texttt{PSCToolkitWrappers::PreconditionAMG} class exposes a standardized interface to build hierarchies from distributed PSBLAS matrices, apply preconditioners via \texttt{vmult()}, and configure options via an \texttt{AdditionalData} object. This allows drop-in replacements for existing AMG preconditioners without structural changes to application code.
+The integration into the \dealii{} main repository is actively tracked via pull requests \#19050\footnote{\url{https://github.com/dealii/dealii/pull/19050}, retrieved on 28.07.2026} and \#18938\footnote{\url{https://github.com/dealii/dealii/pull/18938}, retrieved on 28.07.2026}, while a complete working interface resides on a dedicated repository branch\footnote{\url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas}, retrieved on 28.07.2026}. Designed to mirror existing Trilinos and PETSc wrappers, the \texttt{PSCToolkitWrappers::PreconditionAMG} class exposes a standardized interface to build hierarchies from distributed PSBLAS matrices, apply preconditioners via \texttt{vmult()}, and configure options via an \texttt{AdditionalData} object. This allows drop-in replacements for existing AMG preconditioners without structural changes to application code.
 
 \noindent\textbf{Benchmarks and scaling results for AMG4BLAS preconditioners.\textcolor{red}{NEED NEW INPUT!!}}
 Interface correctness was validated via a Poisson solver tutorial using nodal $\mathcal{Q}^1$ elements (documented in Deliverable D1.6). Large-scale benchmarking experiments on pre-exascale configurations are underway using allocated compute resources on the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center.
@@ -318,22 +297,20 @@ Interface correctness was validated via a Poisson solver tutorial using nodal $\
 \noindent\textbf{Ongoing and Future Work.\textcolor{red}{NEED NEW INPUT!!}}
 Current efforts focus on finalizing sparse matrix wrappers, conducting large-scale HPC performance profiling to resolve bottlenecks, and extending the interface to support GPU-accelerated AMG preconditioning through the PSBLAS CUDA backend.
 
-\subsection{WP1.5: Integration of MUMPS within deal.II} % (M1–M22, Lead: INTP)}
+\subsection{WP1.5: Integration of MUMPS within deal.II} % (M1–M22, Lead: INPT)}
 WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II and improve the capabilities of the MUMPS solver. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
 
-Planned activities include:
-\begin{itemize}
-\item Developing a direct interface between deal.II and MUMPS;
-\item Implementing low-rank approximation techniques to reduce computational costs;
-\item Exploring mixed-precision strategies to optimize performance on modern hardware.
-\end{itemize}
+
+\subsubsection*{Integration Status}
+A direct interface between \dealii{} and MUMPS has been completed and integrated into the \dealii{} main repository, exposing BLR compression and mixed-precision options through the standard solver interface and enabling MUMPS as a coarse grid solver within multigrid and domain decomposition methods. On representative organ simulation benchmarks the integration delivers a $15\times$ reduction in solve time and a $5\times$ reduction in memory consumption relative to the previous configuration, which made full-organ brain indentation problems tractable for the first time.
+
 
 \subsubsection*{Block Low-Rank (BLR) Approximation}
 
 \noindent Recent advancements in sparse direct solver techniques integrate low-rank approximations and mixed-precision algorithms into the MUMPS library within the \texttt{dealii-X} framework to drastically reduce computational complexity and memory footprint.
 
 \noindent\textbf{Direct solver capabilities.}
-Direct solver integration targets high-resolution organ simulation workloads arising in \texttt{deal.II}, such as brain indentation benchmarks comprising 3 million degrees of freedom and $6.2 \times 10^8$ elements. Evaluating sparse direct factorizations demonstrates that exploiting data sparsity and low-rank structures mitigates the prohibitive floating-point operation counts and memory overheads traditional full-rank direct solvers face. Recent evaluations across accelerated hardware platforms (NVIDIA Grace Hopper, AMD MI250/MI300) demonstrate $3\times$ to $6\times$ speedups for full-rank factorizations, establishing a foundation for accelerated low-rank integration. The results are reported in Deliverable D1.7, D1.9,D2.3 and D2.4.
+Direct solver integration targets high-resolution organ simulation workloads arising in \dealii{}, such as brain indentation benchmarks comprising $2.4\times 10^7$ degrees of freedom and $9 \times 10^5$ elements. Evaluating sparse direct factorizations demonstrates that exploiting data sparsity and low-rank structures mitigates the prohibitive floating-point operation counts and memory overheads traditional full-rank direct solvers face. Recent evaluations across accelerated hardware platforms (NVIDIA Grace Hopper, AMD MI250/MI300) demonstrate $3\times$ to $6\times$ speedups for full-rank factorizations, establishing a foundation for accelerated low-rank integration. The results are reported in Deliverables D1.7, D1.9, D2.3 and D2.4.
 
 \noindent\textbf{Adaptive-precision BLR.}
 MUMPS leverages BLR compression to represent dense frontal matrix blocks during numerical factorization, with compression levels controlled by a user-defined threshold $\varepsilon$. Incorporating adaptive precision BLR allows column factors to be stored at varying floating-point precisions based on singular value magnitudes. Benchmarks on 3D organ simulation matrices show LU factor memory reductions of up to $50\%$, peak memory decreases of $26\%$, and operation count (FLOPS) savings up to $85\%$ relative to full-rank factorizations. The results are reported in Deliverables D1.7 and D1.9.
@@ -342,8 +319,8 @@ MUMPS leverages BLR compression to represent dense frontal matrix blocks during 
 
 \noindent Mixed-precision algorithms combine multiple floating-point formats to maximize hardware throughput while preserving full target accuracy through iterative refinement.
 
-\textbf{Mixed LU iterative refinement (LU-IR).}
-Mixed-precision LU iterative refinement executes time- and memory-intensive $LU$ factorizations in single precision (FP32) while calculating residual updates in double precision (FP64). Combining FP32 factorization with FP64 iterative refinement recovers full double-precision accuracy while reducing factorization time and memory consumption by roughly $50\%$. When combined with adaptive BLR compression, this mixed-precision strategy achieves an overall $77\%$ reduction in memory footprint and a $63\%$ reduction in total factorization runtime compared to standard double-precision full-rank solvers.
+\noindent\textbf{Mixed LU iterative refinement (LU-IR).}
+Mixed-precision LU iterative refinement executes time- and memory-intensive $LU$ factorizations in single precision (FP32) while calculating residual updates in double precision (FP64). Combining FP32 factorization with FP64 iterative refinement recovers full double-precision accuracy while reducing factorization time and memory consumption by roughly $50\%$. When combined with adaptive BLR compression, this mixed-precision strategy achieves an overall $77\%$ reduction in memory footprint and a $63\%$ reduction in total factorization runtime compared to standard double-precision full-rank solvers. The results are reported in Deliverables D1.7 and D1.9
 \newpage
 
 \section{{dealii-X lighthouse Applications for Digital Twins of the Human Body (WP2)}}
@@ -375,7 +352,37 @@ stepping, mixed meshes, and fluid–structure interaction, extending later to ot
 \item \textbf{WP2.6 (Lead EXACT LAB)}: Deliver a low-code platform and meta-scheduler to simplify digital twin construction and execution across HPC resources.
 \end{itemize}
 
+Table~\ref{tab:wp1wp2} reports on the  \dealii{} and dealii-X functionalities employed by each lighthouse application \textcolor{red}{PSCTOOLKIT? GPU ADOPTION?}
+
+\begin{table}[htbp]
+	\centering
+	\caption{\dealii{} and dealii-X functionalities employed by each lighthouse application.}\label{tab:wp1wp2}
+	\renewcommand{\arraystretch}{1.2}
+	\footnotesize
+	\begin{tabular}{|p{3.0cm}|p{10.0cm}|}
+		\toprule
+		\textbf{Application} & \textbf{WP1 functionalities employed} \\
+		\midrule
+		WP2.1 Lungs & Matrix-free kernels; polynomial multigrid; mixed-precision preconditioning \\
+		\midrule
+		WP2.2 Heart & Matrix-free evaluation (\texttt{FEEvaluation}); $p$-multigrid with Chebyshev smoothing; block preconditioners; agglomeration-based multigrid for electrophysiology \\
+		\midrule
+		WP2.3 Brain & MUMPS direct solver with BLR compression and mixed precision; distributed triangulations \\
+		\midrule
+		WP2.4 Liver  & Coupling operators for non-matching grids; augmented Lagrangian preconditioners; Gmsh-based mesh generation \\
+		\midrule
+		WP2.5 Mechanobiology  & Distributed triangulations with independent AMR; non-matching field transfer between bulk and surface meshes \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
 Together, the WP2 subprojects aim to push the boundaries of computational simulations for major human organs, leveraging and integrating the advancements in exascale computing and the deal.II software library produced in WP1.
+
+\noindent\textbf{Status of Milestone \#13.}
+Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.
+
+%\noindent\text
+
 
 
 \subsection{WP2.1 Lungs: Exascale Simulations of the Respiratory System}
@@ -395,29 +402,25 @@ Model verification was conducted using an idealized spherical alveolus. Comparat
 \noindent Performance optimizations focused on identifying robust preconditioning strategies for structural solves on quadratic tetrahedral discretizations of complex alveolar networks.
 
 \noindent\textbf{Polynomial multigrid (pMG) evaluation.}
-Colloborative solver evaluations identified polynomial multigrid (pMG) as an effective candidate for high-order finite element formulations. Despite initial concerns regarding shear and volumetric locking on coarse linear tetrahedral elements, pMG with algebraic multigrid (AMG) coarse solver demonstrated superior iteration counts and runtime performance over pure AMG on bending beam benchmarks across compressible and nearly incompressible material regimes. The results are reported in Deliverable D2.4.
+Collaborative solver evaluations identified polynomial multigrid (pMG) as an effective candidate for high-order finite element formulations. Despite initial concerns regarding shear and volumetric locking on coarse linear tetrahedral elements, pMG with algebraic multigrid (AMG) coarse solver demonstrated superior iteration counts and runtime performance over pure AMG on bending beam benchmarks across compressible and nearly incompressible material regimes. The results are reported in Deliverable D2.4.
 
 \noindent\textbf{Application to alveolar meshes.}
 Initial study deployments confirm that pMG maintains high preconditioning efficiency when applied to complex alveolar geometries, exhibiting performance trends consistent with academic benchmarks. Ongoing efforts address boundary-driven convergence sensitivities arising from surface-tension forces on complex boundary geometries. The preliminary results are reported in Deliverable D2.4.
 
 \subsubsection*{Upscaling to the Pre-Exascale Scaling Strategies}
 
-\noindent High-performance computing efforts target large-scale GPU deployment to achieve Milestone 13: \emph{Upscale digital twins to pre-exascale environments}.
+\noindent High-performance computing efforts target large-scale GPU deployment to achieve Milestone \#13: \emph{Upscale digital twins to pre-exascale environments}.
 
 \noindent\textbf{Integration with core infrastructure.}
-By building directly upon \texttt{deal.II} matrix-free algorithms and multigrid infrastructure developed within WP1, the ExaDG lung application directly inherits core performance improvements, including GPU--accelerated matrix-vector products and mixed-precision preconditioning strengthen by WP1 developments.
-
-\noindent\textbf{Large-scale simulation roadmap.}
-Current work prepares large-scale, GPU-accele\-rated simulations of detailed alveolar networks incorporating complete surfactant physics, targeting scalability demonstrations across pre-exascale environments. The transition to the exascale environments is scheduled for the final period of the project. 
-
+By building directly upon \dealii{} matrix-free algorithms and multigrid infrastructure developed within WP1, the ExaDG lung application directly inherits core performance improvements, including GPU--accelerated matrix-vector products and mixed-precision preconditioning strengthened by WP1 developments.
 
 
 \subsection{WP2.2 Heart: Exascale Simulations in Cardiac Computational Medicine}
 \subsubsection*{Matrix-Free Infrastructure and Poromechanics Framework in lifex}
 
-\noindent Updates to the cardiac modeling library \texttt{lifex}\footnote{\url{https://lifex.gitlab.io/}, retrieved on 29.07.2026} expand matrix-free algorithms within \texttt{deal.II} and integrate a coupled poromechanics solver \texttt{Porosolver} combining mechanics and multicompartment perfusion.
+\noindent Updates to the cardiac modeling library \texttt{lifex}\footnote{\url{https://lifex.gitlab.io/}, retrieved on 29.07.2026} expand matrix-free algorithms within \dealii{} and integrate a coupled poromechanics solver \texttt{Porosolver} combining mechanics and multicompartment perfusion.
 
-\noindent\textbf{Matrix-free vs. matrix--free scalability.}
+\noindent\textbf{Matrix--free vs. matrix--based scalability.}
 Replacing \texttt{FEValues} with \texttt{FEEvaluation} yields improved assembly efficiency in matrix-based solvers. On high-order structured hexahedral meshes ($p \ge 2$), matrix-based methods exhibit strong scalability degradation due to increased stiffness matrix density and inter-processor communication overheads. Conversely, matrix-free evaluation preserves strong scalability across high process counts. Linear systems arising from cardiac mechanics utilize Chebyshev polynomial preconditioning with matrix-free $p$-multigrid capabilities. The results are reported in Deliverable D2.3.
 
 \noindent\textbf{Multicompartment perfusion and partitioned fixed-stress coupling.}
@@ -440,36 +443,33 @@ Exploratory tuning on a high-resolution idealized left ventricle (LV) mesh (2.1 
 \noindent\textbf{Staggered electromechanics and active stress formulation.}
 Electrophysiology models were coupled with mechanical solvers via the RDQ20 active tension formulation in a staggered sequence: electrophysiology, active stress evaluation, and solid mechanics solves. Mechanical feedback updates sarcomere length based on fiber strain between time steps. Interfacing with 0D closed-loop circulation models provides physics-based dynamic endocardial pressure boundary conditions. More insights on ongoing work are reported in Deliverable D2.4.
 
-\noindent\textbf{Unified multiphysics roadmap.}
-Future convergence will incorporate mechano-electric feedback into the electrical conductivity tensor and merge the electromechanical framework with the poromechanics solver. This establishes a fully integrated multiphysics simulator combining electromechanics, anisotropic perfusion, and hemodynamics, completing Milestone \#8: \emph{Cardiac Simulator Established for Exascale Computing}.
-
-
+\noindent\textbf{Milestone completion and unified multiphysics roadmap.}
+The staggered electromechanical framework, together with its interfacing to 0D closed-loop circulation models, completes Milestone \#8: \emph{Cardiac Simulator Established for Exascale Computing}. Work in the remaining period will incorporate mechano-electric feedback into the electrical conductivity tensor and merge the electromechanical framework with the poromechanics solver, yielding a fully integrated simulator combining electromechanics, anisotropic perfusion and hemodynamics.
 
 \subsection{WP2.3 Brain: Exascale simulations of brain tissue mechanics}
 
 \subsubsection*{ExaBrain Infrastructure and Linear Solver Benchmarks}
 
-\noindent The \texttt{ExaBrain} library is built on \texttt{deal.II} to enable high-resolution finite element simulations of full human brain mechanics using a nonlinear poro-viscoelastic material model.
+\noindent The \texttt{ExaBrain} library is built on \dealii{} to enable high-resolution finite element simulations of full human brain mechanics using a nonlinear poro-viscoelastic material model.
 
 \noindent\textbf{Repository integration and benchmark performance.}
 The repository has been merged into the central project repository\footnote{\url{https://github.com/dealii-X/dealii-X/tree/main/applications/brain}, retrieved on 28.07.2026}, verifying Milestone \#9: \emph{Brain Simulator Established for Exascale Computing}. Benchmarks on medium-scale problems ($2.5 \times 10^4$ elements, $6.4 \times 10^5$ DoFs) compared SuperLU-dist, direct MUMPS, and GMRES preconditioned with MUMPS Block Low-Rank (BLR) factorizations. Directly solving or factorizing via MUMPS BLR once per Newton iteration (\texttt{BLR-Newt}) achieved superior performance over per-step recalculation (\texttt{BLR-GMRES}) and SuperLU-dist, which suffered from severe memory constraints on single-node configurations. The results are reported in Deliverables D2.3 and D2.4. 
 
 \noindent\textbf{Distributed triangulation and preconditioner reuse.}
-The full-brain simulations matching maximum MRI data resolution require $\approx 9 \times 10^5$ elements and $2.4 \times 10^7$ DoFs with associated system matrices having $\approx 5 \times 10^9$ non-zero matrix entries, which highlights the strong coupling of the underlying poro--viscoelastic model. To overcome the memory bottlenecks and bridging the gap towards full--brain simulations, the framework transitioned from \texttt{parallel::shared} to \texttt{parallel::distributed} triangulations. Together with MUMPS partner, preconditioner reuse strategies were extended across multiple time steps (e.g., computing a direct BLR factorization once every 5 time steps), substantially reducing overall solver time during non-linear relaxation steps. The results are reported in Deliverables D2.3 and D2.4. 
+The full-brain simulations matching maximum MRI data resolution require $\approx 9 \times 10^5$ elements and $2.4 \times 10^7$ DoFs with associated system matrices having $\approx 5 \times 10^9$ non-zero matrix entries, which highlights the strong coupling of the underlying poro--viscoelastic model. To overcome the memory bottlenecks and bridge the gap towards full--brain simulations, the framework transitioned from \texttt{parallel::shared} to \texttt{parallel::distributed} triangulations. Together with the MUMPS partner (INPT), preconditioner reuse strategies were extended across multiple time steps (e.g., computing a direct BLR factorization once every 5 time steps), substantially reducing overall solver time during non-linear relaxation steps. The results are reported in Deliverables D2.3 and D2.4. 
 
 \noindent\textbf{MUMPS low-rank accuracy for MRI indentation simulations.}
 Realistic brain indentation simulations reconstructed from MRI geometries evaluate the interplay between BLR compression accuracy and solver convergence. Increasing BLR compression (lowering accuracy threshold $\varepsilon$) systematically reduces memory consumption (from $180\text{ GB}$ to $100\text{ GB}$ per node across 2 to 8 nodes) and preconditioner factorization times. However, reducing precision beyond $\varepsilon \approx 10^{-5}$ significantly increases GMRES iteration counts, counteracting gains in factorization efficiency. An optimal operating window of $\varepsilon \in [10^{-6}, 10^{-5}]$ balances preconditioner build times with Krylov subspace convergence. This is detailed in Deliverable D2.3.
 
 \subsubsection*{Inverse Parameter Identification and Pre-Exascale Roadmap}
 
-\noindent\noindent Parameter identification routines were updated to calibrate region-dependent poro-viscoelastic material properties from physical tissue measurements.
+\noindent Parameter identification routines were updated to calibrate region-dependent poro-viscoelastic material properties from physical tissue measurements.
 
 \noindent\textbf{Multi-objective inverse calibration.}
 Inverse parameter estimation routines were extended to include lateral displacement alongside total nominal stress/reaction force in the objective function across relaxation, cyclic, and combined loading protocols. On numerical benchmarks, adding lateral displacement increased parameter recovery success rates from $12.5\%$ to $81.3\%$. The calibrated pipeline was validated against experimental pig brain putamen dataset measurements. The results are detailed in Deliverables D2.3 and D2.4.
 
 \noindent\textbf{Pre-exascale scalability strategy.}
-Current solver capabilities are steadily approaching high--resolution medical imaging limits. Future scalability toward Milestone 13 (\emph{Upscale digital twins to pre-exascale environments}) targets strongly coupled block-Schur preconditioners, matrix-free representations, and GPU-accelerated algebraic multigrid methods. Due to the complexity of the model, GPU adoption is considered as a risk and special proactive steps are planned for the remaining project phase.
-
+Current solver capabilities are steadily approaching high--resolution medical imaging limits. Future scalability targets strongly coupled block-Schur preconditioners, matrix-free representations, and GPU-accelerated algebraic multigrid methods. 
 
 \subsection{WP2.4 Liver: Development of a Digital Twin for the Human Liver}
 
@@ -487,11 +487,11 @@ Discretization challenges involve balancing three distinct scales: 3D finite ele
 
 \noindent Numerical efficiency depends on robust linear solver strategies for ill-conditioned mixed-dimensional saddle-point systems.
 
-\textbf{Augmented Lagrangian preconditioners.}
+\noindent\textbf{Augmented Lagrangian preconditioners.}
 The 3D reduced Lagrange multiplier formulation introduces localized singular forces that lead to ill-conditioned saddle-point systems. Integrating an Augmented Lagrangian preconditioner facilitates efficient iterative solves of the coupled block system, accommodating localized vascular networks without compromising solver stability. The results are reported in Deliverable D2.3.
 
 \noindent\textbf{Benchmark validation.}
-Systematic numerical tests evaluate stability, accuracy, and performance across varying longitudinal and transversal refinements of the 1D network relative to the 3D mesh. Comparative studies quantify numerical convergence and pave the way for a monolithic \dealii\ implementation of the 1D--3D coupled systems.  The results are reported in Deliverables D2.3 and D2.4.
+Systematic numerical tests evaluate stability, accuracy, and performance across varying longitudinal and transversal refinements of the 1D network relative to the 3D mesh. Comparative studies quantify numerical convergence and pave the way for a monolithic \dealii{} implementation of the 1D--3D coupled systems.  The results are reported in Deliverables D2.3 and D2.4.
 
 \subsubsection*{Pipeline Integration and Pre-Exascale Liver Modeling}
 
@@ -507,33 +507,33 @@ Initial validation tests were conducted on a prototype network comprising 200 ve
 
 \subsubsection*{Mechanobiology Framework and Staggered Dual-Mesh Architecture}
 
-\noindent Computational models for cell motility implemented within \texttt{deal.II} explore the interplay between large-strain bulk cell mechanics and the chemo-diffusive dynamics of membrane receptors.
+\noindent Computational models for cell motility implemented within \dealii{} explore the interplay between large-strain bulk cell mechanics and the chemo-diffusive dynamics of membrane receptors.
 
-\textbf{One-way kinematic coupling.}
-The formulation adopts a one-way coupled, staggered solution strategy. At each time step, the non--linear mechanics of the cell bulk (cytoplasm and nucleus) are solved first. Once the updated geometric configuration is established, displacements are mapped onto the cell membrane to solve the surface chemo-diffusive problem. This kinematic decoupling permits independent time-stepping and bypasses iterative prediction-correction loops.
+\noindent\textbf{One-way kinematic coupling.}
+The formulation adopts a one-way coupled, staggered solution strategy. At each time step, the non--linear mechanics of the cell bulk (cytoplasm and nucleus) are solved first. Once the updated geometric configuration is established, displacements are mapped onto the cell membrane to solve the surface chemo-diffusive problem. This kinematic decoupling permits independent time-stepping and bypasses iterative prediction-correction loops. The details are available in Deliverable D2.3.
 
-\textbf{Dual-Mesh Architecture.}
-The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, enabling independent adaptive mesh refinement (AMR) on each domain.
+\noindent\textbf{Dual-Mesh Architecture.}
+The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, enabling independent adaptive mesh refinement (AMR) on each domain. The results are reported in Deliverable D2.3.
 
 \subsubsection*{Multi-Scale Integration and Stabilization Methods}
 
 \noindent Numerical enhancements resolve disparities between spatial and temporal scales while maintaining solution positivity and stability across dynamically deforming manifolds.
 
-\textbf{Multi-scale time sub-stepping.}
-To address disparate physical timescales, the computationally intensive 3D contact mechanics equations are integrated using macroscopic time steps. Once updated configurations are projected onto the 2D surface, the rapid chemo-diffusive dynamics of membrane receptors are resolved through a sequence of smaller microscopic time sub-steps.
+\noindent\textbf{Multi-scale time sub-stepping.}
+To address disparate physical timescales, the computationally intensive 3D contact mechanics equations are integrated using macroscopic time steps. Once updated configurations are projected onto the 2D surface, the rapid chemo-diffusive dynamics of membrane receptors are resolved through a sequence of smaller microscopic time sub-steps. The details are available in Deliverables D2.3 and D2.4.
 
-\textbf{Stabilization techniques.}
-Surface advection-diffusion-reaction equations on evolving geometries incorporate numerical stabilization to eliminate non--physical oscillations. Mass lumping diagonalizes the mass matrix to maintain positivity of protein concentrations. Additionally, residual-based shock-capturing schemes introduce localized artificial diffusion near steep solution gradients. Surface transport parameters scale dynamically with local area dilation to maintain consistency under large deformations.
+\noindent\textbf{Stabilization techniques.}
+Surface advection-diffusion-reaction equations on evolving geometries incorporate numerical stabilization to eliminate non--physical oscillations. Mass lumping diagonalizes the mass matrix to maintain positivity of protein concentrations. Additionally, residual-based shock-capturing schemes introduce localized artificial diffusion near steep solution gradients. Surface transport parameters scale dynamically with local area dilation to maintain consistency under large deformations. The details are available in Deliverables D2.3 and D2.4.
 
 \subsubsection*{Contact Mechanics and Migration Simulations}
 
 \noindent \textit{In silico} experiments simulate cell adhesion, spreading, and motility across rigid sub-surfaces to characterize protein relocation phenomena.
 
 \noindent\textbf{Contact mechanics and phase transitions.}
-Cell-substrate interactions are modeled using frictionless Hertz--Signorini--Moreau contact constraints. Phenomelogical body forces mimic active cytoskeletal contraction in the 3D balance equations. The solver dynamically manages transitions across cell physiological phases, including floating, substrate adhesion, axisymmetrical spreading, migration, and stable diffusion.
+Cell-substrate interactions are modeled using frictionless Hertz--Signorini--Moreau contact constraints. Phenomenological body forces mimic active cytoskeletal contraction in the 3D balance equations. The solver dynamically manages transitions across cell physiological phases, including floating, substrate adhesion, axisymmetrical spreading, migration, and stable diffusion. The details are available in Deliverable D2.4.
 
 \noindent\textbf{Receptor relocation and biomarker integration.}
-Simulations track the space-time relocation of transmembrane receptors during chemotaxis and durotaxis. Synthetic biological metrics, such as the total volume of receptor-ligand complexes formed at the basal cell interface, were compared against \emph{in vitro} experimental datasets, establishing a foundation for predictive cell motility digital twins.
+Simulations track the space--time relocation of transmembrane receptors during chemotaxis and durotaxis. Synthetic biological metrics, such as the total volume of receptor-ligand complexes formed at the basal cell interface, were compared against \emph{in vitro} experimental datasets, establishing a foundation for predictive cell motility digital twins. The details are available in Deliverable D2.4.
 
 \subsection{WP2.6 PoC: Low-code platform for human organ digital twin creation}
 
@@ -542,30 +542,30 @@ Simulations track the space-time relocation of transmembrane receptors during ch
 \noindent The Proof of Concept (PoC) platform enhances its three-component architecture to support remote high-performance computing task dispatching and Slurm meta-scheduling.
 
 \noindent\textbf{Three-component architecture.}
-The platform architecture retains its core structural separation: the \texttt{deal.II-X Client} functions as the central coordination interface, \texttt{deal.II-X Cloud} manages collaborative storage, and the \texttt{Coral} execution engine executes computational graphs on target infrastructure. Meta-scheduling layers transform the system from a graphical editor into a distributed task management platform.
+The platform architecture retains its core structural separation: the \texttt{deal.II-X Client} functions as the central coordination interface, \texttt{deal.II-X Cloud} manages collaborative storage, and the \texttt{Coral} execution engine executes computational graphs on target infrastructure. Meta-scheduling layers transform the system from a graphical editor into a distributed task management platform. The details are available in Deliverable D2.4.
 
 \noindent\textbf{SSH/SFTP--based task submission.}
-Computational graphs built via the Client's drag-and-drop interface are validated, exported as JSON conforming to \texttt{Coral}'s network protocol, and transferred via SFTP to remote HPC file systems for Slurm job submission. Persistent mappings between internal job identifiers and Slurm job IDs are stored locally using \texttt{electron-store}. Automated SSH polling queries Slurm at regular intervals to monitor start times, job states, and execution histories.
+Computational graphs built via the Client's drag-and-drop interface are validated, exported as JSON conforming to \texttt{Coral}'s network protocol, and transferred via SFTP to remote HPC file systems for Slurm job submission. Persistent mappings between internal job identifiers and Slurm job IDs are stored locally using \texttt{electron-store}. Automated SSH polling queries Slurm at regular intervals to monitor start times, job states, and execution histories. The details are available in Deliverable D2.4.
 
 \subsubsection*{Modular Network Nodes and Execution Monitoring}
 
 \noindent Enhancements to task management introduce hierarchical graph modularity alongside real-time filesystem-based job status tracking.
 
 \noindent\textbf{Hierarchical network nodes.}
-Complex computational workflows can be encapsulated into modular, reusable "network nodes" containing internal sub-graphs. Managed via qualified node IDs and stored within Client's registry, network nodes can be saved, shared, and instantiated across larger canvas workflows. Protocol validation filters abstract or malformed node entries during import.
+Complex computational workflows can be encapsulated into modular, reusable ``network nodes'' containing internal sub-graphs. Managed via qualified node IDs and stored within Client's registry, network nodes can be saved, shared, and instantiated across larger canvas workflows. Protocol validation filters abstract or malformed node entries during import. The details are available in Deliverable D2.3.
 
 \noindent\textbf{Real-time status tracking and log rendering.}
-Coral implements a touch-file status mechanism on the remote filesystem to report execution states per node. The Client polls this directory via SSH, providing live visual feedback on running, completed, or failed nodes. Users can open detailed job breakdowns and stream Slurm output logs (\texttt{.out} files) directly within Client's interface with syntax-highlighted message parsing.
+Coral implements a touch-file status mechanism on the remote filesystem to report execution states per node. The Client polls this directory via SSH, providing live visual feedback on running, completed, or failed nodes. Users can open detailed job breakdowns and stream Slurm output logs (\texttt{.out} files) directly within Client's interface with syntax-highlighted message parsing. The details are available in Deliverable D2.3.
 
 \subsubsection*{Visualization Integration and Milestone Completion}
 
 \noindent Integrating web-based visualizers and persistent state management completes the initial platform deployment milestone.
 
 \noindent\textbf{Trame visualization integration.}
-Computational graph nodes support integrated 2D and 3D data visualization powered by \texttt{Trame}. Example workflows generate discrete meshes and render spatial solution fields directly within the client canvas environment.
+Computational graph nodes support integrated 2D and 3D data visualization powered by \texttt{Trame}. Example workflows generate discrete meshes and render spatial solution fields directly within the client canvas environment. The details are available in Deliverable D2.3.
 
 \noindent\textbf{Milestone 11 completion.}
-The integration of meta-scheduling capabilities, modular sub-graphs, persistent electron-store registry management, and real-time Slurm job monitoring completes Milestone \#11: \emph{Deployment of the first version of the PoC WP2 platform}.
+The integration of meta-scheduling capabilities, modular sub-graphs, persistent electron-store registry management, and real-time Slurm job monitoring completes Milestone \#11: \emph{Deployment of the first version of the PoC WP2 platform}. 
 
 \newpage
 
@@ -787,7 +787,8 @@ Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/
 \item The dealii-X participated in the EuroHPC community building activities: HiDALGO2 clustering event, panel discussion within the track ``Rethinking scientific applications for exascale and emerging architectures: the Centre of Excellence challenge'' at HiPEAC 2026, the EuroHPC JU stand at ISC 2026 and a minisimuposum at SIAM PP 2026 jointly organized with EoCoE.
 \item The dealii-X project has been represented at 2nd Workshop on Readiness of HPC Extreme-Scaling Applications during the ISC HPC 2025 by M.~Kronbichler with the talk ``dealii-X: Preparing generic PDE solvers for exascale supercomputers''.
 \item dealii-X consortium fully contributed to the Research School ``Digital Twins of the Human Body'' in December 2025 in Trieste, Italy in conjunction with the project annual all--hands meeting.
-\item The project has been represented at CASTIEL2's all-hands meeting in September 2026 in Tallinn, Estonia.  
+\item The project has been represented at CASTIEL2's all-hands meeting in September 2025 in Tallinn, Estonia.  
+\item Public dealii-X webinar series featuring algorithmic and application developments held on a regular basis.   
 \end{itemize}
 
 \subsubsection*{Key Objectives Achieved Through Dissemination}
@@ -908,12 +909,6 @@ The following corrective measures have therefore been agreed:
 % rejected once.
 \end{itemize}
 
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Initial contacts established with key stakeholder groups, including clinicians, patients, industry, regulatory bodies, HTA organisations, payers, citizens, and policymakers.
-\item Project objectives presented through direct exchanges and dissemination via VPH and partner channels.
-\item First links established with complementary EU initiatives to ensure alignment, coherence, and maximize impact.
-\item Preparation of structured engagement activities (focus groups, surveys, interviews) to be launched in the next reporting period.
-\end{itemize}
 
 \subsection{WP4.5: Exploitation}
 
@@ -942,7 +937,7 @@ Large-scale digital twin application codes & Application partners & Open source 
 \midrule
 Sparse direct solver technology & Relevant partners & Transfer to MUMPS & Under discussion \\
 \midrule
-HPC deployment, containerisation and workflow know-how & exactlab and partners & Commercial services & Under discussion \\
+Low-code PoC platform & Relevant partners & Transfer to EXACT LAB & Under discussion \\
 \midrule
 Benchmarking and scalability results on EuroHPC systems & All partners & Publications, EuroHPC access proposals & Ongoing \\
 \bottomrule
@@ -978,7 +973,7 @@ review. The following actions are therefore in progress:
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item \textbf{Clarification of exploitation claims.} Negotiations are ongoing among the participating institutions to establish the ownership, access rights and exploitation claims for each key exploitable result listed in Table~\ref{tab:exploitation}. The outcome will be consolidated in the final exploitation and sustainability plan.
-\item \textbf{Technology transfer to industrial actors.} Two concrete transfer routes are being explored: transfer of the sparse direct solver developments to MUMPS, and transfer of deployment, integration and HPC--ready PoC platform to ExactLab/DUALISTIC, so that maintenance and commercial support for these components rest with entities whose business model sustains them beyond the project's funding horizon.
+\item \textbf{Technology transfer to industrial actors.} Two concrete transfer routes are being explored: transfer of the sparse direct solver developments to MUMPS, and transfer of deployment, integration and HPC--ready PoC platform to EXACT LAB and Dualistic, so that maintenance and commercial support for these components rest with entities whose business model sustains them beyond the project's funding horizon.
 % Name the second company here as well once confirmed, and state the instrument
 % (licence, joint development agreement, MoU) and the target date.
 \item \textbf{Community-based maintenance.} Continuity of the core numerical developments is structurally ensured by their integration into deal.II, whose governance, release cycle and contributor base are independent of the dealii-X project and predate it.
@@ -1001,58 +996,46 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 \item Quality control of results and deliverables according to the defined procedures, ensuring internal review and approval prior to submission.
 \end{itemize}
 
-\subsection{Progress Achieved in Year 1} %(M1–M12)
-
-\paragraph{WP5.1: Management} % (Lead: RUB)}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Monthly consortium meetings held to provide updates, discuss progress, and address technical or administrative issues.
-\item Deliverable D5.1 ``Project Management Handbook'' submitted in M3 by RUB, based on PM$^2$ methodology, establishing procedures for decision-making, risk management, and deliverable approval.
-\item Decision-making procedures and escalation mechanisms established to monitor risks and issues effectively.
-\item Internal documentation repository set up to ensure transparency and easy access for all partners.
-\end{itemize}
-
-\paragraph{WP5.2: Communication} % (Lead: RUB)}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item The project management team (PMT) acts as the interface between the consortium and the EC, preparing periodic and midterm reports (M12, M22) for submission.
-\item Internal communication channels established, including mailing lists, collaborative platforms, and a secure workspace for sharing project information, deliverables, and meeting minutes.
-\item Coordination with WP4 to align communication and dissemination activities.
-\end{itemize}
-
-\paragraph{WP5.3: Quality Control} % (Lead: RUB)}
+\subsection{WP5.1: Management}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Project results and formal deliverables undergo internal quality control prior to submission.
-\item Reviewers assigned for all deliverables to verify content and compliance with project standards.
-\item Deliverable D1.1 "External Libraries Integration" postponed from M6 to M10; revised timeline described, motivated, approved by the EC, and successfully submitted.
-\item Templates and procedures for deliverable review made available to the consortium via the internal workspace.
+	\item The management structure defined in D5.1 ``Project Management Handbook'' (M3, PM$^2$-based) remained stable and effective. The Project Management Board, chaired by the Project Coordinator, retains top-level authority; the Project Management Team handles day-to-day operations.
+	\item Monthly consortium meetings continued without interruption, complemented by WP-level technical meetings and by the annual all-hands meeting held alongside the Research School ``Digital Twins of the Human Body'' (Trieste, December 2025).
+	\item The intermediate project review for the reporting period RP1 was held during on May 13, 2026. The reviewers acknowledged the technical progress of the project and recommended strengthening the stakeholder engagement and exploitation activities; these recommendations have been taken up by the consortium and are reflected in the WP4 activities reported in Sections~\ref{sec:wp4_communication} and Section~\ref{sec"}.
+	% Add the review date; adjust the cross-reference to point at your WP4.4/WP4.5
+	% subsections if they carry their own labels.
+	\item Decision-making, escalation and risk-monitoring procedures were applied as defined, and the internal documentation repository remains the single reference for minutes, deliverables and working documents.
+	% Note here any changes in partner representatives or GA/CA amendments, if applicable.
 \end{itemize}
 
-\paragraph{Critical Risks and Mitigation}
-\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Key risks identified included potential delays in deliverable submissions, coordination challenges among distributed partners, and technical dependencies between WPs.
-\item Mitigation measures included monthly monitoring, proactive communication, and formal approval of revised deliverable timelines by the EC.
-\item Residual risks will continue to be tracked, with contingency measures updated as needed.
-\end{itemize}
-
-
-
-
-
-\subsection{Next Steps} % (M13–M24)
+\subsection{WP5.2: Communication}
 
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Continue monthly consortium meetings and strengthen risk monitoring and mitigation practices.
-\item Maintain effective internal and external communication, including coordination with WP4 on dissemination and timely submission of reports to the EC.
-\item Periodically review and refine quality control procedures for deliverables and internal documentation.
-\item Ensure timely updates of the risk register and implement any necessary corrective actions.
-\item Support upcoming workshops and consortium-wide events, facilitating coordination and logistics.
-\item Monitor deliverable timelines to anticipate potential delays and communicate with the EC proactively.
+	\item The Project Management Team continued to act as the interface between the consortium and the granting authority, preparing the periodic reporting (M12, M22) and the material for the intermediate review.
+	\item Internal communication infrastructure (mailing lists, shared workspace, \texttt{[matrix]} instant messaging, project calendars) remained fully operational; details are given in Section~\ref{sec:wp4_communication}.
+	\item Coordination between WP5 and WP4 was intensified in the second half of the reporting period, in particular on stakeholder engagement planning and on the preparation of the exploitation and sustainability arrangements.
 \end{itemize}
 
-\subsection{Summary}  
+\subsection{WP5.3: Quality Control}
 
-WP5 has established a robust management framework that ensures the smooth operation of the dealii-X project. Through regular consortium meetings, structured decision-making, and effective internal and external communication, the consortium maintains alignment across work packages and partners. Quality control procedures, including internal reviews of deliverables and monitoring of critical risks, support the timely and high-quality production of project outputs. Together, these measures foster synergy among partners, mitigate potential delays, and contribute to achieving the project’s objectives efficiently and in compliance with all ethical and contractual requirements.
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+	\item All formal deliverables submitted in the reporting period underwent internal review by assigned reviewers prior to submission, following the templates and procedures published on the internal workspace.
+	\item Deliverables were submitted on schedule during this reporting period.
+	% Check against the actual list; if anything slipped, name it, give the revised date
+	% and state whether the EC approved it, as was done for D1.1 in the M12 report.
+	\item The review procedure has been extended so that deliverables with a dissemination, stakeholder or exploitation component are additionally checked against the recommendations of the intermediate review before submission.
+\end{itemize}
 
+\subsection{Critical Risks and Mitigation}
+
+\begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
+	\item The risks identified during the RP1 --- deliverable delays, coordination across distributed partners, and technical dependencies between work packages --- remained under control through monthly monitoring and early escalation. They are detailed in the Technical Report (part B) of the periodic reporting for RP1.
+	\item Following the intermediate review, limited stakeholder engagement and the absence of a consolidated post-project sustainability arrangement are tracked as active issues rather than potential risks. Mitigation consists of the revised engagement activities reported under WP4.4 and the exploitation and technology transfer discussions reported under WP4.5, both monitored at the monthly consortium meetings.
+	\item The main residual risk for the remaining period is the timely conclusion of the exploitation claims negotiation among the participating institutions, which conditions the final exploitation and sustainability plan.
+	% Add any technical residual risks from WP1--WP3 that management is tracking.
+\end{itemize}
+
+\subsection{Critical Risks and Mitigation}\label{sec:finreport}
 
 
 % \newpage 
