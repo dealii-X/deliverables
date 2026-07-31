@@ -2,7 +2,7 @@
 \label{sec:energy}
 
 This section describes ongoing work in task WP3.4 on energy and performance profiling.
-The object of study is the matrix-free evaluation of high-order finite element operators, i.e.\ the kernels that dominate the run time of implicit and explicit high-order solvers.
+The object of study is the matrix-free evaluation of high-order finite element operators, i.e., the kernels that dominate the run time of implicit and explicit high-order solvers.
 These kernels are characterised by a small arithmetic footprint per degree of freedom at low polynomial degree and a rapidly growing one at high degree, so that the same operator traverses the memory-bound and the compute-bound regime as the degree is varied.
 This makes the family a convenient probe of the energy behaviour of a node, and it also places the code-generation strategy and the compiler among the parameters under study rather than outside them.
 
@@ -52,7 +52,7 @@ We report $\eta$ and $R$ separately throughout.
 
 \subsection{Measurement methodology}
 
-Measurements are driven by \texttt{p3em} \cite{Cielo25}, an open source approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
+Measurements are driven by \texttt{p3em} \citep{Cielo25}, an open source approach to power, performance and energy measurement~\citep{pribec_wccm2026}.
 Rather than wrapping the benchmark binary as a whole, it instruments a local scope of the program: a background thread queries a power meter running as a separate process and integrates the returned power readings over the lifetime of the scope.
 Three properties of this design matter for the study.
 First, it is selective: the measured region can be restricted to the parts of the program that are of interest, such as the operator evaluation, the preconditioner or the solve, while excluding I/O and set-up phases that would otherwise dilute the result.
@@ -60,7 +60,7 @@ Second, it is portable, since support for a new machine requires only a differen
 Third, we can measure CPU and GPU energy usage separately, accounting for different phases of the process.
 
 The approach is not specific to the kernels studied here.
-It has been applied to a set of flagship science applications on SuperMUC-NG Phase~2, in a study presented at the IXPUG workshop of ISC~2026 which documents the methodology and its validation in more detail~\cite{supermucng_energy_2026}.
+It has been applied to a set of flagship science applications on SuperMUC-NG Phase~2, in a study presented at the IXPUG workshop of ISC~2026 which documents the methodology and its validation in more detail~\citep{supermucng_energy_2026}.
 That work measures whole applications rather than isolated kernels, and is the natural counterpart to the kernel- and problem-level measurements reported below.
 
 Around this instrumentation, the study of a given system consists of the following components:
@@ -98,9 +98,9 @@ A model name does not identify a single product, however: form factor, memory co
 \begin{center}
 \begin{table}[h!]
 \centering
-\small
 \caption{Characteristics of the Nvidia and Intel GPUs of interest. The figures describe the parts installed in the named systems, not the catalogue specifications of a model.}
 \label{tab:nvidia}
+\footnotesize
 \medskip
 \begin{tabular}{l|cccc}
                       & \shortstack{Nvidia\\A100} & \shortstack{Nvidia\\H100} & \shortstack{Nvidia\\GH200} & \shortstack{Intel\\GPU Max 1550} \\ \hline
@@ -178,7 +178,7 @@ Memory Type               & HBM2e      & HBM3       & HBM4        \\
 
 The most informative single view of a frequency sweep plots energy efficiency $\eta$ (GDoF/J) on the vertical axis against performance $R$ (GDoF/s) on the horizontal axis, with the clock frequency or the power cap as the parameter along the curve.
 Both quantities are oriented so that larger is better, so the desirable region is the upper right corner.
-This way of presenting the trade-off follows the analysis of power capping and frequency scaling given by Hager et al.~\cite{hager_wccm2026}.
+This way of presenting the trade-off follows the analysis of power capping and frequency scaling given by \cite{hager_wccm2026}.
 % TODO: a small sketch of the plane would illustrate the approach here. A
 % ready-made one is commented out below; it needs \usepackage{tikz}.
 %
@@ -210,7 +210,7 @@ The two lines of work are complementary, and the plane described above is precis
 
 \subsection{Preliminary results}
 
-For the BK1 mass operator we have measured the performance and the energy efficiency of the OpenMP, Kokkos and TinyTC implementations on a single device at its default operating point, shown in Figure~\ref{fig:intel_pvc_bk1_energy} and presented in preliminary form at the WCCM-ECCOMAS 2026 congress~\cite{pribec_wccm2026}.
+For the BK1 mass operator we have measured the performance and the energy efficiency of the OpenMP, Kokkos and TinyTC implementations on a single device at its default operating point, shown in Figure~\ref{fig:intel_pvc_bk1_energy} and presented in preliminary form at the WCCM-ECCOMAS 2026 congress by \cite{pribec_wccm2026}.
 The two groups of bars are essentially proportional to one another: the ranking of the implementations by GDoF/s is also their ranking by DoF updates per Joule, and the ratios between them are nearly the same in both metrics.
 This is what one expects whenever the average power drawn is similar for all variants, since $\eta = R/\bar{P}$ then reduces to $R$ up to a common factor; the recorded power traces allow this reading to be checked directly, and $\bar{P}$ is therefore reported alongside the two metrics.
 The practical consequence is a negative but useful result.

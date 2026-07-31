@@ -28,7 +28,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Co-Design and Energy Efficiency Report II}
     \tableEntry{Deliverable number}{D3.4}
-    \tableEntry{Deliverable version}{v1}
+    \tableEntry{Deliverable version}{v1.0}
     \tableEntry{Date of delivery}{July 31, 2026}
     \tableEntry{Actual date of delivery}{July 31, 2026}
     \tableEntry{Nature of deliverable}{Report}
@@ -53,8 +53,8 @@
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [Name] \\
-Approval Date: [Date]
+Approved by: Martin Kronbichler \\
+Approval Date: 31/07/2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -93,8 +93,8 @@ Since D3.2, the performance optimization effort has concentrated on three new ar
     Assigning several elements to each thread block removes this limitation and yields a $2\times$ speedup for $p=1$ on the NVIDIA GH200 (Section~\ref{sec:codesign}).
     This directly addresses the poor low-order performance that was observed but left unresolved in D3.2.
     \item \textbf{Raviart--Thomas vector element kernels.}
-    The kernels studied in D3.2 were exclusively $H^1$-conforming and scalar-valued.
-    Mixed formulations of the Navier--Stokes equations instead require $H(\mathrm{div})$-conformity, and we therefore extend the benchmark suite with the vector mass, mixed divergence and mixed gradient operators of the Raviart--Thomas element family.
+    The kernels studied in D3.2 were exclusively $H^1$-conforming and scalar-valued elements.
+    Mixed formulations of the Navier--Stokes equations highly benefit from $H(\mathrm{div})$-conformity in terms of robustness, and we therefore extend the benchmark suite with the vector mass, mixed divergence and mixed gradient operators of the Raviart--Thomas element family.
     \item \textbf{Full Bake-off Problems including solvers and preconditioners.}
     Operator evaluation is embedded in a conjugate gradient solver and in multigrid-preconditioned solvers within the deal.II framework, so that gather--scatter overheads, inter-GPU communication and preconditioner cost enter the measurement.
     This closes the gap between the BK and BP figures of merit that was left open in D3.2.
@@ -133,14 +133,14 @@ To avoid duplication, the following material is documented elsewhere and only re
 \section{{Co-design for High-Performance Finite Element Kernels}}
 \label{sec:codesign}
 
-We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs).
+We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on contemporary graphics processing units (GPUs).
 The matrix-free framework and its initial implementations are described in Deliverable 1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}).
 To evaluate these problems, we adopt the bake-off benchmarks \cite{Fischer20scalability} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
 
 \subsection{Batched Operator Evaluation}
 
-Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \cite{tens_prod}. This approach causes low-order elements to underutilize
-the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \cite{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
+Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \citep{tens_prod}. This approach causes low-order elements to underutilize
+the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \citep{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
 leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
 Based on a batch processing approach, our technique assigns multiple elements to each thread block to overcome these limitations. For example, a polynomial order of 1 in the Laplace operator evaluation (Bake-off Kernel 3 in the CEED benchmarks) can fit 11 elements per thread block.
 A performance comparison between the single-element-per-thread-block and the batched processing approaches is given in Figure~\ref{fig:BK3_1_10}. The new technique achieves a 2$\times$ speedup for polynomial order 1 on the NVIDIA GH200 Superchip at the JUPITER supercomputer located at the Jülich Research Centre.
@@ -149,7 +149,7 @@ New batched implementations are available at \url{https://github.com/dealii-X/be
 \subsection{Experimental Setup}
 
 Performance analysis and benchmarks were conducted on the NVIDIA Grace Hopper Superchip (GH200) on the JUPITER supercomputer and on the AMD MI250X GPU on the LUMI supercomputer. The Kokkos performance portability layer
-v5.1 \cite{kokkos} was used to target traditional compute cores. For tensor core implementations, CUDA PTX mma instructions v9.3 \cite{nvidia_mma} were employed.
+v5.1 \citep{kokkos} was used to target traditional compute cores. For tensor core implementations, CUDA PTX mma instructions v9.3 \citep{nvidia_mma} were employed.
 
 \subsection{Operator Performance and Optimization Analysis}
 \begin{figure}[htbp]
@@ -220,11 +220,11 @@ The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree
     \label{fig:BK_BP}
 \end{figure}
 
-\subsection{Raviart-Thomas Elements and Kernel Performance}
+\subsection{Raviart--Thomas Elements and Kernel Performance}
 
 $H^1$-conforming elements (as used in the CEED Bake-off kernels) enforce continuity of all vector components across elements, whereas the Navier-Stokes equations, in mixed formulations often require continuity of the normal component of the flux across element boundaries which is a property of $H(\mathrm{div})$-conforming spaces.
-Elements designed for this purpose are known as Raviart-Thomas finite elements.
-We implement the vector mass, mixed divergence and mixed gradient operators -- the core operations in Raviart-Thomas kernel design -- in our benchmarks repository: \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
+One element type designed for this purpose are the Raviart--Thomas finite elements.
+We implement the vector mass, mixed divergence and mixed gradient operators -- the core operations in Raviart--Thomas kernel design -- in our benchmarks repository: \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
 
 Figure\ref{fig:GH200_vector_Mass} shows the performance of the vector Mass operator on the NVIDIA GH200 in both FP32 and FP64 precisions.
 Batch processing enabled all polynomial orders to achieve similar throughput (GDoF/s).
@@ -246,7 +246,7 @@ This drop in performance is likely due to register file capacity constraints in 
     \label{fig:MI250x_vector_Mass}
 \end{figure}
 
-We also introduce a new technique to target NVIDIA tensor cores \cite{nvidia_mma} which are designed to perform fast matrix-matrix multiplication in different precisions.
+We also introduce a new technique to target NVIDIA tensor cores \citep{nvidia_mma} which are designed to perform fast matrix-matrix multiplication in different precisions.
 Initial implementations for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) are available in the same \texttt{rt\_kernels} benchmarks repository folder.
 
 \subsection{Alternative Programming Models}
@@ -303,7 +303,7 @@ Should the trade-off worsen, several mechanisms retain compile-time constants wi
     \item \textbf{TinyTC}, JIT-based by design, generating code specialized to the tensor shapes encountered at execution time -- anticipated in D3.2 as a prospective advantage of a tensor DSL.
 \end{itemize}
 
-Others in the community pursue the same goal through domain-specific languages and finite-element-tailored intermediate representations.
+Others in the community pursue the same goal through domain-specific languages and finite-element-tailored intermediate representations. For example, libCEED implements a just-in-time compiler as well.
 A practical constraint here is that Kokkos, on which the portable deal.II kernels are based, offers no such abstraction; for Kokkos-based application codes it may therefore be preferable to fix the polynomial order at build time rather than dispatch on it at runtime.
 
 Which route best suits a general-purpose finite element library remains open, and the answer will likely depend on maintainability and build-system considerations as much as on the performance figures reported here.
