@@ -27,13 +27,13 @@
 \begin{document}
 
 % Create the title page with the title as argument
-\maketitlepage{Report on application improvements - IV semester}
+\maketitlepage{Report on application improvements -- IV semester}
 
 \newpage
 
 % Main Table using the new environment and command
 \begin{deliverableTable}
-    \tableEntry{Deliverable title}{Report on application improvements - IV semester}
+    \tableEntry{Deliverable title}{Report on application improvements -- IV semester}
     \tableEntry{Deliverable number}{D2.4}
     \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{July 31, 2026}
@@ -56,7 +56,7 @@
     \addVersion{0.1}{9.07.2026}{Alberto Salvadori (UNIBS)}{Initial draft}
     \addVersion{0.2}{26.07.2026}{Alberto Salvadori (UNIBS)}{Collected input from all partners}
     \addVersion{0.3}{29.07.2026}{Ivan Prusak}{Review and adjustments}
-    \addVersion{1.0}{31.07.2026}{Martin Kronbichler}{Final version}
+   	\addVersion{1.0}{31.07.2026}{Ivan Prusak}{Final review and adjustments}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -95,24 +95,26 @@ In this document, we report on the status of the exascale human applications par
 
 \subsection{{Purpose of the Document}}
 
-This report collects the updates from the project partners (TUM, POLIMI, FAU, FVB-WIAS, UNIBS, Dualistic/eXact-Lab) into a single document. Each section reports on advancements on the corresponding application, and identifies the upcoming steps in the project.
+This report collects the updates from the project application partners TUM, POLIMI, FAU, FVB-WIAS and UNIBS into a single document. Each section reports on advancements on the corresponding application, and identifies the upcoming steps in the project.
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:section2}: Reports on Applications
+    \item Section \ref{sec:tum}: Lungs (TUM)
+    \item Section \ref{sec:polimi}: Heart (POLIMI)
+    \item Section \ref{sec:fau}: Brain (FAU)
+    \item Section \ref{sec:wias}: Liver (FVB-WIAS)
+    \item Section \ref{sec:unibs}: Mechanobiology (UNIBS)
 \end{itemize}
 
 \newpage
 
-\section{{Reports on applications}}
-\label{sec:section2}
 
-\subsection{Lungs (TUM)}
+\section{Lungs (TUM)}\label{sec:tum}
 % ====================
 
 This section reports on the progress of the lung application.
 
-This semester, we have initially worked on the final details of the surfactant implementation. As a result of our efforts, the implementation reached a stage where we could verify it using an idealized spherical alveolus. Figure \ref{fig:PictureTUM1} illustrates the effect of a water film and the surfactant on the compliance of the alveolus. Among the three simulated cases, compliance is highest when there is no water film on the surface (left figure), as there is no surface tension. However, this case is not physiological and would not allow gas exchange, as the water film is necessary for the dissolution of respiratory gases. The lowest compliance is observed when there is a water film, but no surfactant (right figure), which, for example, corresponds to a pathological case. Finally, as shown in the middle figure, when surface tension is reduced by surfactant molecules, alveolar compliance increases, leading to larger displacements and a higher volume, beneficial for gas exchange.
+This semester, we have principally worked on the final details of the surfactant implementation. As a result of our efforts, the implementation reached a stage where we could verify it using an idealized spherical alveolus. Figure \ref{fig:PictureTUM1} illustrates the effect of a water film and the surfactant on the compliance of the alveolus. Among the three simulated cases, compliance is highest when there is no water film on the surface (left figure), as there is no surface tension. However, this case is not physiological and would not allow gas exchange, as the water film is necessary for the dissolution of respiratory gases. The lowest compliance is observed when there is a water film, but no surfactant (right figure), which, for example, corresponds to a pathological case. Finally, as shown in the middle figure, when surface tension is reduced by surfactant molecules, alveolar compliance increases, leading to larger displacements and a higher volume, beneficial for gas exchange.
 
 
 \begin{figure}[htbp]
@@ -123,7 +125,7 @@ This semester, we have initially worked on the final details of the surfactant i
 \end{figure}
 
 
-This semester, we have also worked on the performance aspect of our solver. By working together with project partners at RUB, we have investigated different preconditioner configurations. We have identified the polynomial multigrid method as a promising candidate and investigated its behavior for quadratic tetrahedral elements. Despite our initial concerns about locking in the coarse problem, which features linear tetrahedral elements that are particularly prone to both shear and volumetric locking, we have found that the polynomial multigrid method performed well. On a bending beam example, it overperformed a purely algebraic multigrid method for both a compressible (Poisson’s number of 0.3) and a nearly incompressible material (Poisson’s number of 0.49). The solver performances are shown in Table~\ref{tab:solver_comparison} for all four combinations of materials and preconditioners.
+This semester, we have also worked on the performance aspect of our solver. By working together with project partners at RUB, we have investigated different preconditioner configurations. We have identified the polynomial multigrid method as a promising candidate and investigated its behavior for quadratic tetrahedral elements. Despite our initial concerns about locking in the coarse problem, which features linear tetrahedral elements that are particularly prone to both shear and volumetric locking, we have found that the polynomial multigrid method performed well. On a bending beam example, it outperformed a purely algebraic multigrid method for both a compressible (Poisson’s ratio of 0.3) and a nearly incompressible material (Poisson’s ratio of 0.49). The performance of both solver is shown in Table~\ref{tab:solver_comparison} for all four combinations of materials and preconditioners.
 
 
 \begin{table}[htbp]
@@ -160,13 +162,13 @@ Currently, we are preparing large-scale simulations of alveolar geometries with 
 
 \noindent\textbf{Milestone 13: Upscale digital twins to pre-exascale environments}
 
-A performant solver and preconditioner configuration has been identified with project partners used for lung simulations. The lung application implements its own physics but heavily utilizes deal.II algorithms. Thus, improvements to multigrid preconditioners and matrix-free algorithms by other work packages can be directly incorporated into the lung application framework. We anticipate that once robust simulations are established on our side, they can be scaled to pre-exascale and present an application that can be run on GPUs.
+A performant solver and preconditioner configuration has been identified with project partners used for lung simulations. The lung application implements its own physics but heavily utilizes deal.II algorithms. Thus, improvements to multigrid preconditioners and matrix-free algorithms by other work packages can be directly incorporated into the lung application framework. We anticipate that once robust simulations are established on our side, they can be scaled to pre-exascale and provide an application for porting to GPU.
 
 
-\subsection{Heart (POLIMI)}
+\section{Heart (POLIMI)}\label{sec:polimi}
 % ====================
 
-This section reports on recent updates to the cardiac modeling library lifex, which relies on deal.II to provide a comprehensive multiphysics framework for matrix-free simulation of cardiac function.
+This section reports on recent updates to the cardiac modeling library \texttt{life$^x$}, which relies on deal.II to provide a comprehensive multiphysics framework for matrix-free simulation of cardiac function.
 During this reporting period, the poromechanics framework was extended to finite-strain, patient-relevant cardiac perfusion simulations by coupling a matrix-free perfusion solver with nonlinear solid mechanics using a fixed-stress sequential splitting strategy (Figure \ref{fig:PicturePOLIMI1}). The framework supports both fully coupled poromechanics and standalone perfusion or mechanics simulations. The primary implementation combines finite-strain Guccione myocardial mechanics with Biot-type pressure coupling, while retaining a mixture-theory formulation for comparison. The formulation also includes deformation-induced fluid pumping, deformation-dependent fluid properties, and an optional Kozeny–Carman correction for porosity-dependent permeability.
 
 
@@ -185,8 +187,10 @@ The mechanics framework was extended through the introduction of independent nor
 
 Recent exploratory tuning was carried out on an idealized LV problem comprising approximately 2.1 million hexahedral cells and 171.9 million degrees of freedom for the poromechanics solver. Changing the Chebyshev configuration from a smoothing range of 0.3 with eight eigenvalue-estimation iterations to a smoothing range of 0.6 with thirty iterations reduced the mechanics GMRES counts from approximately 905/276 to 208/65 across two Newton updates. Although this represents a promising improvement, it should be regarded as a solver-tuning observation rather than a controlled scaling comparison. A systematic sweep using identical meshes, MPI partitions, tolerances, and material states is planned.
 
-In parallel with these developments, the electromechanical framework has been significantly extended. The previously implemented electrophysiology and the mechanical models have been coupled through the RDQ20 activation model, enabling the prescription of a physics based, time-varying active tension within the mechanical model instead of imposing it a priori. The resulting electromechanical model adopts a staggered solution strategy: at each timestep, the electrophysiology problem is solved first, followed by the active stress model and finally the mechanical problem. 
+In parallel with these developments, the electromechanical framework has been significantly extended. The previously implemented electrophysiology and mechanical models have been coupled through the RDQ20 activation model, enabling the prescription of a physics-based, time-varying active tension within the mechanical model instead of imposing it a priori. The resulting electromechanical model adopts a staggered solution strategy: at each timestep, the electrophysiology problem is solved first, followed by the active stress model and finally the mechanical problem. 
+
 To improve the coupling, a mechanical feedback mechanism from the mechanics to the active stress model has been introduced between consecutive timesteps.  This provides the sarcomere deformation depending on the fiber deformation, which is required by the active stress model to compute the active tension. The coupled formulation is currently being validated on a beam benchmark mesh, with the objective of extending the simulations to an idealized LV geometry (Figure \ref{fig:PicturePOLIMI2}).
+
 Current developments include coupling the electromechanical model with a 0D circulation model, thereby providing physics-based pressure boundary conditions on the endocardium for the mechanical problem and replacing the current approach in which the pressure is prescribed a priori.
 Building on these developments, the framework now provides a matrix-free finite-strain poromechanics capability for cardiac perfusion that combines nonlinear myocardial mechanics, deformation-dependent perfusion, anisotropic permeability, and LV-specific boundary conditions. Ongoing work focuses on unifying Darcy-flux evaluation, strengthening anisotropic verification, improving solver robustness and preconditioning, validating physiological LV simulations, and calibrating Darcy-derived biomarkers for clinical interpretation.
 
@@ -203,35 +207,33 @@ Ultimately, these developments will converge by coupling the electromechanical f
 
 
 
-\subsection{Brain (FAU)}
+\section{Brain (FAU)}\label{sec:fau}
 %=================
 
 Here, we report on the progress within the ExaBrain library, which is developed to facilitate high resolution full human brain finite element simulations using a complex nonlinear poro-viscoelastic material model.
  
 As reported in previous deliverables, memory consumption during the solve of the linearized system of equations is currently the main bottleneck towards larger problem sizes. Therefore, we are currently limited to coarse full brain simulations with approx. 112e+3 elements and 3e+6 degrees of freedom. To match the maximum MRI resolution, one more refinement step is necessary, such that we end up with approx. 900e+3 elements and 24e+6 degrees of freedom. The associated system matrix has about 5e+9 non-zero entries, which highlights the strong coupling in our nonlinear poro-viscoelastic model. To solve the system, we exported the system matrix and the corresponding right hand side and shared it with our collaborators and experts in direct solvers from the MUMPS team. If it turns out that the system is not (efficiently) solvable using the advanced features of MUMPS we will move on exploring options towards iterative Block-Schur preconditioners and variants thereof. Moreover, we changed our code from a parallel::shared triangulation to work with a parallel::distributed triangulation. The distributed triangulation is essential for good scalability on HPC systems and saves a significant amount of memory as each MPI process has to store only a part of the triangulation and not the full triangulation object. 
 
-We also worked on the performance of our current solver strategy - a MUMPS Block Low Rank (BLR) preconditioner for an iterative GMRES solver. The preconditioner is currently computed once at the beginning of each time step and then reused throughout the Newton-Raphson iterations. A preliminary study on small systems without BLR factorization shows that the preconditioner might also be reused for several time steps. As a benchmark we performed a compression relaxation simulation comprised of 50 nonlinear time steps on a small system with 3072 elements and 84572 degrees of freedom. In Figure \ref{fig:PictureFAU1}, the baseline is set through a direct solve with MUMPS in every solver step, i.e. for each Newton step in each time step (blue). Next, we solve directly only in the first Newton iteration and then iteratively for the subsequent Newton steps – essentially the method we reported in the last deliverable just without BLR (orange). Our third improved version reuses the preconditioner for several time steps such that the system is only solved directly once throughout 5 timesteps (orange). Clearly, reusing the preconditioner provides further significant gains in computational efficiency – even for such a small system size. The next step is to test this enhanced solver strategy on larger systems in an HPC environment. Thereby, we will test scalability and the applicability to different loading and boundary conditions, as the reusability of the preconditioner might be affected by the complexity of the simulation itself. For now, reusing the preconditioner for five time steps is just a user choice. Of course, there will be a certain optimum in efficiency where the iteration counts in the GMRES solver get so large that a new direct solve becomes more efficient.  Our test cases will show whether an automated adaption of the solver strategy is beneficial for the overall robustness and efficiency throughout several load cases. 
+We also worked on the performance of our current solver strategy - a MUMPS Block Low Rank (BLR) preconditioner for an iterative GMRES solver. The preconditioner is currently computed once at the beginning of each time step and then reused throughout the Newton-Raphson iterations. A preliminary study on small systems without BLR factorization shows that the preconditioner might also be reused for several time steps. As a benchmark we performed a compression relaxation simulation comprised of 50 nonlinear time steps on a small system with 3072 elements and 84572 degrees of freedom. In Figure \ref{fig:PictureFAU1}, the baseline is set through a direct solve with MUMPS in every solver step, i.e. for each Newton step in each time step (blue). Next, we solve directly only in the first Newton iteration and then iteratively for the subsequent Newton steps – essentially the method we reported in the last deliverable just without BLR (orange). Our third improved version reuses the preconditioner for several time steps such that the system is only solved directly once throughout 5 timesteps (green). Clearly, reusing the preconditioner provides further significant gains in computational efficiency – even for such a small system size. The next step is to test this enhanced solver strategy on larger systems in an HPC environment. Thereby, we will test scalability and the applicability to different loading and boundary conditions, as the reusability of the preconditioner might be affected by the complexity of the simulation itself. For now, reusing the preconditioner for five time steps is just a user choice. Of course, there will be a certain optimum in efficiency where the iteration counts in the GMRES solver get so large that a new direct solve becomes more efficient.  Our test cases will show whether an automated adaption of the solver strategy is beneficial for the overall robustness and efficiency throughout several load cases. 
 
 
 \begin{figure}
 \centering
 \begin{subfigure}{0.49\textwidth}
-\includegraphics[width=0.95\textwidth]{PictureFAU1a}
-        \caption{  }
+\includegraphics[width=0.9\textwidth]{PictureFAU1a}
 \label{fig:PictureFAU1a}
 \end{subfigure}
 \begin{subfigure}{0.49\textwidth}
-\includegraphics[width=\textwidth]{PictureFAU1b}
-        \caption{ }
+\includegraphics[width=0.9\textwidth]{PictureFAU1b}
 \label{fig:PictureFAU1b}
 \end{subfigure}
-  \caption{Simulation of a compression relaxation experiment, 3072 elements, 84572 DoFs. In total 50 nonlinear time steps, once solved with MUMPS direct, once using MUMPS direct as a preconditioner in every timestep (MUMPS-GMRES) and once reusing the preconditioner for five consecutive time steps (MUMPS-GMRES-5). Left: Total CPU wall time. Right: CPU time spent in the linear solver. System: Apple M4 Max.}
+  \caption{Simulation of a compression relaxation experiment, 3072 elements, 84572 DoFs. In total 50 nonlinear time steps, once solved with MUMPS direct, once using MUMPS direct as a preconditioner in every timestep (MUMPS-GMRES) and once reusing the preconditioner for five consecutive time steps (MUMPS-GMRES-5). Left: Total CPU wall time. Right: CPU wall time spent in the linear solver. System: Apple M4 Max.}
 \label{fig:PictureFAU1}
 \end{figure}
 
-To provide proper region-dependent material parameters to our nonlinear poro-viscoelastic model, we need to ensure that our inverse parameter identification algorithm provides physically reasonable and unique parameter sets. Therefore, we performed a numerical experiment that includes the lateral displacement into the inverse parameter identification. In Deliverable 2.3 we reported on the extension of our numerical experiment from poroelasticity towards poro-viscoelasticity and showed the results for a relaxation test loading protocol. The inclusion of the lateral displacement proved highly beneficial such that we extended the experiment by two more loading protocols. Inspired by our actual experimental protocol for brain tissue in the laboratory, we analyze cyclic loading and a combination of cyclic loading and compression relaxation. It turns out that also for the other loading protocols, adding the lateral displacement as an additional information to the inverse parameter identification is a mandatory improvement. All results on the improved parameter identification will be published in an upcoming publication. 
+To provide proper region-dependent material parameters to our nonlinear poro-viscoelastic model, we need to ensure that our inverse parameter identification algorithm provides physically reasonable and unique parameter sets. Therefore, we performed a numerical experiment that includes the lateral displacement into the inverse parameter identification. In Deliverable 2.3 we reported on the extension of our numerical experiment from poroelasticity towards poro-viscoelasticity and showed the results for a relaxation test loading protocol. The inclusion of the lateral displacement proved highly beneficial such that we extended the experiment by two more loading protocols. Inspired by our actual experimental protocol for brain tissue in the laboratory, we analyze cyclic loading and a combination of cyclic loading and compression relaxation. It turns out that also for the other loading protocols, adding the lateral displacement as additional information to the inverse parameter identification is a mandatory improvement. All results on the improved parameter identification will be used in an upcoming publication. 
  
-To put our improved inverse parameter identification to the test, we applied it to actual experimental data of the pig brain putamen (see Figure \ref{fig:PictureFAU2}). Like the numerical experiment, both optimization strategies provide a good fit on the reaction force, but the lateral displacement is only captured by our improved algorithm. 
+To put our improved inverse parameter identification to the test, we applied it to actual experimental data of the pig brain putamen (see Figure \ref{fig:PictureFAU2}). As in the numerical experiment, both optimization strategies provide a good fit on the reaction force, but the lateral displacement is only captured by our improved algorithm. 
 
 \begin{figure}[h]
   \centering
@@ -240,13 +242,8 @@ To put our improved inverse parameter identification to the test, we applied it 
   \label{fig:PictureFAU2}
 \end{figure}
 
-\noindent\textbf{Milestone 13: Upscale digital twins to pre-exascale environments}
 
-The brain application is far from pre-exascale readiness. Still, we made huge improvements and are close to system resolutions that match current medical imaging techniques. Moving towards pre-exascale, we require iterative solver strategies for our strongly coupled problem, matrix-free methods with GPU acceleration and algebraic multigrid methods. This has to be considered as a risk for the remaining funding period but is still in accordance with the proposal where we refer to application improvements based on their initial state. 
-
-
-
-\subsection{Liver (FVB-WIAS)}
+\section{Liver (FVB-WIAS)}    \label{sec:wias}
 %======================
 
 
@@ -258,12 +255,13 @@ The implementation covered the following main directions:
 \item consistent and stable discretization of the discrete spaces in different dimensions,
 \item the inclusion of the augmented Lagrangian preconditioner developed at UNIPI, and
 \item the definition of a pipeline for constructing realistic liver and liver vasculature models for testing and validation purposes.
+
 \end{itemize}
 The mathematical model considers the tissue described as a (linear) elastic material as a function of the displacement field, coupled to a set of thin structures (the fluid vessels) which are approximated by one-dimensional manifolds within the three dimensional domain, and whose dynamics is described by one-dimensional Navier-Stokes equations for the cross-sectional area, the flow rate, and the average cross-sectional pressure along the one-dimensional manifold. Mathematically, the vasculature is assumed to be composed of a finite set of elementary curves (curved segments) which can be mapped into the interval [0,1]. The vasculature network is uniquely defined by the list of curved segments, the positions of the initial and final points of these segments, and by the information concerning the connectivity of the graph (junctions connecting multiple segments)
 
 \noindent\textbf{Discretization size across scales }
 
-\noindent One of the challenges to be addressed concerns the presence of different discretization: the finite element discretization for the 3D displacement field, the discretization of the one-dimensional fluid dynamics, and the discretization of the Lagrange multiplier space on the tissue-vessel interface via singular points. The choice of these parameters is strictly related to the physical scales, and  to the numerical properties of the different solvers. The numerical investigations performed in the previous project phases revealed that, one the one hand, the discretization size used for the singular points has to be comparable to the characteristic mesh size of the three-dimensional finite element mesh. On the other hand, if the vasculature contains a large number of vessels, requiring multiple singular points per 3D mesh element, stability problems can arise, due to the singularity of the resulting finite element matrix. To overcome this issue, we introduced an additional constraint in the reduced Lagrange multiplier formulation, identifying all singular points belonging to the same degree of freedom of the 3D mesh. This step introduces a voxelization of the one-dimensional which is refined automatically according to the three-dimensional solver and ensures well-posedness of the linear system as demonstrated in Figure~\ref{fig:PictureWIAS1}.
+\noindent One of the challenges to be addressed concerns the presence of different discretization: the finite element discretization for the 3D displacement field, the discretization of the one-dimensional fluid dynamics, and the discretization of the Lagrange multiplier space on the tissue-vessel interface via singular points. The choice of these parameters is strictly related to the physical scales, and  to the numerical properties of the different solvers. The numerical investigations performed in the previous project phases revealed that, one the one hand, the discretization size used for the singular points has to be comparable to the characteristic mesh size of the three-dimensional finite element mesh. On the other hand, if the vasculature contains a large number of vessels, requiring multiple singular points per 3D mesh element, stability problems can arise, due to the singularity of the resulting finite element matrix. To overcome this issue, we introduced an additional constraint in the reduced Lagrange multiplier formulation, identifying all singular points belonging to the same degree of freedom of the 3D mesh. This step introduces a voxelization of the one-dimensional component which is refined automatically according to the three-dimensional solver and ensures well-posedness of the linear system as demonstrated in Figure~\ref{fig:PictureWIAS1}.
 
 \begin{figure}
 	\centering
@@ -273,14 +271,6 @@ The mathematical model considers the tissue described as a (linear) elastic mate
 \end{figure}
 
 
-
-
-
-Within the physical model, the coupling conditions are defined as follows:
-\begin{itemize}[left=1.5em, itemsep=0pt, topsep=0pt]
-	\item the pulsatile flow within the vessels imposes a normal displacement at the tissue vessel boundary;
-	\item the response of the tissue to this displacement induces an external pressure, which is included in the equations for the one-dimensional fluid dynamics.
-\end{itemize}
 
 As described in the previous deliverables, the boundary condition on the tissue is implemented using an immersed method with reduced Lagrange multipliers, i.e., imposing singular terms on the elasticity model with support in the thin vessel.
 
@@ -345,7 +335,7 @@ We developed a first pipeline combining OpenCCO with MeshLabl for mesh smoothing
 \begin{figure}[hbtp]
 	\centering
 	\includegraphics[width=0.75\textwidth]{PictureWIAS4.png}
-	\caption{\it{\small{Numerical results for the preliminary model (200 vessels, 1.3Mio. degrees of freedom in the 3D model).}}}
+	\caption{Numerical results for the preliminary model (200 vessels, 1.3Mio. degrees of freedom in the 3D model).}
 	\label{fig:PictureWIAS4}
 \end{figure}
 
@@ -356,7 +346,7 @@ We developed a first pipeline combining OpenCCO with MeshLabl for mesh smoothing
 %	B.Kerautret, P. Ngo, N. Passat, H. Talbot, and C. Jaquet: ``OpenCCO: An Implementation of Constrained Constructive Optimization for Generating 2D and 3D Vascular Trees'', \emph{Image Processing On Line}, 13 (2023), pp.~258--279. \href{https://doi.org/10.5201/ipol.2023.473}{doi:10.5201/ipol.2023.473}
 %\end{thebibliography}
 
-\subsection{Mechanobiology (UNIBS)}
+\section{Mechanobiology (UNIBS)}   \label{sec:unibs}
 %===========================
 
 
@@ -369,7 +359,7 @@ The current implementation features significant numerical enhancements compared 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.75\linewidth]{PictureUNIBS1.png}
-    \caption{Triangulation adopted for the 3D bulk mesh (left), distinguishing between the nucleus in blue and the cytoplasm in red, and the triangulation utilized for the 2D cell membrane manifold mesh.}
+    \caption{Triangulation adopted for the 3D bulk mesh (left), distinguishing between the nucleus in blue and the cytoplasm in red, and the triangulation utilized for the 2D cell membrane manifold mesh (right).}
     \label{fig:Picture1}
 \end{figure}
 
@@ -378,7 +368,7 @@ The current implementation features significant numerical enhancements compared 
 \noindent\textbf{Parallel Distributed Infrastructure and Dual-Mesh Architecture}
 %________________________________________________________________________________________________
 
-\noindent We employ a fully distributed-memory parallelization strategy, leveraging MPI through deal.II’s \textit{parallel::distributed::Triangulation} class. To manage the distinct physical phenomena characterizing the problem, we utilize two separate meshes (see Fig. \ref{fig:Picture1}):
+\noindent We employ a fully distributed-memory parallelization strategy, leveraging MPI through deal.II’s \texttt{parallel::distributed::Triangulation} class. To manage the distinct physical phenomena characterizing the problem, we utilize two separate meshes (see Fig. \ref{fig:Picture1}):
 
 \begin{itemize}[left=1.5em, itemsep=0pt, topsep=0pt]
     \item 	\textbf{3D Bulk Mesh}: Employed to solve the large-strain contact mechanics problem, capturing the deformations of the cytoplasm and the nucleus.
@@ -462,14 +452,7 @@ The code dynamically manages different biological phases: Rolling/Floating, Adhe
 	\label{fig:Picture4}
 \end{figure}
 
-A preliminary integration of numerical and experimental outcomes has been achieved, where the time evolution of the total amount of complexes generated at the basal side of the cell has been compared between in vitro and in silico experiments.
-
-
-%
-%This section details recent advancements made at the University of Brescia (UNIBS) regarding high performance computational models for cell motility, implemented within the deal.II finite element library. Both multiphysics and numerical formulations are provided to study how the mechanical response of a cell affects the chemo-diffusive activities of proteins on its membrane.
-%The model employs a one-way coupling mechanism: while the geometrical evolution of the cell membrane affects the activities of transmembrane proteins, the transport of these proteins does not influence the mechanical deformation of the cell bulk. This decoupling facilitates the use of a staggered algorithm, bypassing the need for prediction or correction phases.
-%The current implementation features significant numerical enhancements compared to \cite{SerpelloniEtAlBMM2023}, specifically through the integration of stabilization methods and the transition to parallel distributed meshes and simulations. To suppress numerical oscillations, both mass lumping and shock-capturing schemes have been implemented. In the following paragraphs, we summarize the main features of the code.
-% 
+A preliminary integration of numerical and experimental outcomes has been achieved, where the time evolution of the total amount of complexes generated at the basal side of the cell has been compared between \textit{in vitro} and \textit{in silico} experiments.
 
 
 
@@ -477,7 +460,7 @@ A preliminary integration of numerical and experimental outcomes has been achiev
 
 \section{{Conclusion}} \label{sec:conclusion}
 
-In this document, we have reported the progress made in the digital twin applications of the deal.II-X project.
+In this document, we have reported the progress made in the digital twin applications of the dealii-X project.
 
 \bibliographystyle{plainnat}
 \bibliography{../common/bibliography.bib}
