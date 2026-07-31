@@ -53,9 +53,10 @@
 	\begin{documentControl}
 		\addVersion{0.1}{25.07.2026}{Ivan Prusak}{Initial draft}
 		\addVersion{0.2}{28.07.2026}{Ivan Prusak}{Techical WP summary}
-		\addVersion{0.2}{29.07.2026}{Ivan Prusak}{Non--technical WP summary}
-		\addVersion{0.3}{30.07.2026}{Ivan Prusak}{RP1 project review integration}
-		\addVersion{0.4}{31.07.2026}{Ivan Prusak}{Update partner contributions}
+		\addVersion{0.3}{29.07.2026}{Ivan Prusak}{Non--technical WP summary}
+		\addVersion{0.4}{30.07.2026}{Ivan Prusak}{RP1 project review integration}
+		\addVersion{0.5}{31.07.2026}{Ivan Prusak}{Update partner contributions}
+		\addVersion{0.6}{31.07.2026}{Ivan Prusak}{Deliverable and Milestone status}
 		\addVersion{1.0}{31.07.2026}{Martin Kronbichler}{Final version}
 	\end{documentControl}
 	
@@ -384,11 +385,6 @@ Together, the WP2 subprojects aim to push the boundaries of computational simula
 \footnotetext[1]{AMG4PSBLAS has been assessed on the cardiac electrophysiology monodomain problem on a patient-specific left ventricle mesh (Section~\ref{sec:wp1_psctoolkit}); its integration into the application codes is foreseen in the final project period.}
 
 
-\textcolor{red}{
-\noindent\textbf{Status of Milestone \#13.}
-Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.}
-
-%\noindent\text
 
 
 
@@ -808,7 +804,7 @@ engagement with patients, payers and policymakers remains at an early stage.
 
 \subsubsection*{Follow-up on the intermediate review recommendations}
 
-The reviewers of the intermediate project review identified stakeholder engagement and
+The Monitors of the intermediate project review identified stakeholder engagement and
 exploitation as the weakest aspects of the project's planning and of the initial and
 intermediate dissemination deliverables. The consortium accepts this assessment. The
 activities reported above were designed primarily for the technical and scientific
@@ -974,14 +970,55 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 	% Add any technical residual risks from WP1--WP3 that management is tracking.
 \end{itemize}
 
+\subsection{Deliverable and milestone status}
+
+\subsubsection*{Submitted deliverables}
+
+The following deliverables have been submitted in M13-M22:
+\begin{itemize}
+	\item D4.5: Communication and Dissemination intermediate report (M15)
+	\item D1.6: Tutorial based on external libraries (M17)
+	\item D1.7: Report on \dealii{} improvements -- III semester (M17)
+	\item D2.3: Report on applications improvements -- III semester (M17)
+	\item D3.3: Integration of performance measuring tools (M17)
+	\item D1.8: Polygonal Discretization in \dealii{} -- II (M22)
+	\item D1.9: Report on \dealii{} improvements -- IV semester (M22)
+	\item D2.4: Report on application improvements -- IV semester (M22)
+	\item D2.7: Refined design of the PoC platform (M22)
+	\item D3.4: Co-design and energe Efficiency report (M22)
+	\item D5.3: Progress report M22 (M22)
+\end{itemize}
+
+Deliverables D1.6, D1.7, D2.3 and D3.3 have been accepted and approved by the RP1 by the Monitors during the RP1 project review. The Monitors requested changes to Deliverable D4.5 which will be implemented by September 2026 are resubmitted as described below.
+
+\subsubsection*{Submitted deliverables}
+
+The following milestone have been reached in M13-M22:
+\begin{itemize}
+	\item Milestone \#6: Parallel Polygonal Discretization Module (M14)
+	\item Milestone \#7: Scalable Coupling Algorithms Framework Completion (M17)
+	\item Milestone \#8: Cardiac Simulator Established for Exascale Computing (M17)
+	\item Milestone \#9: Brain Simulator Established for Exascale Computing (M17)
+	\item Milestone \#10: Multiscale Coupled Liver Model Completion (M17)
+	\item Milestone \#11: Deployment of the First Version of the PoC Platform (M17)
+	\item Milestone \#12: Polygonal GMG Module Completion (M22)
+\end{itemize}
+
+Milestones \#6-\#12 have been accepted and approved by the RP1 by the Monitors during the RP1 project review. 
+
+\textcolor{red}{
+\noindent\textbf{Status of Milestone \#13.}
+Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.}
+
+
 \subsection{Reporting Period RP1 review}
 
-The intermediate project review for the reporting period RP1 was held on 13 May 2026, and the formal review report was received on 2 July 2026. The reviewers acknowledged the technical progress of the project and recommended strengthening the stakeholder engagement and exploitation activities; these recommendations have been taken up by the consortium and are reflected in Sections~\ref{sec:wp4.4} and~\ref{sec:wp4.5}, and in the present section. The requested changes to Deliverables D1.3, D4.4 and D4.5 are being prepared and will be submitted by September 2026.
+The intermediate project review for the reporting period RP1 was held on 13 May 2026, and the formal review report was received on 2 July 2026. The Monitors acknowledged the technical progress of the project and recommended strengthening the stakeholder engagement and exploitation activities; these recommendations have been taken up by the consortium and are reflected in Sections~\ref{sec:wp4.4} and~\ref{sec:wp4.5}, and in the present section. The requested changes to Deliverables D1.3, D4.4 and D4.5 are being prepared and will be submitted by September 2026.
 
 
 \subsection{Clarification on travel costs}
 
-The reviewers observed that the travel budget appears overestimated for some partners. The partner INPT reports travel costs exceeding 15\% of its personnel costs in RP1, while remaining within the overall frame of the action at that partner. These costs correspond to trips, detailed in the Financial Statement of INPT, made by members of the MUMPS development team who are closely involved in dealii-X although not directly funded by the project. In particular, they attended the project meeting in Trieste, where the synchronisation between partners necessary to deliver the content of WP1.5 took place, and which also supported several other dealii-X activities. In addition, results achieved by the INPT team, including results obtained by members not directly funded by dealii-X, were presented at SIAM PP in Berlin, aligning the project's activities with the scientific community.
+The Monitors observed that the travel budget appears overestimated for some partners. The partner INPT reports travel costs exceeding 15\% of its personnel costs in RP1, while remaining within the overall frame of the action at that partner. These costs correspond to trips, detailed in the Financial Statement of INPT, made by members of the MUMPS development team who are closely involved in dealii-X although not directly funded by the project. In particular, they attended the project meeting in Trieste, where the synchronisation between partners necessary to deliver the content of WP1.5 took place, and which also supported several other dealii-X activities. In addition, results achieved by the INPT team, including results obtained by members not directly funded by dealii-X, were presented at SIAM PP in Berlin, aligning the project's activities with the scientific community.
 
 
 \subsection{Gender balance}
@@ -997,7 +1034,7 @@ field, and the project partners seek to contribute to addressing it through open
 giving early-career researchers a visible role in the project's training and dissemination
 activities.
 
-Following the reviewers' suggestion, the consortium has begun examining whether the organ
+Following Monitors' suggestion, the consortium has begun examining whether the organ
 simulation models could incorporate sex- or gender-specific parameters. The patient-specific
 simulators are driven by subject-derived imaging data and therefore already reflect
 individual anatomy, whereas the material parameters currently in use are not differentiated
