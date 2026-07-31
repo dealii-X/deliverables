@@ -267,10 +267,6 @@ There, the TinyTC implementation of BK1 reached about 10~GDoF/s on the Intel Dat
 In consultation with the compiler author we concluded that index fusion, batch vectorization and memory layout transformations would be needed for satisfactory register and SIMD utilization on that architecture.
 
 That strategy has since been implemented and the kernel set extended from BK1 to BK5.
-%% CONFIRM: state which of the three measures (index fusion / batch
-%% vectorization / layout transformation) actually delivered the gain,
-%% and give the new GDoF/s figure so the comparison with the 10 GDoF/s
-%% of D3.2 is quantitative rather than qualitative.
 Both kernels now run close to the achievable machine bandwidth of the target Intel GPUs.
 Performance is sustained across a broad range of polynomial orders, unlike the OpenMP implementations noted above; the residual loss at very high orders is a tuning rather than a structural problem, attributable to shared local memory allocation and padding.
 

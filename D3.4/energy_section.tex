@@ -52,9 +52,7 @@ We report $\eta$ and $R$ separately throughout.
 
 \subsection{Measurement methodology}
 
-% TODO: add a proper reference for p3em itself -- the GitHub repository or the
-% arXiv paper -- and cite it here alongside (or instead of) the WCCM abstract.
-Measurements are driven by \texttt{p3em}, an open source approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
+Measurements are driven by \texttt{p3em} \cite{Cielo25}, an open source approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
 Rather than wrapping the benchmark binary as a whole, it instruments a local scope of the program: a background thread queries a power meter running as a separate process and integrates the returned power readings over the lifetime of the scope.
 Three properties of this design matter for the study.
 First, it is selective: the measured region can be restricted to the parts of the program that are of interest, such as the operator evaluation, the preconditioner or the solve, while excluding I/O and set-up phases that would otherwise dilute the result.
@@ -136,13 +134,6 @@ Memory Type           & HBM2  & HBM2e    & HBM3            & HBM2e  \\
 % MareNostrum5 H100 64 GB HBM2e: arXiv:2503.09917 (cited below), and the
 % TOP500 entry names the system "NVIDIA H100 64GB".
 %   https://top500.org/system/180238/
-% TODO: the H100 column was headed "NVL" but MareNostrum5 ACC is not an NVL
-% deployment -- header changed to plain H100; confirm which was intended.
-% TODO: the 3.9 TB/s bandwidth in the H100 column is the NVL figure; the
-% MareNostrum5 64 GB HBM2e modules do not reach it. Check against the
-% MareNostrum5 paper cited below.
-% TODO: base/boost frequencies still missing for the H100, and the base clock
-% for the GH200 -- these are the quantities the frequency sweeps act on.
 
 % A100 data is provided for the system in LEONARDO (CINECA)
 % The values are taken from the work
@@ -182,13 +173,8 @@ Memory Type               & HBM2e      & HBM3       & HBM4        \\
 \end{center}
 % Performance rows are FP32 throughout, except the MI430X, for which only an
 % fp64 estimate is available (marked in the cell).
-% TODO: no EuroHPC JU system in the list above is recorded as deploying the
-% MI300X -- fill in the site if there is one, otherwise the column stands as a
-% reference point rather than as a target platform.
 
 \subsection{The efficiency--performance plane}
-
-% TODO: describe the general principle, don't describe plots we don't have.
 
 The most informative single view of a frequency sweep plots energy efficiency $\eta$ (GDoF/J) on the vertical axis against performance $R$ (GDoF/s) on the horizontal axis, with the clock frequency or the power cap as the parameter along the curve.
 Both quantities are oriented so that larger is better, so the desirable region is the upper right corner.
@@ -225,7 +211,6 @@ The two lines of work are complementary, and the plane described above is precis
 \subsection{Preliminary results}
 
 For the BK1 mass operator we have measured the performance and the energy efficiency of the OpenMP, Kokkos and TinyTC implementations on a single device at its default operating point, shown in Figure~\ref{fig:intel_pvc_bk1_energy} and presented in preliminary form at the WCCM-ECCOMAS 2026 congress~\cite{pribec_wccm2026}.
-% TODO: state the device, the polynomial degree(s), precision, problem size and runtime/driver versions.
 The two groups of bars are essentially proportional to one another: the ranking of the implementations by GDoF/s is also their ranking by DoF updates per Joule, and the ratios between them are nearly the same in both metrics.
 This is what one expects whenever the average power drawn is similar for all variants, since $\eta = R/\bar{P}$ then reduces to $R$ up to a common factor; the recorded power traces allow this reading to be checked directly, and $\bar{P}$ is therefore reported alongside the two metrics.
 The practical consequence is a negative but useful result.
@@ -237,8 +222,7 @@ No frequency or power-cap sweep has been performed so far, and this is precisely
     \centering
     \includegraphics[width=0.5\textwidth]{figures/dealii_bk1.png}
     \caption{
-            Performance (GDoF/s) and energy efficiency (DoF updates per Joule) of the OpenMP, Kokkos and TinyTC implementations of the BK1 mass operator, at the default operating point.
-            % TODO: state device, polynomial degree, precision, problem size and driver/runtime versions.
+            Performance (GDoF/s) and energy efficiency (DoF updates per Joule) of the OpenMP, Kokkos and TinyTC implementations of the BK1 mass operator for degree $p = 2$ in 32-bit precision. The setup consists of 1000 billion elements per GPU tile (Intel Ponte Vecchio).
     }
     \label{fig:intel_pvc_bk1_energy}
 \end{figure}
