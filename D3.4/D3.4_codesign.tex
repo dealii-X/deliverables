@@ -79,13 +79,13 @@ Approval Date: [Date]
 \section{Introduction}
 \label{sec:intro}
 
-This report is the second and final co-design and energy-efficiency report of the dealii-X project.
-It is a direct continuation of Deliverable D3.2, \emph{Co-Design and Energy Efficiency Report~I}, and should be read together with it.
+This is the second co-design and energy-efficiency report of the dealii-X project.
+It is a direct continuation of Deliverable D3.2, \emph{Co-Design and Energy Efficiency Report~I}.
 The motivation for the work, the selection of the CEED Bake-Off Kernels (BK) and Bake-Off Problems (BP) \citep{Fischer20scalability} and the streaming kernels \citep{Chalmers20} as proxies for the algorithmic core of high-order finite element codes, and the description of the benchmark repository\footnote{\url{https://github.com/dealii-X/benchmarks/}} are given in D3.2 and are not repeated here.
 
 D3.2 established a performance baseline for the scalar operator-evaluation kernels BK1, BK3 and BK5 on NVIDIA, AMD and Intel accelerators, using a range of programming models (CUDA, Kokkos, OpenCL, OpenMP target offloading and the Tiny Tensor Compiler), together with an initial characterization of the streaming kernels on CPUs.
 It closed by identifying three directions for the remaining project period: the exploitation of matrix instructions and cross-element vectorization, the extension from isolated operator evaluation to the complete solver chain including multigrid preconditioners, and the adoption of a portable, process-based methodology for energy measurement.
-The present report reports on the outcome of those three directions.
+Here we report on the outcome of those three directions.
 
 Since D3.2, the performance optimization effort has concentrated on three new areas:
 
@@ -102,8 +102,7 @@ Since D3.2, the performance optimization effort has concentrated on three new ar
     This closes the gap between the BK and BP figures of merit that was left open in D3.2.
 \end{itemize}
 
-The energy-efficiency analysis has likewise moved from plan to practice.
-Where D3.2 could only outline the process-based measurement strategy of \citet{Cielo25}, this report presents measurements obtained with the \texttt{p3em} energy meter, together with the efficiency metrics used to interpret them.
+Where D3.2 could only outline the process-based measurement strategy of \citet{Cielo25}, this report presents measurements obtained with the \texttt{p3em} energy meter and an explanation of the energy efficiency metrics.
 
 \subsection{Purpose of the Document}
 
@@ -126,17 +125,12 @@ To avoid duplication, the following material is documented elsewhere and only re
 \subsection{Structure of the Document}
 
 \begin{itemize}
-    \item Section~\ref{sec:codesign}: co-design for high-performance finite element kernels -- batched operator evaluation, Raviart--Thomas kernels, solver-level (BP) performance, and an updated assessment of alternative programming models.
-    \item Section~\ref{sec:energy}: energy efficiency -- metrics, measurement methodology and results.
-    \item Section~\ref{sec:conclusion}: conclusions and outlook.
+    \item Section~\ref{sec:codesign}: Co-design for High-Performance Finite Element Kernels -- batched operator evaluation, Raviart--Thomas kernels, solver-level (BP) performance, and an updated assessment of alternative programming models.
+    \item Section~\ref{sec:energy}: Energy Efficiency -- metrics, measurement methodology and results.
+    \item Section~\ref{sec:conclusion}: Conclusions and Outlook.
 \end{itemize}
 
-
 \newpage
-
-% Author notes, TODOs, ideas...
-%  - test system, upcoming hardware
-%  - energy plot (Intel PVC, OpenMP vs TinyTC vs Kokkos)
 
 \section{{Co-design for High-Performance Finite Element Kernels}}
 \label{sec:codesign}
@@ -372,7 +366,25 @@ Communication APIs: NCCL, RCCL, NVSHMEM
 
 \section{Conclusion}
 \label{sec:conclusion}
-% TODO: findings will be reported in the final project report.
+
+This report has extended the co-design work of D3.2 in three directions.
+
+First, the batched (thread-coarsened) mapping of elements to thread blocks resolves the poor low-order performance identified in the first report.
+By assigning several elements per thread block instead of one, the register and shared-memory capacity left idle by the 32-block-per-SM limit is recovered, raising the achieved fraction of the roofline limit from 27\% to 48\% for $p=1$ on the NVIDIA GH200 and delivering a $2\times$ speedup for the Laplace operator.
+The same mechanism addresses wavefront underutilization on AMD hardware.
+
+Second, the benchmark suite has been extended beyond the scalar, $H^1$-conforming kernels of D3.2 to the $H(\mathrm{div})$-conforming Raviart--Thomas element family, which is required by mixed formulations of the Navier--Stokes equations.
+The vector mass, mixed divergence and mixed gradient operators have been implemented and measured on both NVIDIA and AMD accelerators, and initial implementations targeting NVIDIA tensor cores in FP64 and TF32 are available.
+
+Third, operator evaluation has been embedded in a complete conjugate gradient solver, allowing the gap between kernel-level (BK) and problem-level (BP) throughput to be quantified.
+The remaining difference is attributable to gather--scatter overheads and inter-GPU communication rather than to the operator evaluation itself, which confirms that further gains at the application level must come from the solver and communication layers.
+
+The comparison of programming models has been broadened accordingly.
+High-level directive-based offloading remains convenient but does not reach machine limits for arithmetically intensive high-order kernels, whereas the tile-based approach represented by the Tiny Tensor Compiler approaches the bandwidth limits of Intel GPUs consistently across polynomial orders.
+Static kernel specialization was confirmed to be a significant lever, with just-in-time compilation strategies keeping the resulting build-time cost manageable.
+
+The energy-efficiency measurements reported in Section~\ref{sec:energy} are, at the time of writing, still being extended to the full range of target platforms.
+A consolidated assessment of energy efficiency across the benchmark suite and the participating architectures will therefore be presented in the final project report.
 
 \clearpage
 \bibliographystyle{plainnat}
