@@ -8,6 +8,7 @@
 
 \usepackage{xspace}
 \usepackage{listings}
+\usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{amssymb}
@@ -48,7 +49,15 @@
 \end{deliverableTable}
 
 \begin{deliverableTable}
-    \tableEntry{Abstract}{This document reports the publication of an example in the deal.II Code Gallery and the submission of reusable software for discontinuous Galerkin methods on agglomerated polytopal meshes to the deal.II core library.}
+    \tableEntry{Abstract}{This document reports three complementary software outcomes of WP1.3:
+the publication of a Poisson example on agglomerated polytopal meshes
+in the official deal.II Code Gallery, the availability of an
+MPI-parallel \texttt{polyDEAL} tutorial for multigrid on nested
+agglomerated meshes, and the submission of reusable agglomeration
+infrastructure for discontinuous Galerkin methods to the deal.II
+core library.}    
+%    
+%    This document reports the publication of an example in the deal.II Code Gallery and the submission of reusable software for discontinuous Galerkin methods on agglomerated polytopal meshes to the deal.II core library.}
     \tableEntry{Keywords}{Polygonal meshes, polytopic meshes, mesh
         agglomeration, discontinuous Galerkin methods, deal.II, Code Gallery,
         software integration}
@@ -58,6 +67,8 @@
 
 \begin{documentControl}
     \addVersion{0.1}{16/07/2026}{Xinping Gui}{Initial draft}
+    \addVersion{0.2}{31/07/2026}{Xinping Gui}
+               {Added a section on agglomeration-based multigrid}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -115,7 +126,7 @@ electrophysiology~\citep{FederAfrica2026}.
 %hierarchies. The proposed core framework also supports fully distributed
 %triangulations, thereby contributing to the parallelization objectives of
 %WP1.3.2. Moreover, the R-tree-based coarsening strategy has already been
-%employed within \texttt{Polydeal} to construct an agglomeration-based
+%employed within \texttt{polyDEAL} to construct an agglomeration-based
 %multilevel preconditioner for a DG discretization of cardiac
 %electrophysiology~\citep{FederAfrica2026}, providing a concrete realization of
 %the objectives of WP1.3.4. The resulting grid hierarchies and finite element
@@ -123,21 +134,47 @@ electrophysiology~\citep{FederAfrica2026}.
 %preconditioning activities envisaged in WP1.3.5, although that broader
 %integration is beyond the scope of this deliverable.
 
-Deliverable D1.5 introduced the external \texttt{Polydeal} library and
+Deliverable D1.5 introduced the external \texttt{polyDEAL} library and
 described a Poisson tutorial on agglomerated polytopic meshes. Deliverable
 D1.7 subsequently reported the testing and validation of the module, the
 opening of a separate contribution to the deal.II Code Gallery, and the
 ongoing refactoring of reusable components for possible integration into
-deal.II. The present deliverable reports the subsequent upstream software
-results. A new, self-contained agglomeration-based Poisson example, distinct
-from the tutorial described in D1.5, has been developed and published in the
-official deal.II Code Gallery to provide a clear presentation of the
-polygonal DG workflow. In parallel, a reusable framework for DG
-discretizations on agglomerated polygonal and polyhedral meshes has been
-submitted to the deal.II core library through pull request \#19891. The Code
-Gallery program provides a user-facing demonstrator, whereas the core-library
-submission provides the general-purpose software components intended for reuse
-in other applications.
+deal.II. The present deliverable records three complementary outcomes. First,
+a self-contained agglomeration-based Poisson example has been published in the
+official deal.II Code Gallery to present the single-level polygonal DG
+workflow.
+Second, the public \texttt{polyDEAL} program
+\path{examples/simplex_agglomerated_multigrid.cc}
+provides an MPI-parallel tutorial demonstrator for multigrid on nested
+agglomerated meshes.
+% Second, the public \texttt{polyDEAL} program
+%\path{examples/simplex_agglomerated_multigrid.cc} provides a tutorial software
+%demonstrator for geometric and algebraic-geometric multigrid on agglomerated polygonal meshes. 
+Third,
+a reusable framework for DG discretizations on agglomerated polygonal and
+polyhedral meshes has been submitted to the deal.II core library through pull
+request \#19891. The Code Gallery example, multigrid demonstrator, and
+core-library submission therefore address user-facing documentation,
+multilevel solver demonstration, and reusable software infrastructure,
+respectively.
+
+%Deliverable D1.5 introduced the external \texttt{polyDEAL} library and
+%described a Poisson tutorial on agglomerated polytopic meshes. Deliverable
+%D1.7 subsequently reported the testing and validation of the module, the
+%opening of a separate contribution to the deal.II Code Gallery, and the
+%ongoing refactoring of reusable components for possible integration into
+%deal.II. The present deliverable reports the subsequent upstream software
+%results. A new, self-contained agglomeration-based Poisson example, distinct
+%from the tutorial described in D1.5, has been developed and published in the
+%official deal.II Code Gallery to provide a clear presentation of the
+%polygonal DG workflow. In parallel, a reusable framework for DG
+%discretizations on agglomerated polygonal and polyhedral meshes has been
+%submitted to the deal.II core library through pull request \#19891. The Code
+%Gallery program provides a user-facing demonstrator, whereas the core-library
+%submission provides the general-purpose software components intended for reuse
+%in other applications.
+%
+
 
 %\section{{Introduction}}
 %\label{sec:introduction}
@@ -166,7 +203,7 @@ in other applications.
 %of increasingly coarse agglomerated meshes starting from an existing fine
 %mesh~\citep{FEDER2025113773}.
 %
-%Deliverable D1.5 introduced the external \texttt{Polydeal} library and
+%Deliverable D1.5 introduced the external \texttt{polyDEAL} library and
 %described a Poisson tutorial on agglomerated polytopic meshes. D1.7
 %subsequently reported the testing and validation of the module, the opening of
 %Code Gallery pull request \#233, and the ongoing refactoring of reusable
@@ -192,9 +229,42 @@ capabilities developed in WP1.3 are made available within the deal.II
 environment. It presents an agglomeration-based Poisson example that starts
 from a conventional fine triangulation, constructs a polytopic mesh, and
 solves the resulting problem using a symmetric interior penalty discontinuous
-Galerkin method. The example provides users with a reproducible introduction
+Galerkin method. The example provides users with an introduction
 to polygonal DG discretizations and illustrates both METIS- and R-tree-based
 agglomeration strategies.
+
+
+{
+The document additionally references the public \texttt{polyDEAL} multigrid
+tutorial, which uses an R-tree-based agglomeration strategy to construct a
+nested hierarchy of agglomerates. The program includes both the non-inherited
+approach, in which the DG bilinear forms are explicitly assembled on each
+agglomerated level, and the inherited approach, in which the coarse-level
+operators are recursively constructed from the fine-grid operator through the
+Galerkin product. It also provides an optional comparison with the Trilinos
+AMG preconditioner. Representative numerical results from the associated work are included
+to illustrate the parallel scalability of the shared multilevel
+components for polynomial degrees.
+% \(p=1\) and \(p=2\).
+%
+%Representative numerical results from the associated work
+%are included to illustrate the construction of the agglomerated hierarchy,
+%robustness with respect to the polynomial degree, and parallel scalability.
+}
+
+
+%{\color{blue}
+%The document additionally references the public \texttt{polyDEAL} multigrid
+%tutorial. It constructs a nested hierarchy of agglomerated grids from an
+%R-tree and supports two closely related multilevel constructions: a geometric
+%variant in which the DG operator is assembled on each polygonal level, and an
+%algebraic-geometric variant in which the same geometric hierarchy is retained
+%but coarse operators are inherited through Galerkin projection. The program
+%also provides an optional comparison with a standard Trilinos algebraic
+%multigrid preconditioner. Representative results from the associated
+%publications are included to document hierarchy construction, robustness with
+%respect to polynomial degree, and distributed-memory scalability.
+%}
 
 The document also presents the reusable software framework developed behind
 the example and proposed for integration into the deal.II core library. The
@@ -254,7 +324,7 @@ of the figures and made related documentation-formatting adjustments. The result
 Gallery page cited above.
 
 
-\subsection{{Test case, and representative output}}
+\subsection{{Test case and representative output}}
 
 The Code Gallery program considers the Poisson problem on the unit square
 $\Omega=(0,1)^2$. The numerical test is based on the manufactured exact
@@ -391,17 +461,157 @@ solution profile.
 %    \label{fig:p_convergence}
 %\end{figure}
 
+
+%\section{Geometric multigrid on agglomerated polygonal meshes}\label{sec:mg_tutorial}
+\section{Multigrid on agglomerated polygonal meshes}
+\subsection{Public implementation}
+The public \href{https://github.com/fdrmrc/polyDEAL}{\texttt{polyDEAL} repository} provides an MPI-parallel tutorial
+program for multigrid on a nested hierarchy of agglomerated
+polygonal meshes. The implementation is available in
+\href{https://github.com/fdrmrc/polyDEAL/blob/main/examples/simplex_agglomerated_multigrid.cc}
+{\path{examples/simplex_agglomerated_multigrid.cc}}.
+
+The program complements the Code Gallery example described in
+Section~2. Whereas the Code Gallery example explains how to construct
+an agglomerated polygonal mesh and assemble a DG discretization
+on it, the \texttt{polyDEAL} program extracts successive levels of an
+R-tree to construct a nested hierarchy of agglomerated meshes. It then
+builds transfer operators between consecutive levels and uses the
+resulting hierarchy in a multigrid V-cycle applied as a preconditioner
+for the fine-grid linear system.
+
+The program implements two closely related multilevel constructions.
+In the non-inherited geometric variant, the DG operator is assembled
+independently on each level of the agglomerated hierarchy. In the
+inherited algebraic-geometric variant, the same geometric hierarchy
+and transfer operators are retained, while the coarse operators are
+obtained from the finer levels through Galerkin projection.
+
+%The program implements two closely related multilevel constructions.
+%In the geometric variant, the DG operator is assembled independently
+%on each level of the agglomerated hierarchy. In the
+%algebraic-geometric variant, the same geometrically constructed
+%hierarchy and transfer operators are retained, while the coarse
+%operators are inherited from the finer levels through Galerkin
+%projection. Thus, the distinction between the two variants concerns
+%the construction of the level operators, whereas the underlying mesh
+%hierarchy is geometric in both cases.
+
+
+
+\subsection{{Construction of the polygonal hierarchy}}
+Let \(\mathcal T_h\) denote the fine simplicial mesh. The bounding boxes of
+its cells are inserted into a packed R-tree. Extracting successive tree
+levels yields a nested hierarchy of agglomerated partitions,
+\[
+    \mathcal T_0^{\mathrm{agg}}
+    \prec
+    \mathcal T_1^{\mathrm{agg}}
+    \prec \cdots \prec
+    \mathcal T_L^{\mathrm{agg}}
+    \prec
+    \mathcal T_h,
+\]
+where each coarse agglomerate is the union of agglomerates on the next finer
+level. For every extracted level, the program creates an
+\texttt{AgglomerationHandler}, connects the parent--child information provided
+by the R-tree, defines the agglomerates, initializes cell and face quadrature,
+and distributes the DG degrees of freedom.
+
+Let \(V_\ell\) denote the DG space on
+\(\mathcal{T}^{\mathrm{agg}}_\ell\), and let \(V_h\) denote the DG
+space on the underlying fine simplicial mesh. For a fixed polynomial
+degree, restriction of a polynomial on a coarse agglomerate to its
+children defines a natural injection between consecutive spaces,
+\[
+    V_0 \subset V_1 \subset \cdots \subset V_L \subset V_h.
+\]
+The program constructs the corresponding sparse injection matrices between
+all consecutive agglomerated levels and an interpolation matrix between the
+finest agglomerated level and the underlying simplicial space. Their
+transposes provide the residual restrictions required by the V-cycle. This
+avoids geometric intersection calculations between unrelated meshes because
+the hierarchy is nested by construction.
+
+
+\subsection{Representative numerical results}
+\label{subsec:representative_results}
+D1.7 reported the application of the agglomeration-based multilevel
+methodology to the three-dimensional monodomain problem, including
+comparisons with the Trilinos ML AMG preconditioner. The associated
+preprint contains an extended strong-scaling study based on the
+distributed-memory implementation in \texttt{polyDEAL}
+(Feder and Africa, 2026). Figure~3 reproduces the strong-scaling
+results reported as Figure~13 in that work.
+
+These results were obtained for a realistic ventricular application.
+%rather than by the compact two-dimensional tutorial
+%\path{examples/simplex_agglomerated_multigrid.cc}. 
+They use the same
+agglomeration and multilevel software components and are included here
+as representative evidence of their parallel scalability.
+
+%D1.7 reported the application of the agglomeration-based multilevel methodology
+%to the three-dimensional monodomain problem, including comparisons with the
+%Trilinos ML AMG preconditioner. The associated publication contains an extended
+%strong-scaling study carried out with the distributed-memory implementation in
+%\texttt{polyDEAL}~\citep{FederAfrica2026}. Figure~\ref{fig:strong_scaling}
+%reproduces Figure~13 from that work as representative numerical evidence for
+%the multilevel implementation. These results are not the output of the compact
+%two-dimensional \texttt{simplex\_agglomerated\_multigrid.cc} example; they use
+%the same agglomeration and multilevel software components in the realistic
+%ventricle application.
+
+For polynomial degree $p=1$, the test uses a mesh with $2{,}992{,}176$
+elements and $23{,}937{,}408$ degrees of freedom. Twenty time steps with
+$\Delta t=10^{-4}\,\mathrm{s}$ are run while increasing the number of MPI
+processes from 80 to 5,120, corresponding to 1 to 64 compute nodes. The authors
+report ideal scaling of the linear solver up to 32 nodes and an efficiency
+above $90\%$ up to 2,560 processes. At 5,120 processes, fewer than 10,000
+degrees of freedom are assigned to each process, and a mild degradation due to
+communication overhead is observed~\citep{FederAfrica2026}.
+
+For $p=2$, the same study considers $80{,}788{,}752$ degrees of freedom and
+uses from 320 to 5,120 MPI processes, corresponding to 4 to 64 compute nodes.
+The linear solver shows almost ideal scaling up to 64 nodes. The matrix assembly
+and right-hand-side assembly components also exhibit favorable strong-scaling
+behaviour in the reported range~\citep{FederAfrica2026}.
+
+
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.94\textwidth]{feder_africa_figure13.png}
+  \caption{Strong-scaling results for the realistic ventricular test with
+  $p=1$ (top) and $p=2$ (bottom). The left panels report wall-clock times for
+  the simulation components; the right panels report speedup relative to the
+  baseline runs with 80 and 320 MPI processes, respectively. The red labels
+  indicate the number of compute nodes. Reproduced from
+  \citet[Figure~13]{FederAfrica2026}.}
+  \label{fig:strong_scaling}
+\end{figure}
+
+The figure documents the distributed-memory scalability of the
+multilevel components shared with the public tutorial. Together with
+the hierarchy, transfer, coarse-operator, and V-cycle steps exposed by
+the tutorial, it provides representative numerical evidence for the
+implementation.
+% without presenting the ventricular application itself
+%as a new D1.8 development.
+
 % The two figure environments above are intentionally kept separate and can
 % be replaced by the two updated Code Gallery figures supplied for the final
 % version. Keep the source attribution in the captions after replacement.
-\section{{Submission of Polydeal components to the deal.II core library}}
+\section{{Submission of reusable agglomeration components to the
+deal.II core library}}
+%\section{{Submission of polyDEAL components to the deal.II core library}}
 \label{sec:core_pr}
 
 \subsection{{Overview of the submitted framework}}
-%\subsection{{Integration of \texttt{Polydeal} functionality into deal.II}}
+%\subsection{{Integration of \texttt{polyDEAL} functionality into deal.II}}
 The core-library submission represents the next step in the integration
 process described in D1.7. During this process, the generic components of
-\texttt{Polydeal} were separated from application-specific code, adapted to
+\texttt{polyDEAL} were separated from application-specific code, adapted to
 current deal.II interfaces and coding conventions, and organized for reuse in
 different DG applications on agglomerated polygonal and polyhedral meshes.
 
@@ -413,7 +623,7 @@ of writing, it remains open and is assigned to the deal.II 9.9 release
 milestone.
 
 
-The complete \texttt{Polydeal} project contains functionality beyond the
+The complete \texttt{polyDEAL} project contains functionality beyond the
 scope of this pull request, including distributed-memory agglomerated
 multigrid components. Pull request \#19891 instead concentrates on the
 general-purpose topology, traversal, mapping, quadrature, and finite element
@@ -440,8 +650,7 @@ standard deal.II matrices, vectors, constraints, and solvers.
 \texttt{AgglomerationIterator}}
 
 The accessor and iterator classes follow the usual deal.II programming
-conventions. They allow users to loop over polytopes, retrieve degree-of-
-freedom indices, query geometric data and neighboring agglomerates, and
+conventions. They allow users to loop over polytopes, retrieve degree-of-freedom indices, query geometric data and neighboring agglomerates, and
 access the faces forming an interface. The bookkeeping associated with the
 underlying fine cells is hidden from the application.
 
@@ -542,8 +751,7 @@ parts of the proposed infrastructure:
     \item \texttt{fe\_space\_on\_bbox} checks finite element evaluation and
           collected quadrature on bounding boxes in two and three dimensions;
           and
-    \item \texttt{poisson\_sanity\_check\_01} checks the combined degree-of-
-          freedom, sparsity, quadrature, and DG assembly workflow on an
+    \item \texttt{poisson\_sanity\_check\_01} checks the combined degree-of-freedom, sparsity, quadrature, and DG assembly workflow on an
           agglomerated Poisson problem.
 \end{itemize}
 
@@ -557,18 +765,16 @@ the functionality described above.
 
 \section{{Conclusion}}
 \label{sec:conclusion}
-
-The agglomeration-based Poisson program is now publicly available through the
-official deal.II Code Gallery. 
-
-The reusable agglomeration infrastructure has been submitted separately to
-the deal.II core library through pull request \#19891. The proposal provides
-handler, iterator, accessor, mapping, quadrature, degree-of-freedom,
-sparsity, and R-tree agglomeration components for DG methods on polygonal and
-polyhedral meshes. At the reporting date, the core pull request remains open and is awaiting maintainer review. Its eventual upstream integration is the next software step.
-
-
-
+This deliverable records three complementary outputs of WP1.3.
+First, the agglomeration-based Poisson program is publicly available
+through the official deal.II Code Gallery and provides a user-facing
+introduction to single-level polygonal DG discretization. Second, the
+public \texttt{polyDEAL} tutorial demonstrates MPI-parallel multigrid
+on nested R-tree agglomeration hierarchies. It supports alternative
+constructions of the level operators by direct assembly on each
+agglomerated level and by recursive Galerkin projection from the finer
+levels. Third, reusable agglomeration infrastructure has been submitted
+to the deal.II core library through pull request~\#19891. At the reporting date, the core pull request remains open and is awaiting maintainer review. Its eventual upstream integration is the next software step.
 \begin{thebibliography}{10}
 
 \bibitem[Cangiani et al., 2014]{polyDG}
