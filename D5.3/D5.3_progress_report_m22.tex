@@ -167,18 +167,18 @@ The activities of the group at RUB can be summarized as follows:
 The Kokkos-based CEED\footnote{\url{https://ceed.exascaleproject.org/bps}, retrieved on 28.07.2026} bake-off kernels within the \texttt{dealii-X} benchmark repository\footnote{\url{https://github.com/dealii-x/benchmarks}, retrieved on 28.07.2026} have been expanded using two- and three-dimensional thread structures to maximize thread-wise data locality and hardware throughput. The usage of  C++ templates allowed for significant compile-time optimizations, including loop unrolling. To mitigate streaming multiprocessor (SM) and wavefront underutilization observed for low polynomial orders ($p=1, 2$), the implementation transitioned from a single-element-per-block model to a batched multi-element processing strategy (e.g., fitting up to 11 elements per thread block for BK3 $p=1$). 
 
 \noindent\textbf{Performance highlights and key results.}
-On the NVIDIA GH200 Grace Hopper Superchip, the Kokkos-based Stream Triad benchmark established an effective reference memory bandwidth of $3.65\text{ TB/s}$. Across evaluated GPU architectures, the AMD MI210 nearly doubled the throughput compared to the Intel Max 1550, despite similar bandwidth figures ($\sim 1.25\text{ TB/s}$ vs.\ $1.0\text{ TB/s}$). Peak single-precision (FP32) throughputs on the GH200 reached nearly $90\text{ GDOF/s}$ for BK1 and BK5, while BK3 plateaued at approximately $25\text{ GDOF/s}$. Critically, the new batched processing technique yielded a $2\times$ speedup for $p=1$ on the NVIDIA GH200 (JUPITER supercomputer). The results are reported in Deliverables D1.7, D1.9, D3.3 and D3.4.
+On the NVIDIA GH200 Grace Hopper Superchip, the Kokkos-based Stream Triad benchmark established an effective reference memory bandwidth of $3.65\text{ TB/s}$. Across evaluated GPU architectures, the AMD MI210 nearly doubled the throughput compared to the Intel Max 1550, despite similar bandwidth figures ($\sim 1.25\text{ TB/s}$ vs.\ $1.0\text{ TB/s}$). Peak single-precision (FP32) throughputs on the GH200 reached nearly $90\text{ GDOF/s}$ for BK1 and BK5, while BK3 plateaued at approximately $25\text{ GDOF/s}$. Critically, the new batched processing technique yielded a $2\times$ speedup for $p=1$ on the NVIDIA GH200 (JUPITER supercomputer). The results are documented in the reports for Deliverables D1.7, D1.9, D3.3 and D3.4.
 
 \noindent\textbf{CEED benchmark Problems.}
-The operator evaluation framework was further extended to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem (BP) benchmarks. Implemented within \dealii{}, the solver was evaluated on single- and multi-GPU configurations of the GH200 Superchip using MPI with peer-to-peer (P2P) communication enabled. Results indicate that performance differences between standalone operator evaluations (BK) and full solvers (BP) are primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the evaluations confirm the high computational efficiency of high-order elements, which leverage tensor-product formulations of shape functions to increase arithmetic intensity. The results are reported in Deliverables D1.7, D1.9, D3.3 and D3.4.
+The operator evaluation framework was further extended to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem (BP) benchmarks. Implemented within \dealii{}, the solver was evaluated on single- and multi-GPU configurations of the GH200 Superchip using MPI with peer-to-peer (P2P) communication enabled. Results indicate that performance differences between standalone operator evaluations (BK) and full solvers (BP) are primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the evaluations confirm the high computational efficiency of high-order elements, which leverage tensor-product formulations of shape functions to increase arithmetic intensity. The results are documented in the reports for Deliverables D1.7, D1.9, D3.3 and D3.4.
 
 
-\subsubsection*{New matrix--free kernels for various Finite Elements.}
+\subsubsection*{New matrix--free kernels for various finite elements.}
 
 Recent developments expand the matrix-free evaluation capabilities to $H(\text{div})$--confor\-ming Raviart--Thomas spaces and Discontinuous Galerkin (DG) formulations across modern accelerator platforms.
 
 \noindent\textbf{Raviart--Thomas elements and tensor core integration.}
-Matrix-free kernels for the core operators of $H(\text{div})$--conforming Raviart--Thomas elements---vector mass, mixed divergence, and mixed gradient---were implemented and benchmarked. On the NVIDIA GH200 (JUPITER), batch processing yields consistent throughput across polynomial orders in both FP32 and FP64 precision. Similar high throughput is observed on the AMD MI250X GPU (LUMI supercomputer), with a performance drop restricted to $p=8$ due to register file capacity constraints. Furthermore, target support for NVIDIA Tensor Cores was introduced for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) matrix multiplications. The results are reported in Deliverables D1.9 and D3.4.
+Matrix-free kernels for the core operators of $H(\text{div})$--conforming Raviart--Thomas elements---vector mass, mixed divergence, and mixed gradient---were implemented and benchmarked. On the NVIDIA GH200 (JUPITER), batch processing yields consistent throughput across polynomial orders in both FP32 and FP64 precision. Similar high throughput is observed on the AMD MI250X GPU (LUMI supercomputer), with a performance drop restricted to $p=8$ due to register file capacity constraints. Furthermore, target support for NVIDIA Tensor Cores was introduced for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) matrix multiplications. The results are documented in the reports for Deliverables D1.9 and D3.4.
 
 \noindent\textbf{Discontinuous Galerkin kernels.}
 Matrix-free Discontinuous Galerkin (DG) face integration was developed for symmetric interior penalty (Nitsche) discretizations of the Laplace operator, handling both cell volume terms and numerical flux integrals over face interfaces via average and directed jump operators. Initial evaluations employ a face-centric loop (FCL) algorithm with global temporary storage to process face interactions across adjacent cells. Current efforts focus on communication reduction and cell-centric face integration paradigms ahead of a comprehensive scalability study. The preliminary results are reported in Deliverable D1.9. 
@@ -187,7 +187,7 @@ Matrix-free Discontinuous Galerkin (DG) face integration was developed for symme
 
 \noindent Matrix-free algorithms were integrated into the capable multigrid infrastructure of \dealii{}, featuring GPU-accelerated polynomial and geometric transfer operators using Kokkos abstractions and device-aware MPI.
 
-\noindent\textbf{Portable multigrid infrastructure.}  Incorporating the matrix--free kernel developments, an extensive multigrid infrastructure covering both geometric and polynomial variants has been developed within the \texttt{dealii-X portable-multigrid} repository\footnote{\url{https://github.com/dealii-X/portable-multigrid}, retrieved on 28.07.2026}. Core matrix-free geometric transfer functionality has been integrated upstream into \dealii{} and included in \dealii{} upcoming release 9.8. The infrastructure was ported to the JUPITER supercomputer at the Jülich Supercomputing Centre (JSC), leveraging both Nvidia Grace CPU Neon vectorization and Hopper GPU capabilities within the GH200 Superchip. 
+\noindent\textbf{Portable multigrid infrastructure.}  Incorporating the matrix--free kernel developments, an extensive multigrid infrastructure covering both geometric and polynomial variants has been developed within the \texttt{dealii-X portable-multigrid} repository.\footnote{\url{https://github.com/dealii-X/portable-multigrid}, retrieved on 28.07.2026} Core matrix-free geometric transfer functionality has been integrated upstream into \dealii{} and included in \dealii{} upcoming release 9.8. The infrastructure was ported to the JUPITER supercomputer at the Jülich Supercomputing Centre (JSC), leveraging both Nvidia Grace CPU Neon vectorization and Hopper GPU capabilities within the GH200 Superchip. 
 
 \noindent\textbf{Mixed--precision strategies.}
 Combining a single-precision (FP32) multigrid V-cycle preconditioner with an outer double-precision (FP64) conjugate gradient solver demonstrated superior performance and robustness compared to pure FP64 implementations. Matrix-vector evaluations on continuous finite elements established high single-GPU throughput across broad problem sizes. The preliminary results are reported in Deliverables D1.7 and D1.9.
@@ -214,7 +214,7 @@ computers.
 \noindent Robust data-ingestion utilities have been established to enable seamless interoperability between external scientific computing pipelines and the \texttt{dealii-X} framework via native Visualization Toolkit (VTK) APIs.
 
 \noindent\textbf{VTK integration and data flow.}
-Capabilities to import VTK meshes alongside point and cell fields using native VTK APIs, as well as bi-directional conversion between VTK unstructured grids and \dealii{} triangulations, have been implemented. This direct VTK API usage facilitates streamlined integration with external pre--processing tools, enables reproducible mesh and field reuse for surrogate modeling, and minimizes custom glue code across lighthouse applications. The VTK utilities workstream is coordinated under meta-issue \#19056\footnote{\url{https://github.com/dealii/dealii/issues/19056}, retrieved on 28.07.2026}.
+Capabilities to import VTK meshes alongside point and cell fields using native VTK APIs, as well as bi-directional conversion between VTK unstructured grids and \dealii{} triangulations, have been implemented. This direct VTK API usage facilitates streamlined integration with external pre--processing tools, enables reproducible mesh and field reuse for surrogate modeling, and minimizes custom glue code across lighthouse applications. The VTK utilities workstream is coordinated under meta-issue \#19056.\footnote{\url{https://github.com/dealii/dealii/issues/19056}, retrieved on 28.07.2026}
 
 \subsubsection*{New Tutorials under the \texttt{dealii-X} Label}
 
@@ -248,16 +248,16 @@ and hexahedral meshes, but does not support polygonal and polyhedral (\emph{poly
 
 \subsubsection*{Polygonal Discretization Module}
 
-\noindent The polygonal discretization activity integrates general-mesh capabilities into \dealii{}, focusing on discontinuous Galerkin methods on agglomerated polygonal/polyhedral meshes and automatic coarse grid hierarchy construction.
+\noindent The polygonal discretization activity integrates general-mesh capabilities into the \dealii{} library, focusing on discontinuous Galerkin methods on agglomerated polygonal/polyhedral meshes and automatic coarse grid hierarchy construction.
 
 \noindent\textbf{Polydeal library.}
-The supporting library, \texttt{Polydeal}\footnote{\url{https://github.com/fdrmrc/Polydeal}, retrieved on 28.07.2026}, provides the computational foundation for agglomerated polytopic discretizations. It is continuously updated to align with the latest version of \dealii{}, strictly adhering to its coding style, design practices, and quality standards. Comprehensive continuous integration test suites are executed on every commit to ensure long-term codebase integrity and stability.
+The supporting library, \texttt{Polydeal},\footnote{\url{https://github.com/fdrmrc/Polydeal}, retrieved on 28.07.2026} provides the computational foundation for agglomerated polytopic discretizations. It is continuously updated to align with the latest version of \dealii{}, strictly adhering to its coding style, design practices, and quality standards. Comprehensive continuous integration test suites are executed on every commit to ensure long-term codebase integrity and stability.
 
 \noindent\textbf{Code Gallery tutorial.}
-To showcase practical applications, a self-contained tutorial program demonstrating an agglomeration-based Poisson solver was submitted to the \dealii{} Code Gallery via pull request \#233\footnote{\url{https://github.com/dealii/code-gallery/pull/233}, retrieved on 28.07.2026}. Following review and approval, the \texttt{agglomeration\_poisson} tutorial, complete with documentation and numerical results, was published on the official \dealii{} Code Gallery page\footnote{\url{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}, retrieved on 28.07.2026}, supplemented by layout rendering enhancements in pull request \#244\footnote{\url{https://github.com/dealii/code-gallery/pull/244}, retrieved on 28.07.2026}.
+To showcase practical applications, a self-contained tutorial program demonstrating an agglomeration-based Poisson solver was submitted to the \dealii{} Code Gallery via pull request \#233.\footnote{\url{https://github.com/dealii/code-gallery/pull/233}, retrieved on 28.07.2026} Following review and approval, the \texttt{agglomeration\_poisson} tutorial, complete with documentation and numerical results, was published on the official \dealii{} Code Gallery page,\footnote{\url{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}, retrieved on 28.07.2026} supplemented by layout rendering enhancements in pull request \#244.\footnote{\url{https://github.com/dealii/code-gallery/pull/244}, retrieved on 28.07.2026}
 
 \noindent\textbf{Integration in deal.II.}
-Core reusable components from \texttt{Polydeal} were separated from application code, adapted to native \dealii{} conventions, and submitted to the main core repository via pull request \#19891\footnote{\url{https://github.com/dealii/dealii/pull/19891}, retrieved on 28.07.2026}. This contribution establishes a framework for DG discretizations on agglomerated meshes, introducing agglomeration management, standard accessor/iterator interfaces, degree-of-freedom and sparsity-pattern construction, agglomeration-aware mapping and quadrature, and R-tree-based hierarchical agglomeration (detailed in Deliverable D1.8).
+Core reusable components from \texttt{Polydeal} were separated from application code, adapted to native \dealii{} conventions, and submitted to the main core repository via pull request \#19891.\footnote{\url{https://github.com/dealii/dealii/pull/19891}, retrieved on 28.07.2026} This contribution establishes a framework for DG discretizations on agglomerated meshes, introducing agglomeration management, standard accessor/iterator interfaces, degree-of-freedom and sparsity-pattern construction, agglomeration-aware mapping and quadrature, and R-tree-based hierarchical agglomeration (detailed in the report for Deliverable D1.8).
 
 \subsubsection*{Geometrically Informed Multilevel Preconditioning}
 
@@ -362,10 +362,12 @@ Together, the WP2 subprojects aim to push the boundaries of computational simula
 
 \begin{table}[htbp]
 	\centering
-	\caption{\dealii{} and dealii-X functionalities employed by each lighthouse application.}\label{tab:wp1wp2}
+	\caption{\dealii{} and dealii-X functionalities employed by the individual lighthouse applications.}
+        \label{tab:wp1wp2}
+        \medskip
 	\renewcommand{\arraystretch}{1.2}
 	\footnotesize
-	\begin{tabular}{|p{3.0cm}|p{10.0cm}|}
+	\begin{tabular}{p{3.0cm}p{11.0cm}}
 		\toprule
 		\textbf{Application} & \textbf{WP1 functionalities employed} \\
 		\midrule
@@ -427,7 +429,7 @@ By building directly upon \dealii{} matrix-free algorithms and multigrid infrast
 Replacing \texttt{FEValues} with \texttt{FEEvaluation} yields improved assembly efficiency in matrix-based solvers. On high-order structured hexahedral meshes ($p \ge 2$), matrix-based methods exhibit strong scalability degradation due to increased stiffness matrix density and inter-processor communication overheads. Conversely, matrix-free evaluation preserves strong scalability across high process counts. Linear systems arising from cardiac mechanics utilize Chebyshev polynomial preconditioning with matrix-free $p$-multigrid capabilities. The results are reported in Deliverable D2.3.
 
 \noindent\textbf{Multicompartment perfusion and partitioned fixed-stress coupling.}
-Multicompartment Darcy perfusion physics with finite-strain Guccione myocardial mechanics and Biot-type pressure coupling have been integrated in \texttt{Porosolver}. Operating modes support standalone mechanics, standalone perfusion, or fully coupled poromechanics via a fixed-stress staggered splitting scheme. The formulation incorporates deformation-induced fluid pumping, variable fluid properties, Kozeny--Carman porosity\-dependent permeability corrections, and rule-based fiber generation with anisotropic permeability tensors aligned along fiber, sheet, and normal directions. More details are available in Deliverable D2.4.
+Multicompartment Darcy perfusion physics with finite-strain Guccione myocardial mechanics and Biot-type pressure coupling have been integrated in \texttt{Porosolver}. Operating modes support standalone mechanics, standalone perfusion, or fully coupled poromechanics via a fixed-stress staggered splitting scheme. The formulation incorporates deformation-induced fluid pumping, variable fluid properties, Kozeny--Carman porosity-dependent permeability corrections, and rule-based fiber generation with anisotropic permeability tensors aligned along fiber, sheet, and normal directions. More details are available in the report for Deliverable D2.4.
 
 \subsubsection*{Monolithic Block Preconditioning and High-Resolution Performance}
 
@@ -456,7 +458,7 @@ The staggered electromechanical framework, together with its interfacing to 0D c
 \noindent The \texttt{ExaBrain} library is built on \dealii{} to enable high-resolution finite element simulations of full human brain mechanics using a nonlinear poro-viscoelastic material model.
 
 \noindent\textbf{Repository integration and benchmark performance.}
-The repository has been merged into the central project repository\footnote{\url{https://github.com/dealii-X/dealii-X/tree/main/applications/brain}, retrieved on 28.07.2026}, verifying Milestone \#9: \emph{Brain Simulator Established for Exascale Computing}. Benchmarks on medium-scale problems ($2.5 \times 10^4$ elements, $6.4 \times 10^5$ DoFs) compared SuperLU-dist, direct MUMPS, and GMRES preconditioned with MUMPS Block Low-Rank (BLR) factorizations. Directly solving or factorizing via MUMPS BLR once per Newton iteration (\texttt{BLR-Newt}) achieved superior performance over per-step recalculation (\texttt{BLR-GMRES}) and SuperLU-dist, which suffered from severe memory constraints on single-node configurations. The results are reported in Deliverables D2.3 and D2.4. 
+The repository has been merged into the central project repository,\footnote{\url{https://github.com/dealii-X/dealii-X/tree/main/applications/brain}, retrieved on 28.07.2026} verifying Milestone \#9: \emph{Brain Simulator Established for Exascale Computing}. Benchmarks on medium-scale problems ($2.5 \times 10^4$ elements, $6.4 \times 10^5$ DoFs) compared SuperLU-dist, direct MUMPS, and GMRES preconditioned with MUMPS Block Low-Rank (BLR) factorizations. Directly solving or factorizing via MUMPS BLR once per Newton iteration (\texttt{BLR-Newt}) achieved superior performance over per-step recalculation (\texttt{BLR-GMRES}) and SuperLU-dist, which suffered from severe memory constraints on single-node configurations. The results are reported in Deliverables D2.3 and D2.4. 
 
 \noindent\textbf{Distributed triangulation and preconditioner reuse.}
 The full-brain simulations matching maximum MRI data resolution require $\approx 9 \times 10^5$ elements and $2.4 \times 10^7$ DoFs with associated system matrices having $\approx 5 \times 10^9$ non-zero matrix entries, which highlights the strong coupling of the underlying poro--viscoelastic model. To overcome the memory bottlenecks and bridge the gap towards full--brain simulations, the framework transitioned from \texttt{parallel::shared} to \texttt{parallel::distributed} triangulations. Together with the MUMPS partner (INPT), preconditioner reuse strategies were extended across multiple time steps (e.g., computing a direct BLR factorization once every 5 time steps), substantially reducing overall solver time during non-linear relaxation steps. The results are reported in Deliverables D2.3 and D2.4. 
@@ -478,7 +480,7 @@ Current solver capabilities are steadily approaching high--resolution medical im
 
 \subsubsection*{Immersed Mixed-Dimensional Elasticity and Coupling Framework}
 
-\noindent Recent updates to the liver application develop a mixed-dimensional immersed framework combining a 3D elastic tissue model with a 1D fluid model for vascular dynamics.
+\noindent Recent updates to the liver application developed a mixed-dimensional immersed framework combining a 3D elastic tissue model with a 1D fluid model for vascular dynamics.
 
 \noindent\textbf{3D--1D coupling model.}
 The coupled multi-scale model interfaces a 3D reduced Lagrange multiplier elasticity solver with a high-order explicit finite-volume scheme for 1D Navier--Stokes hemodynamics. Thin vascular structures are represented as 1D manifolds within the 3D domain. Pulsatile flow within vessels exerts normal displacements at the tissue-vessel interface via singular terms, while tissue elasticity responses generate external back-pressure for 1D fluid updates within a staggered coupling loop. This framework marks the completion of Milestone \#10: \emph{Multiscale Coupled Liver Model Completion}. The results are detailed in Deliverables D2.3 and D2.4.
@@ -517,7 +519,7 @@ The formulation adopts a one-way coupled, staggered solution strategy. At each t
 
 
 \noindent\textbf{Dual-Mesh Architecture.}
-The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics, distinguishing cytoplasm and nucleus, and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, synchronised through ghost value updates, enabling independent mesh operations on each domain; adaptive re-meshing of the manifold triangulation is foreseen as a future development. More details are reported in Deliverables D2.3 and D2.4.
+The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics, distinguishing cytoplasm and nucleus, and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, synchronized through ghost value updates, enabling independent mesh operations on each domain; adaptive re-meshing of the manifold triangulation is foreseen as a future development. More details are reported in Deliverables D2.3 and D2.4.
 
 
 
@@ -566,7 +568,7 @@ Two deliverables were submitted during this reporting period: D3.3 \emph{Integra
 
 \subsubsection*{Co-Design of Batched Operator Evaluation}
 
-\noindent The single-element-per-thread-block mapping used in the first co-design report leaves hardware resources idle at low polynomial order. Assigning several elements to each thread block removes this limitation, and the analysis of why it does so illustrates the co-design methodology applied throughout the work package.
+\noindent The single-element-per-thread-block mapping used in the initial implementation and documented in the first co-design report leaves hardware resources idle at low polynomial order. Assigning several elements to each thread block removes this limitation, and the analysis of why it does so illustrates the co-design methodology applied throughout the work package.
 
 \noindent\textbf{Occupancy analysis.}
 Profiling the Laplace operator (BK3) with $12.5$ million linear elements ($p=1$) in double precision using NVIDIA Nsight Compute shows that, under the single-element mapping, $18.8\%$ of registers and $31\%$ of shared memory remain unused, because the limit of 32 thread blocks per streaming multiprocessor is reached before the register and shared-memory capacity is exhausted. Under the batched mapping, in which up to 11 elements are assigned to a thread block for BK3 at $p=1$, register usage becomes the occupancy limiter instead, which is the desired regime. The results are reported in Deliverable D3.4.
@@ -613,10 +615,10 @@ High-level directive-based abstractions provide ease of use for simpler workload
 \subsection{WP3.4: Energy and performance profiling}
 \subsubsection*{Performance Analysis Workflow (D3.3)}
 
-\noindent Deliverable D3.3 \emph{Integration of performance measuring tools} was submitted in M17. It establishes a portable performance-analysis workflow intended as a blueprint for the library and application developers of WP1 and WP2, organised in three tiers of increasing granularity and implementation effort --- application-level profiling and roofline analysis, instrumentation-based tools, and sampling-based tools --- so that the appropriate instrument can be selected for a given analysis task. The workflow is demonstrated on a Poisson solver proxy based on the CEED Bake-Off Problems, deliberately using deformed elements so that the full metric terms are evaluated and the proxy remains representative of the complex geometries arising in the biomedical applications.
+\noindent Deliverable D3.3 \emph{Integration of performance measuring tools} was submitted in M17. It establishes a portable performance-analysis workflow intended as a blueprint for the library and application developers of WP1 and WP2, organized in three tiers of increasing granularity and implementation effort --- application-level profiling and roofline analysis, instrumentation-based tools, and sampling-based tools --- so that the appropriate instrument can be selected for a given analysis task. The workflow is demonstrated on a Poisson solver proxy based on the CEED Bake-Off Problems, deliberately using deformed elements so that the full metric terms are evaluated and the proxy remains representative of the complex geometries arising in the biomedical applications.
 
 \noindent\textbf{Tool chain.}
-NVIDIA Nsight Systems provides the system-wide timeline view of CPU and GPU execution together with API and memory-transfer statistics. The Intel VTune Profiler contributes the Application Performance Snapshot for a first compute-, memory- or I/O-bound classification, and the \texttt{gpu-offload} and \texttt{gpu-hotspots} collectors for offload analysis; source instrumentation through the Intel Tracing Technology API restricts collection to the solver loop, which matters in finite element applications where mesh setup would otherwise dominate the measurement. Intel Advisor supplies GPU roofline and source-linked line profiling. LIKWID, through its Marker API, isolates named regions such as the matrix-vector product or the linear solver loop with minimal intrusion, and supports MPI-parallel collection. The tool chain is described in Deliverable D3.3.
+NVIDIA Nsight Systems provides the system-wide timeline view of CPU and GPU execution together with API and memory-transfer statistics. The Intel VTune Profiler contributes the Application Performance Snapshot for a first classification into compute-, memory- or I/O-bound regimes, and the \texttt{gpu-offload} and \texttt{gpu-hotspots} collectors for offload analysis; source instrumentation through the Intel Tracing Technology API restricts collection to the solver loop, which matters in finite element applications where mesh setup would otherwise dominate the measurement. Intel Advisor supplies GPU roofline and source-linked line profiling. LIKWID, through its Marker API, isolates named regions such as the matrix-vector product or the linear solver loop with minimal intrusion, and supports MPI-parallel collection. The tool chain is described in Deliverable D3.3.
 
 \noindent\textbf{Representative measurement.}
 Applied to a BP3-inspired benchmark on a two-socket Intel Xeon Platinum 8360Y system using 72 cores, the instrumented workflow reports $1.80$ TFLOP/s in double precision at an operational intensity of $0.97$ FLOP/B and an aggregate memory bandwidth of $102.6$ GB/s, together with $2889$ J of energy at an average power of $499$ W, of which $160$ J is attributable to DRAM. Measurements of this kind feed a ``measure--refine'' cycle in which the effect of individual optimizations is quantified immediately and fed back into the algorithm design. The results are reported in Deliverable D3.3.
@@ -624,10 +626,10 @@ Applied to a BP3-inspired benchmark on a two-socket Intel Xeon Platinum 8360Y sy
 \subsubsection*{Energy Measurement Methodology}
 
 \noindent\textbf{Portable energy metering.}
-Energy consumption is measured with \texttt{p3em}\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 31.07.2026}, a minimal header-only C++ library offering a RAII-based region-of-interest interface analogous to a timer class. It spawns a background thread driving a sub-process that queries vendor- or OS-specific interfaces and reports a single monotonically increasing value in Joules, which keeps the API hardware-agnostic across NVIDIA, AMD and Intel devices. Complementary telemetry is available from the Slurm scheduler, which reports a single integrated value per job and therefore cannot be correlated with individual application phases, from \texttt{likwid-powermeter} through the RAPL interfaces on Intel and AMD CPUs, and from the vendor system management interfaces for GPU devices. The methodology is described in Deliverable D3.3.
+Energy consumption is measured with \texttt{p3em},\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 31.07.2026} a minimal header-only C++ library offering a RAII-based region-of-interest interface analogous to a timer class. It spawns a background thread driving a sub-process that queries vendor- or OS-specific interfaces and reports a single monotonically increasing value in Joules, which keeps the API hardware-agnostic across NVIDIA, AMD and Intel devices. Complementary telemetry is available from the Slurm scheduler, which reports a single integrated value per job and therefore cannot be correlated with individual application phases, from \texttt{likwid-powermeter} through the RAPL interfaces on Intel and AMD CPUs, and from the vendor system management interfaces for GPU devices. The methodology is described in Deliverable D3.3.
 
 \noindent\textbf{Preliminary energy results.}
-For the BK1 mass operator, performance and energy efficiency were measured for the OpenMP, Kokkos and Tiny Tensor Compiler implementations on a single Intel Data Center GPU Max device at its default operating point, and presented in preliminary form at the WCCM--ECCOMAS 2026 congress. The ranking of the implementations by throughput (GDoF/s) coincides with their ranking by energy efficiency (DoF updates per Joule), and the ratios between them are nearly identical in the two metrics. This follows from the average power drawn being similar across the variants, in which case efficiency reduces to throughput up to a common factor. The practical consequence is a negative but useful result: at a fixed operating point there is no trade-off to be made, and an implementation optimised for time-to-solution is simultaneously optimised for energy-to-solution. A trade-off can only arise once the operating point itself is varied, which motivates the frequency and power-cap sweep planned for the remaining period. The results are reported in Deliverable D3.4.
+For the BK1 mass operator, performance and energy efficiency were measured for the OpenMP, Kokkos and Tiny Tensor Compiler implementations on a single Intel Data Center GPU Max device at its default operating point, and presented in preliminary form at the WCCM--ECCOMAS 2026 congress. The ranking of the implementations by throughput (GDoF/s) coincides with their ranking by energy efficiency (DoF updates per Joule), and the ratios between them are nearly identical in the two metrics. This follows from the average power drawn being similar across the variants, in which case efficiency reduces to throughput up to a common factor. The practical consequence is a negative but useful result: at a fixed operating point there is no trade-off to be made, and an implementation optimized for time-to-solution is simultaneously optimized for energy-to-solution. A trade-off can only arise once the operating point itself is varied, which motivates the frequency and power-cap sweep planned for the remaining period. The results are reported in Deliverable D3.4.
 
 \noindent\textbf{Status of the energy assessment.}
 The measurement campaign is being extended to the full range of target platforms; a consolidated assessment of energy efficiency across the benchmark suite and the participating architectures will be presented in the final project report.
@@ -660,8 +662,9 @@ The summary and the status of the communication and dissemination activities ori
 \begin{table}[htbp]
 \centering
 \caption{Implementation of the communication and dissemination plan timeline.}\label{tab:commdiss}
+\medskip
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|p{8cm}|c|c|} % Forces 1st column to wrap at 6cm width
+\begin{tabular}{p{9cm}cc} % Forces 1st column to wrap at 6cm width
 \toprule
 \textbf{Task} & \textbf{Planned} & \textbf{Delivered} \\
 \midrule
@@ -695,13 +698,13 @@ Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/
 \item Partner-contributed media (venue/lab photography) utilized for public dissemination; visual elements are currently being expanded to engage non-technical audiences on social media.
 \end{itemize}
 
-\item \textbf{Project Website\footnote{\url{https://www.dealii-x.eu/}, retrieved on 30.07.2026}:}
+\item \textbf{Project Website:\footnote{\url{https://www.dealii-x.eu/}, retrieved on 30.07.2026}}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Built on WordPress for efficient content and media management, featuring structured navigation, clear page categorizations, and an integrated footer newsletter subscription form.
 \item 1.3K visitors as of May 2026.
 \end{itemize}
 
-\item \textbf{Project LinkedIn account\footnote{\url{https://www.linkedin.com/company/dealii-x/}, retrieved on 30.07.2026}:}
+\item \textbf{Project LinkedIn account:\footnote{\url{https://www.linkedin.com/company/dealii-x/}, retrieved on 30.07.2026}}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
 \item Selected LinkedIn as the primary platform  to effectively target industry, governmental, non-profit, and academic professionals.
 \item Maintained an active publication frequency of 1--2 posts per week since mid-January 2025, supported by custom header branding and an editorial calendar.
@@ -710,7 +713,7 @@ Communication and Dissemination intermediate Report (D4.5) & 31/12/2025 & 19/12/
 
 \item \textbf{Quarterly E-Newsletter:}
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item Managed via Mailchimp with a structured format (editorial, highlight articles, news snippets, upcoming events/job openings, and direct links/privacy footers).
+\item Managed via Mailchimp with a structured format (editorial, highlight articles, news snippets, upcoming events/job openings, and direct links \& privacy footers).
 \item Successfully released six issues reaching 39 subscribers, demonstrating high engagement with open rates reaching up to 85\% as of May 2026.
 \end{itemize}
 \end{itemize}
@@ -763,7 +766,7 @@ Figure~\ref{fig:dissportfolio} shows the dealii-X Dissemination Portfolio achiev
 dealii-X project strictly follows the Article 17 of the Grant Agreement regarding communication, dissemination, promotion and visibility actions. In particular, all the dissemination results include both EU and EuroHPC logos and the following acknowledgment disclaimer: 
 
 
-\noindent\emph{The European Union funded this study through the HORIZON-EUROHPC project ``dealii-X: an Exascale Framework for Digital Twins of the Human Body'' (topic HORIZON-EUROHPC-JU-2023-COE-03-01). Project Grant 101172493. Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+\noindent\emph{\small The European Union funded this study through the HORIZON-EUROHPC project ``dealii-X: an Exascale Framework for Digital Twins of the Human Body'' (topic HORIZON-EUROHPC-JU-2023-COE-03-01). Project Grant 101172493. Views and opinions expressed are, however, those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
 }
 
 As an example, Figure~\ref{fig:article17} displays the snapshot of the Article 17 implementation on the dealii-X webpage.
@@ -783,7 +786,7 @@ As an example, Figure~\ref{fig:article17} displays the snapshot of the Article 1
 
 Outreach under this task is deliberately routed through the established networks of the
 in silico medicine and HPC communities (see WP4.3) rather than through project-specific
-channels, in order to maximise reach at limited cost. During the current reporting period
+channels, in order to maximize reach at limited cost. During the current reporting period
 the emphasis has been on the professional stakeholder groups closest to the project's
 technical results (clinical researchers, industry, HPC and modelling communities), while
 engagement with patients, payers and policymakers remains at an early stage.
@@ -813,13 +816,13 @@ covering the full range of stakeholders named in the Grant Agreement.
 
 Work in the remaining period is therefore directed at converting the visibility already
 achieved into genuine two-way engagement. The engagement approach is being reworked from
-opportunistic dissemination towards a documented plan that identifies target organisations
+opportunistic dissemination towards a documented plan that identifies target organizations
 for each stakeholder group and assigns responsibility for them within the consortium. The
 structured instruments foreseen in the Grant Agreement --- focus groups, surveys and
 semi-structured interviews --- will be applied first to the clinical and industrial
 communities, which are closest to the project's results and where the consortium already
 has established contacts. Engagement with patients, payers and policymakers will be
-pursued through the intermediary organisations available to the consortium, in particular
+pursued through the intermediary organizations available to the consortium, in particular
 the VPH Institute and the clinical partners' own networks, rather than through channels
 the project would have to build from scratch in its final months. The outcome of these
 activities, together with the corresponding indicators, will be reported in the final
@@ -835,15 +838,16 @@ reviewed at the consortium all-hands meetings. The register distinguishes betwee
 community, (ii) methodological and performance results, exploited through scientific
 publications and HPC access campaigns, and (iii) results with a direct industrial
 exploitation path, exploited through integration into partner products and services. The
-current status of the main exploitable results is summarised in
+current status of the main exploitable results is summarized in
 Table~\ref{tab:exploitation}.
 
 \begin{table}[htbp]
 \centering
 \caption{Key exploitable results and their exploitation routes at M22.}\label{tab:exploitation}
+\medskip
 \renewcommand{\arraystretch}{1.2}
 \footnotesize
-\begin{tabular}{|p{3.4cm}|p{2.2cm}|p{3.0cm}|p{3.8cm}|}
+\begin{tabular}{p{4cm}p{2.2cm}p{3.5cm}p{3.8cm}}
 \toprule
 \textbf{Exploitable result} & \textbf{Owner(s)} & \textbf{Route} & \textbf{Status at M22} \\
 \midrule
@@ -872,7 +876,7 @@ Benchmarking and scalability results on EuroHPC systems & All partners & Publica
 % Insert: system names, call types (Extreme Scale / Regular / Benchmark), total core
 % hours awarded and consumed. A single number here is the strongest exploitation
 % evidence in the whole subsection.
-\item \textbf{Uptake by third parties:} improvements contributed to deal.II benefit the wider user base of the library beyond the consortium, extending the reach of the project's results well past the biomedical application domain targeted by dealii-X.
+\item \textbf{Uptake by third parties:} improvements contributed to deal.II benefit the wider user base of the library beyond the consortium, extending the reach of the project's results well past the biomedical application domain targeted by \mbox{dealii-X}.
 % If you have download/clone statistics, releases containing dealii-X contributions,
 % or external users/citations, add them here.
 \item \textbf{Integration into partner software:} developed components are being integrated into the simulation workflows and toolchains maintained by the industrial and clinical partners, in line with the exploitation intentions declared in the Grant Agreement.
@@ -962,7 +966,7 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 	\item The risks identified during the RP1 --- delays in recruitment, technical dependencies between work packages, and the strategic work refocusing --- remained under control through monthly monitoring and early escalation. They are detailed in the Technical Report (part B) of the periodic reporting for RP1.
 	\item The multigrid scalability limitation observed on JUPITER (Section~\ref{sec:wp1_dealii}) is being addressed with the support of the POP3 Centre of Excellence and by a dedicated task force established at RUB.
 	\item Following the intermediate review, limited stakeholder engagement and the absence of a consolidated post-project sustainability arrangement are tracked as active issues rather than potential risks. Mitigation consists of the revised engagement activities reported under WP4.4 and the exploitation and technology transfer discussions reported under WP4.5, both monitored at the monthly consortium meetings.
-	\item The main residual risk for the remaining period is the timely conclusion of the exploitation claims negotiation among the participating institutions, which conditions the final exploitation and sustainability plan.
+	\item The main residual risk for the remaining period is the timely conclusion of the exploitation claims negotiated among the participating institutions concerning the conditions of the final exploitation and sustainability plan.
 	\item The GPU-accelerated interface to PSCToolkit (WP1.4), originally due at M18, has been implemented and is awaiting submission to the \dealii{} main repository; the residual risk concerns the timing of the upstream review and of the subsequent large-scale evaluation, expected during Q3--Q4 2026. The AMG preconditioners themselves have already been validated at scale on MareNostrum 5 (Section~\ref{sec:wp1_psctoolkit}).
 	\item Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is only partially achieved (see Section~\ref{sec:wp2_applications}); the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced. Progress is monitored at the monthly consortium meetings.
 	
@@ -1006,9 +1010,8 @@ The following milestone have been reached in M13-M22:
 
 Milestones \#6-\#12 have been accepted and approved by the RP1 by the Monitors during the RP1 project review. 
 
-\textcolor{red}{
 \noindent\textbf{Status of Milestone \#13.}
-Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.}
+Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected M24, and progress is being closely monitored.
 
 
 \subsection{Reporting Period RP1 review}
@@ -1034,7 +1037,7 @@ field, and the project partners seek to contribute to addressing it through open
 giving early-career researchers a visible role in the project's training and dissemination
 activities.
 
-Following Monitors' suggestion, the consortium has begun examining whether the organ
+Following the Monitors' suggestion, the consortium has begun examining whether the organ
 simulation models could incorporate sex- or gender-specific parameters. The patient-specific
 simulators are driven by subject-derived imaging data and therefore already reflect
 individual anatomy, whereas the material parameters currently in use are not differentiated
