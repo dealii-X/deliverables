@@ -383,9 +383,9 @@ Together, the WP2 subprojects aim to push the boundaries of computational simula
 \footnotetext[1]{AMG4PSBLAS has been assessed on the cardiac electrophysiology monodomain problem on a patient-specific left ventricle mesh (Section~\ref{sec:wp1_psctoolkit}); its integration into the application codes is foreseen in the final project period.}
 
 
-
+\textcolor{red}{
 \noindent\textbf{Status of Milestone \#13.}
-Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.
+Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is partially achieved at the time of reporting. The brain and cardiac simulators have demonstrated large-scale runs on pre-exascale systems, while the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced, and the liver application is scaling up network complexity towards full-organ geometries. Completion is expected \textcolor{red}{M???}, and progress is being closely monitored.}
 
 %\noindent\text
 
@@ -516,58 +516,36 @@ Initial validation tests were conducted on a prototype network comprising 200 ve
 \noindent Computational models for cell motility implemented within \dealii{} explore the interplay between large-strain bulk cell mechanics and the chemo-diffusive dynamics of membrane receptors.
 
 \noindent\textbf{One-way kinematic coupling.}
-The formulation adopts a one-way coupled, staggered solution strategy. At each time step, the non--linear mechanics of the cell bulk (cytoplasm and nucleus) are solved first. Once the updated geometric configuration is established, displacements are mapped onto the cell membrane to solve the surface chemo-diffusive problem. This kinematic decoupling permits independent time-stepping and bypasses iterative prediction-correction loops. The details are available in Deliverable D2.3.
+The formulation adopts a one-way coupled, staggered solution strategy. At each time step, the non--linear mechanics of the cell bulk (cytoplasm and nucleus) are solved first. Once the updated geometric configuration is established, displacements are mapped onto the cell membrane to solve the surface chemo-diffusive problem. This kinematic decoupling permits independent time-stepping and bypasses iterative prediction-correction loops. This is detailed in Deliverable D2.3.
+
 
 \noindent\textbf{Dual-Mesh Architecture.}
-The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, enabling independent adaptive mesh refinement (AMR) on each domain. The results are reported in Deliverable D2.3.
+The implementation employs two decoupled, parallel distributed triangulations (\texttt{parallel::distributed::Triangulation}): a 3D bulk mesh for large-strain contact mechanics, distinguishing cytoplasm and nucleus, and a 2D manifold mesh for membrane reaction-diffusion equations. Field transfer functions project bulk displacement fields onto non-matching surface grids across MPI partitions, synchronised through ghost value updates, enabling independent mesh operations on each domain; adaptive re-meshing of the manifold triangulation is foreseen as a future development. More details are reported in Deliverables D2.3 and D2.4.
+
+
 
 \subsubsection*{Multi-Scale Integration and Stabilization Methods}
 
 \noindent Numerical enhancements resolve disparities between spatial and temporal scales while maintaining solution positivity and stability across dynamically deforming manifolds.
 
 \noindent\textbf{Multi-scale time sub-stepping.}
-To address disparate physical timescales, the computationally intensive 3D contact mechanics equations are integrated using macroscopic time steps. Once updated configurations are projected onto the 2D surface, the rapid chemo-diffusive dynamics of membrane receptors are resolved through a sequence of smaller microscopic time sub-steps. The details are available in Deliverables D2.3 and D2.4.
+To address disparate physical timescales, the computationally intensive 3D contact mechanics equations are integrated using macroscopic time steps. Once updated configurations are projected onto the 2D surface, the rapid chemo-diffusive dynamics of membrane receptors are resolved through a sequence of smaller microscopic time sub-steps.
 
 \noindent\textbf{Stabilization techniques.}
-Surface advection-diffusion-reaction equations on evolving geometries incorporate numerical stabilization to eliminate non--physical oscillations. Mass lumping diagonalizes the mass matrix to maintain positivity of protein concentrations. Additionally, residual-based shock-capturing schemes introduce localized artificial diffusion near steep solution gradients. Surface transport parameters scale dynamically with local area dilation to maintain consistency under large deformations. The details are available in Deliverables D2.3 and D2.4.
+Surface advection-diffusion-reaction equations on evolving geometries incorporate numerical stabilization to eliminate non--physical oscillations. Mass lumping diagonalizes the mass matrix to maintain positivity of protein concentrations. Additionally, residual-based shock-capturing schemes introduce localized artificial diffusion near steep solution gradients. Surface transport parameters scale dynamically with local area dilation to maintain consistency under large deformations. Both the time integration scheme and the stabilization strategies are described in Deliverables D2.3 and D2.4.
+
+
 
 \subsubsection*{Contact Mechanics and Migration Simulations}
 
 \noindent \textit{In silico} experiments simulate cell adhesion, spreading, and motility across rigid sub-surfaces to characterize protein relocation phenomena.
 
 \noindent\textbf{Contact mechanics and phase transitions.}
-Cell-substrate interactions are modeled using frictionless Hertz--Signorini--Moreau contact constraints. Phenomenological body forces mimic active cytoskeletal contraction in the 3D balance equations. The solver dynamically manages transitions across cell physiological phases, including floating, substrate adhesion, axisymmetrical spreading, migration, and stable diffusion. The details are available in Deliverable D2.4.
+Cell-substrate interactions are modeled using frictionless Hertz--Signorini--Moreau contact constraints against a rigid, fixed obstacle. Phenomenological body forces mimic active cytoskeletal contraction in the 3D balance equations. The solver dynamically manages transitions across the cell physiological phases: rolling and floating, adhesion, migration and contraction (translocation), and finally diffusion, in which the cell maintains an approximately constant contact area with the substrate.
 
 \noindent\textbf{Receptor relocation and biomarker integration.}
-Simulations track the space--time relocation of transmembrane receptors during chemotaxis and durotaxis. Synthetic biological metrics, such as the total volume of receptor-ligand complexes formed at the basal cell interface, were compared against \emph{in vitro} experimental datasets, establishing a foundation for predictive cell motility digital twins. The details are available in Deliverable D2.4.
+Simulations track the space--time relocation of transmembrane receptors on the deforming membrane, which underpins the mechanisms by which cells perceive chemical and stiffness gradients in their environment. Representative results reproduce the coffee-ring formation of receptor-ligand complexes at the basal interface during the first $60$ s of the adhesion phase, at a ligand availability of $90$ molecules per square micron. A preliminary integration of numerical and experimental outcomes has also been achieved, in which the time evolution of the total amount of complexes generated at the basal side of the cell was compared between \emph{in silico} and \emph{in vitro} experiments. The results of the contact mechanics and receptor relocation simulations are reported in Deliverable D2.4.
 
-\subsection{WP2.6 PoC: Low-code platform for human organ digital twin creation}
-
-The Proof of Concept platform, deployed during this reporting period under the name \emph{DealiiX Platform}, provides a single environment in which users with different levels of technical expertise can build, run and inspect simulations based on the dealii-X libraries without dealing with the complexity of a traditional HPC workflow.
-
-\subsubsection*{Architecture and interaction model}
-
-\noindent\textbf{Four-component architecture.}
-The platform comprises the DealiiX Platform desktop application, built with Electron and Svelte and hosting the node-based canvas editor; CORAL (Computational Object-oriented Representation And Library), the C++ computational graph engine whose main backend is a \dealii{} plugin exposing the finite element machinery as graph nodes; the Coral Remote Server, a REST service providing authentication and collaborative project management; and the Coral VTK Manipulator, a web application for result visualisation and mesh tagging built on Trame with a ParaView rendering backend. The desktop application and CORAL communicate through two JSON protocols --- a registry protocol describing the available node types and a network protocol describing a computational graph --- which keep the user interface agnostic of the underlying simulation library: any library wrapped by a CORAL backend becomes available in the editor without changes to the application. The architecture is described in Deliverable D2.7.
-
-\noindent\textbf{Low-code editor and no-code layer.}
-Nodes expose typed input and output pins, and connections are validated in real time against the type system, including inheritance through abstract base classes, so that only well-formed graphs reach the execution engine. The editor provides a searchable palette, create-on-connect, per-level undo and redo, automatic rank-based layout, and import and export of graphs as JSON. The no-code layer is realised through subnetwork nodes: any selection of nodes can be collapsed into a named reusable node whose external interface is computed automatically from the unconnected pins of the selection, and which can be edited in place, nested arbitrarily, shared, or exploded back into its constituents. This realises the interaction model foreseen in D2.6, in which an expert user encapsulates a complete workflow into a single opaque node that a non-expert user then operates without seeing the underlying logic. More details are reported in Deliverables D2.3 and D2.7.
-
-\subsubsection*{Execution, metascheduling and collaborative services}
-
-\noindent\textbf{Execution modes and job management.}
-The metascheduling layer supports four execution modes, combining local or remote execution with either a CORAL graph or a standalone executable. The \emph{executable contract} is a minimal convention --- a program invoked with a non-existent parameter file writes a template of its parameters and exits, and otherwise reads the file and runs --- which makes existing \dealii{} applications usable from the platform without any platform-side development. For remote modes the platform manages the complete job lifecycle: graph and parameter files are uploaded over SSH, a Slurm batch script is generated from serial or MPI templates, and submitted jobs are tracked in a persistent table reporting scheduler status, timings and backend. For CORAL jobs the execution status of every individual node, including nodes nested inside subnetworks, can be inspected from the interface together with the job output. Two deployment scenarios were exercised: a containerised environment distributed with the platform, in which Docker runs CORAL with a complete Slurm installation and an SSH server, and a real HPC cluster reached over SSH. The results are reported in Deliverable D2.7.
-
-\noindent\textbf{Collaborative services and mesh tagging.}
-The Coral Remote Server allows users to create projects and to save, load and share computational graphs with read or write permissions, so that a validated workflow prepared by an expert can be opened and run by a colleague without being rebuilt. The Coral VTK Manipulator, extended during this period with a ParaView-based rendering backend, acquired mesh editing capabilities that make it a pre-processing as well as a post-processing tool: volume and surface cells can be picked interactively, the selection grown according to a feature angle, and \texttt{MaterialID} and \texttt{ManifoldID} tags assigned to it. Since organ meshes reconstructed from medical images carry no underlying geometry to which tags could be attached at generation time, this capability replaces error-prone loops in application code or conversion scripts with a visual and verifiable operation. The tool has been exercised on organ-scale meshes, including the brain mesh of WP2.3, and on reference meshes of several million cells. More details are reported in Deliverable D2.7.
-
-\subsubsection*{Testing with the lighthouse applications}
-
-\noindent\textbf{End-to-end validation and early-user feedback.}
-The executable mode was tested end to end on two of the dealii-X lighthouse applications, the brain simulator of FAU and the liver simulator of FVB-WIAS, as well as on the \dealii{} tutorial program step-70, included in the repository as a reference example of the contract. Because the contract requires no per-application development, support is a property of the mechanism rather than of an integration effort: the cardiac application of POLIMI and the lung application of TUM follow the same parameter-file conventions. These runs also showed that mesh tagging and result inspection are two stages of a single workflow, since the identifiers assigned upstream in the manipulator reappear downstream as the boundary indicators on which the boundary conditions are set. Feedback collected from the project partners during the testing phase was positive on the central proposition of the platform and has been translated into the activities of the final phase. The results are reported in Deliverable D2.7.
-
-\noindent\textbf{Packaging, quality assurance and milestone completion.}
-The platform is distributed as native installers for Linux and macOS, produced by an automated release pipeline in which tagging a version triggers the full check and test suite, builds the application and publishes the installers; the complete server-side stack is started with a single \texttt{docker compose} command. Six versions were released between M12 and M22, each with a public changelog and an automated test suite, and quality assurance is enforced at commit time, in continuous integration, and through two tiers of end-to-end tests driving the real application. Together, these developments complete Milestone \#11: \emph{Deployment of the first version of the PoC WP2 platform}, and conclude the deployment and testing phase of the task. The final period is devoted to enriching the node registries with the dealii-X application libraries, to developing the pipeline orchestrator designed during this phase, and to further improvements of the no-code user experience.
 \newpage
 
 \section{{Co-Design, Technology Exploitation, and Energy Efficiency (WP3)}}
