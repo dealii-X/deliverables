@@ -33,9 +33,9 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{D2.7: Deployment of the PoC platform}
     \tableEntry{Deliverable number}{D2.7}
-    \tableEntry{Deliverable version}{0.5}
+    \tableEntry{Deliverable version}{1.0}
     \tableEntry{Date of delivery}{31/07/2026}
-    \tableEntry{Actual date of delivery}{[TBD]}
+    \tableEntry{Actual date of delivery}{31/07/2026}
     \tableEntry{Nature of deliverable}{Report}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP2}
@@ -86,11 +86,12 @@
   \addVersion{0.4}{30/07/2026}{P. Colturi, M. Franzon}{Flow and consistency
     revision}
   \addVersion{0.5}{30/07/2026}{P. Colturi}{Brain figures; float placement}
+  \addVersion{1.0}{31/07/2026}{M. Kronbichler}{Final edit}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Approved by: [TBD] \\
-Approval Date: [TBD]
+Approved by: Martin Kronbichler \\
+Approval Date: 31/07/2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -192,11 +193,11 @@ Fig.~\ref{architecture}:
         \node[group, fit=(canvas)(params)(main), label={[anchor=south]above:\textbf{DealiiX Platform (desktop app)}}] (app) {};
 
         % Right column: services
-        \node[box, right=2.6cm of canvas] (server) {Coral Remote Server\\ (projects, auth, sharing)};
-        \node[box, right=2.6cm of params] (viz) {Coral VTK Manipulator\\ (VTK / ParaView)};
+        \node[box, right=3.6cm of canvas] (server) {Coral Remote Server\\ (projects, auth, sharing)};
+        \node[box, right=3.6cm of params] (viz) {Coral VTK Manipulator\\ (VTK / ParaView)};
 
         % Bottom right: execution
-        \node[box, right=2.6cm of main, fill=green!7] (coral) {CORAL engine\\ + deal.II backend};
+        \node[box, right=3.6cm of main, fill=green!7] (coral) {CORAL engine\\ + deal.II backend};
         \node[box, below=0.5cm of coral, fill=green!7] (hpc) {Local machine or\\ HPC cluster (Slurm, MPI)};
 
         \draw[arr] (canvas.east) -- node[above, sloped, font=\scriptsize]{HTTP/JWT} (server.west);
