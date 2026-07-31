@@ -1,76 +1,79 @@
-@article{bakeoff,
-author = {Paul Fischer and Misun Min and Thilina Rathnayake and Som Dutta and Tzanio Kolev and Veselin Dobrev and Jean-Sylvain Camier and Martin Kronbichler and Tim Warburton and Kasia Świrydowicz and Jed Brown},
-title ={Scalability of high-performance PDE solvers},
-
-journal = {The International Journal of High Performance Computing Applications},
-volume = {34},
-number = {5},
-pages = {562-586},
-year = {2020},
-doi = {10.1177/1094342020915762},
-
-URL = { 
-        https://doi.org/10.1177/1094342020915762
-
-},
-eprint = { 
-        https://doi.org/10.1177/1094342020915762
+@inproceedings{supermucng_energy_2026,
+  author        = {Salvatore Cielo and Elmira Birang and Alexander P{\"o}ppl and Sajad Azizi and Plamen Dobrev and Margarita Egelhofer and Ivan Pribec and Gerald Mathias},
+  title         = {Node-Level Performance and Energy Characterization of
+                   Flagship Science Applications on {SuperMUC-NG} {P}hase 2},
+  booktitle     = {IXPUG Workshop, ISC High Performance 2026},
+  address       = {Hamburg, Germany},
+  month         = jun,
+  year          = {2026},
+  note          = {arXiv:2606.23265},
+  eprint        = {2606.23265},
+  archivePrefix = {arXiv},
 }
-,
-    abstract = { Performance tests and analyses are critical to effective high-performance computing software development and are central components in the design and implementation of computational algorithms for achieving faster simulations on existing and future computing architectures for large-scale application problems. In this article, we explore performance and space-time trade-offs for important compute-intensive kernels of large-scale numerical solvers for partial differential equations (PDEs) that govern a wide range of physical applications. We consider a sequence of PDE-motivated bake-off problems designed to establish best practices for efficient high-order simulations across a variety of codes and platforms. We measure peak performance (degrees of freedom per second) on a fixed number of nodes and identify effective code optimization strategies for each architecture. In addition to peak performance, we identify the minimum time to solution at 80\% parallel efficiency. The performance analysis is based on spectral and p-type finite elements but is equally applicable to a broad spectrum of numerical PDE discretizations, including finite difference, finite volume, and h-type finite elements. }
+
+
+@article{bakeoff,
+  author  = {Paul Fischer and Misun Min and Thilina Rathnayake and Som Dutta
+             and Tzanio Kolev and Veselin Dobrev and Jean-Sylvain Camier and
+             Martin Kronbichler and Tim Warburton and Kasia {\'S}wirydowicz and
+             Jed Brown},
+  title   = {Scalability of high-performance {PDE} solvers},
+  journal = {The International Journal of High Performance Computing Applications},
+  volume  = {34},
+  number  = {5},
+  pages   = {562--586},
+  year    = {2020},
+  doi     = {10.1177/1094342020915762},
 }
 
 @article{tens_prod,
-author = {Kasia Świrydowicz and Noel Chalmers and Ali Karakus and Tim Warburton},
-title ={Acceleration of tensor-product operations for high-order finite element methods},
-
-journal = {The International Journal of High Performance Computing Applications},
-volume = {33},
-number = {4},
-pages = {735-757},
-year = {2019},
-doi = {10.1177/1094342018816368},
-
-URL = { 
-    
-        https://doi.org/10.1177/1094342018816368
-    
-    
-
-},
-eprint = { 
-    
-        https://doi.org/10.1177/1094342018816368
-    
-    
-
-}
-,
-    abstract = { This article is devoted to graphics processing unit (GPU) kernel optimization and performance analysis of three tensor-product operations arising in finite element methods. We provide a mathematical background to these operations and implementation details. Achieving close to peak performance for these operators requires extensive optimization because of the operators’ properties: low arithmetic intensity, tiered structure, and the need to store intermediate results during the kernel execution. We give a guided overview of optimization strategies and we present a performance model that allows us to compare the efficacy of these optimizations against an empirically calibrated roofline. }
-}
-
-@online{nvidia_hopper_tuning,
-  author       = {{NVIDIA Corporation}},
-  title        = {NVIDIA Hopper Tuning Guide},
-  year         = {2026},
-  url          = {https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html},
-  urldate      = {2026-06-22}
+  author  = {Kasia Świrydowicz and Noel Chalmers and Ali Karakus and
+             Tim Warburton},
+  title   = {Acceleration of tensor-product operations for high-order finite
+             element methods},
+  journal = {The International Journal of High Performance Computing Applications},
+  volume  = {33},
+  number  = {4},
+  pages   = {735--757},
+  year    = {2019},
+  doi     = {10.1177/1094342018816368},
 }
 
 @article{kokkos,
-  author={Trott, Christian R. and Lebrun-Grandié, Damien and Arndt, Daniel and Ciesko, Jan and Dang, Vinh and Ellingwood, Nathan and Gayatri, Rahulkumar and Harvey, Evan and Hollman, Daisy S. and Ibanez, Dan and Liber, Nevin and Madsen, Jonathan and Miles, Jeff and Poliakoff, David and Powell, Amy and Rajamanickam, Sivasankaran and Simberg, Mikael and Sunderland, Dan and Turcksin, Bruno and Wilke, Jeremiah},
-  journal={IEEE Transactions on Parallel and Distributed Systems},
-  title={Kokkos 3: Programming Model Extensions for the Exascale Era},
-  year={2022},
-  volume={33},
-  number={4},
-  pages={805-817},
-  doi={10.1109/TPDS.2021.3097283}}
+  author  = {Trott, Christian R. and Lebrun-Grandi{\'e}, Damien and Arndt, Daniel
+             and Ciesko, Jan and Dang, Vinh and Ellingwood, Nathan and
+             Gayatri, Rahulkumar and Harvey, Evan and Hollman, Daisy S. and
+             Ibanez, Dan and Liber, Nevin and Madsen, Jonathan and Miles, Jeff
+             and Poliakoff, David and Powell, Amy and Rajamanickam,
+             Sivasankaran and Simberg, Mikael and Sunderland, Dan and
+             Turcksin, Bruno and Wilke, Jeremiah},
+  title   = {{Kokkos} 3: Programming Model Extensions for the Exascale Era},
+  journal = {IEEE Transactions on Parallel and Distributed Systems},
+  volume  = {33},
+  number  = {4},
+  pages   = {805--817},
+  year    = {2022},
+  doi     = {10.1109/TPDS.2021.3097283},
+}
 
-@online{nvidia_mma,
+
+@misc{nvidia_hopper_tuning,
   author       = {{NVIDIA Corporation}},
-  title        = {NVIDIA MMA instruction},
+  title        = {{NVIDIA} Hopper Tuning Guide},
   year         = {2026},
+  howpublished = {\url{https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html}},
+  note         = {Accessed 2026-06-22},
+  url          = {https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html},
+  urldate      = {2026-06-22},
+}
+
+
+@misc{nvidia_mma,
+  author       = {{NVIDIA Corporation}},
+  title        = {{NVIDIA} {MMA} instruction},
+  year         = {2026},
+  howpublished = {\url{https://docs.nvidia.com/cuda/parallel-thread-execution/\#warp-level-matrix-instructions-for-mma}},
+  note         = {Accessed 2026-06-23},
   url          = {https://docs.nvidia.com/cuda/parallel-thread-execution/#warp-level-matrix-instructions-for-mma},
-  urldate      = {2026-06-23}
+  urldate      = {2026-06-23},
 }
