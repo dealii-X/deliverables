@@ -277,28 +277,30 @@ The evolving physical domain is tracked via a time-dependent level-set function 
 \noindent\textbf{Formulation and theoretical stability.}
 A space--time DG formulation was established on the agglomerated space--time mesh. Theoretical analysis verified coercivity and inf-sup stability estimates that remain uniform relative to the moving boundary position, alongside optimal a priori error bounds in a DG energy norm controlling the broken $H^1$-seminorm. More details are available in Deliverable D1.9.
 
-\subsection{WP1.4: Integration of PSCToolkit within deal.II} % (M1–M22, Lead: UNITOV)}
+\subsection{WP1.4: Integration of PSCToolkit within deal.II} \label{sec:wp1_psctoolkit}% (M1–M22, Lead: UNITOV)}
 
-The primary objective of WP1.4 is to integrate the PSCToolkit (Parallel Sparse Computing Toolkit) into the deal.II library and enhance the capability of PSCToolkit. This integration aims to leverage GPU computing to enhance performance and develop efficient preconditioners for multiphysics problems. PSCToolkit provides advanced routines for sparse matrix operations optimized for GPU architectures, which are critical for large-scale simulations.
+Work package 1.4 integrates the Parallel Sparse Computing Toolkit (PSCToolkit) into \dealii{}, with the objective of providing scalable algebraic multigrid (AMG) preconditioning through the AMG4PSBLAS package as a drop-in replacement for the existing AMG interfaces.
 
+\subsubsection*{Integration status}
 
-\subsubsection*{Integration of PSCToolkit}
+\noindent\textbf{Linear algebra backbone.}
+The integration has advanced to a mature stage during this reporting period. The numerical linear algebra backbone provided by the PSBLAS library is now fully integrated into the \dealii{} main repository, through pull requests \#18938 and \#19356.\footnote{\url{https://github.com/dealii/dealii/pull/18938} and \url{https://github.com/dealii/dealii/pull/19356}, retrieved on 30.07.2026} The user interface follows the design of the existing \dealii{} linear algebra frameworks: the \texttt{PSCToolkitWrappers} namespace mirrors the structure of the Trilinos and PETSc wrappers, so that switching between AMG implementations requires no structural changes to application code. Unit tests have been added to ensure correctness and to prevent regressions in future developments.
 
+\noindent\textbf{AMG preconditioners.}
+The AMG4PSBLAS preconditioners are exposed through the \texttt{PreconditionAMG} class, which builds the multilevel hierarchy from a distributed PSBLAS system matrix and applies it through the standardized \texttt{vmult()} method. Smoother type, coarsening strategy and coarse grid solver are configured through an \texttt{AdditionalData} object, in the same manner as the other \dealii{} preconditioner interfaces. This contribution is under review in pull request \#19398.\footnote{\url{https://github.com/dealii/dealii/pull/19398}, retrieved on 30.07.2026} The interface and its usage are documented in Deliverables D1.6 and D1.7.
 
-\textcolor{red}{NEED NEW INPUT!!}
+\subsubsection*{Performance assessment on MareNostrum 5}
 
+\noindent\textbf{Weak scaling on a model problem.}
+Following validation of the interface on the tutorial application documented in Deliverable D1.6, the practical performance of the AMG preconditioners was assessed on the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center. A three-dimensional Poisson problem on the unit cube, discretized with $\mathcal{Q}_1$ elements on a uniform hexahedral mesh, is solved by conjugate gradient preconditioned with a single smoothed V-cycle using parallel matching aggregation (\texttt{MatchBoxP}), a degree-four polynomial smoother and an $\ell_1$-Jacobi coarsest level solver. Weak-scaling runs on 1, 8 and 64 nodes (24 MPI ranks per node), corresponding to approximately $2.15\times 10^{6}$, $1.70\times 10^{7}$ and $1.35\times 10^{8}$ unknowns, keep the cost per CG iteration within a narrow range of $0.08$--$0.10$ s while the operator complexity of the hierarchy remains essentially constant at approximately $2$, indicating that the quality of the AMG hierarchy is preserved as the problem size grows. The results are reported in Deliverable D1.9.
 
-\noindent The integration of the Parallel Sparse Computing Toolkit (PSCToolkit) into \dealii{} aims to provide scalable algebraic multigrid (AMG) preconditioning through its AMG4PSBLAS package, targeting PSBLAS v3.9 and AMG4PSBLAS v1.2.
+\noindent\textbf{Strong scaling on a realistic cardiac test case.}
+The preconditioner was further assessed on the linear system arising from the monodomain model in cardiac electrophysiology, discretized on a fixed, unstructured, patient-specific left ventricle mesh with approximately $2.4\times 10^{7}$ degrees of freedom. With the same preconditioner configuration, the conjugate gradient solver reduces the relative residual by eight orders of magnitude in $12$ iterations, independently of the number of MPI ranks employed, confirming the algorithmic scalability of the aggregation strategy on unstructured, patient-derived geometries. The strong-scaling behaviour is reported in Deliverable D1.9.
 
-\noindent\textbf{Integration status.}
-The integration into the \dealii{} main repository is actively tracked via pull requests \#19050\footnote{\url{https://github.com/dealii/dealii/pull/19050}, retrieved on 28.07.2026} and \#18938\footnote{\url{https://github.com/dealii/dealii/pull/18938}, retrieved on 28.07.2026}, while a complete working interface resides on a dedicated repository branch\footnote{\url{https://github.com/psctoolkit/dealii/commits/configure_amg4psblas}, retrieved on 28.07.2026}. Designed to mirror existing Trilinos and PETSc wrappers, the \texttt{PSCToolkitWrappers::PreconditionAMG} class exposes a standardized interface to build hierarchies from distributed PSBLAS matrices, apply preconditioners via \texttt{vmult()}, and configure options via an \texttt{AdditionalData} object. This allows drop-in replacements for existing AMG preconditioners without structural changes to application code.
+\subsubsection*{Ongoing and future work}
 
-\noindent\textbf{Benchmarks and scaling results for AMG4BLAS preconditioners.\textcolor{red}{NEED NEW INPUT!!}}
-Interface correctness was validated via a Poisson solver tutorial using nodal $\mathcal{Q}^1$ elements (documented in Deliverable D1.6). Large-scale benchmarking experiments on pre-exascale configurations are underway using allocated compute resources on the MareNostrum 5 supercomputer at the Barcelona Supercomputing Center.
-
-\noindent\textbf{Ongoing and Future Work.\textcolor{red}{NEED NEW INPUT!!}}
-Current efforts focus on finalizing sparse matrix wrappers, conducting large-scale HPC performance profiling to resolve bottlenecks, and extending the interface to support GPU-accelerated AMG preconditioning through the PSBLAS CUDA backend.
-
+\noindent\textbf{GPU support and outlook.}
+PSBLAS provides GPU acceleration primarily through CUDA backends, and the exposition of this functionality through the \dealii{} interface has already been implemented, with the corresponding pull request to be submitted shortly. The remaining activities concern larger-scale performance evaluations on EuroHPC systems and the assessment of the AMG preconditioners on coupled multiphysics problems. In collaboration with INPT, the use of Block Low-Rank approximations as smoothers within the AMG cycles is being explored, linking the developments of WP1.4 and WP1.5.
 \subsection{WP1.5: Integration of MUMPS within deal.II} % (M1–M22, Lead: INPT)}
 WP1.5 aims to integrate the MUMPS (Multifrontal Massively Parallel Sparse) solver directly into deal.II and improve the capabilities of the MUMPS solver. This task focuses on enabling its use in multigrid methods and exploring advanced techniques such as low-rank approximations and mixed-precision computations to enhance solver efficiency.
 
@@ -354,7 +356,7 @@ stepping, mixed meshes, and fluid–structure interaction, extending later to ot
 \item \textbf{WP2.6 (Lead EXACT LAB)}: Deliver a low-code platform and meta-scheduler to simplify digital twin construction and execution across HPC resources.
 \end{itemize}
 
-Together, the WP2 subprojects aim to push the boundaries of computational simulations for major human organs, leveraging and integrating the advancements in exascale computing and the deal.II software library produced in WP1. Table~\ref{tab:wp1wp2} reports on the  \dealii{} and dealii-X functionalities employed by each lighthouse application \textcolor{red}{PSCTOOLKIT? GPU ADOPTION?}
+Together, the WP2 subprojects aim to push the boundaries of computational simulations for major human organs, leveraging and integrating the advancements in exascale computing and the deal.II software library produced in WP1. Table~\ref{tab:wp1wp2} reports on the  \dealii{} and dealii-X functionalities employed by each lighthouse application.
 
 \begin{table}[htbp]
 	\centering
@@ -367,7 +369,7 @@ Together, the WP2 subprojects aim to push the boundaries of computational simula
 		\midrule
 		WP2.1 Lungs & Matrix-free kernels; polynomial multigrid; mixed-precision preconditioning \\
 		\midrule
-		WP2.2 Heart & Matrix-free evaluation (\texttt{FEEvaluation}); $p$-multigrid with Chebyshev smoothing; block preconditioners; agglomeration-based multigrid for electrophysiology \\
+		WP2.2 Heart & Matrix-free evaluation (\texttt{FEEvaluation}); $p$-multigrid with Chebyshev smoothing; block preconditioners; agglomeration-based multigrid for electrophysiology; AMG4PSBLAS (PSCToolkit) preconditioning\footnotemark[1] \\
 		\midrule
 		WP2.3 Brain & MUMPS direct solver with BLR compression and mixed precision; distributed triangulations \\
 		\midrule
@@ -377,6 +379,8 @@ Together, the WP2 subprojects aim to push the boundaries of computational simula
 		\bottomrule
 	\end{tabular}
 \end{table}
+
+\footnotetext[1]{AMG4PSBLAS has been assessed on the cardiac electrophysiology monodomain problem on a patient-specific left ventricle mesh (Section~\ref{sec:wp1_psctoolkit}); its integration into the application codes is foreseen in the final project period.}
 
 
 
@@ -1019,7 +1023,7 @@ WP5 is devoted to project management and administrative tasks. The main objectiv
 	\item The multigrid scalability limitation observed on JUPITER (Section~\ref{sec:wp1_dealii}) is being addressed with the support of the POP3 Centre of Excellence and by a dedicated task force established at RUB.
 	\item Following the intermediate review, limited stakeholder engagement and the absence of a consolidated post-project sustainability arrangement are tracked as active issues rather than potential risks. Mitigation consists of the revised engagement activities reported under WP4.4 and the exploitation and technology transfer discussions reported under WP4.5, both monitored at the monthly consortium meetings.
 	\item The main residual risk for the remaining period is the timely conclusion of the exploitation claims negotiation among the participating institutions, which conditions the final exploitation and sustainability plan.
-	\item  The delayed PSCToolkit GPU interface (WP1.4) remains outstanding; completion is expected in the Q3 of 2026.
+	\item The GPU-accelerated interface to PSCToolkit (WP1.4), originally due at M18, has been implemented and is awaiting submission to the \dealii{} main repository; the residual risk concerns the timing of the upstream review and of the subsequent large-scale evaluation, expected during Q3--Q4 2026. The AMG preconditioners themselves have already been validated at scale on MareNostrum 5 (Section~\ref{sec:wp1_psctoolkit}).
 	\item Milestone \#13 (\emph{Upscale digital twins to pre-exascale environments}, M22) is only partially achieved (see Section~\ref{sec:wp2_applications}); the lung application requires further work on the surfactant boundary formulation before converged large-scale results can be produced. Progress is monitored at the monthly consortium meetings.
 	
 	
