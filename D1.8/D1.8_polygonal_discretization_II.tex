@@ -40,8 +40,7 @@
     \tableEntry{Deliverable number}{D1.8}
     \tableEntry{Deliverable version}{v0.2 (draft)}
     \tableEntry{Date of delivery}{July 31, 2026}
-    \tableEntry{Actual date of delivery}{Draft prepared July 16, 2026}
-    % Check the nature against the Grant Agreement before submission.
+    \tableEntry{Actual date of delivery}{July 31, 2026}
     \tableEntry{Nature of deliverable}{DEM - Demonstrator, pilot, prototype}
     \tableEntry{Dissemination level}{Public}
     \tableEntry{Work Package}{WP1}
@@ -67,11 +66,14 @@ core library.}
 \begin{documentControl}
     \addVersion{0.1}{16/07/2026}{Xinping Gui}{Initial draft}
     \addVersion{0.2}{31/07/2026}{Xinping Gui}
-               {Added a section on agglomeration-based multigrid}
+    {Added a section on agglomeration-based multigrid}
+    \addVersion{1.0}{31/07/2026}{M. Kronbichler}{Final edits}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
-Internal review and approval pending.
+
+Approved by: Martin Kronbichler \\
+Approval Date: 31/07/2026
 
 \subsection*{{Distribution List}}
 \begin{itemize}
@@ -152,7 +154,7 @@ agglomerated meshes.
 Third,
 a reusable framework for DG discretizations on agglomerated polygonal and
 polyhedral meshes has been submitted to the deal.II core library through pull
-request \#19891. The Code Gallery example, multigrid demonstrator, and
+request \href{https://github.com/dealii/dealii/pull/19891}{\#19891}. The Code Gallery example, multigrid demonstrator, and
 core-library submission therefore address user-facing documentation,
 multilevel solver demonstration, and reusable software infrastructure,
 respectively.
@@ -313,7 +315,7 @@ $H^1$ errors, and construction-time measurements.
 The submission and review history is recorded in two Code Gallery pull
 requests. The complete \texttt{agglomeration\_poisson} program, including its
 source and build files, user documentation, and numerical results, was
-submitted through
+posted through
 \href{https://github.com/dealii/code-gallery/pull/233}
 {dealii/code-gallery pull request \#233} and merged on March 31, 2026. A
 subsequent
@@ -624,7 +626,7 @@ milestone.
 
 The complete \texttt{polyDEAL} project contains functionality beyond the
 scope of this pull request, including distributed-memory agglomerated
-multigrid components. Pull request \#19891 instead concentrates on the
+multigrid components. Pull request \href{https://github.com/dealii/dealii/pull/19891}{\#19891} instead concentrates on the
 general-purpose topology, traversal, mapping, quadrature, and finite element
 operations that are candidates for inclusion in the deal.II core library.
 
@@ -742,7 +744,7 @@ available for standard geometric operations.
 
 \subsection{{Tests and current status}}
 
-Pull request \#19891 includes initial regression tests covering different
+Pull request \href{https://github.com/dealii/dealii/pull/19891}{\#19891} includes initial regression tests covering different
 parts of the proposed infrastructure:
 \begin{itemize}
     \item \texttt{3DRtree} checks R-tree extraction and agglomeration in
@@ -765,7 +767,7 @@ the functionality described above.
 \section{{Conclusion}}
 \label{sec:conclusion}
 This deliverable records three complementary outputs of WP1.3.
-First, the agglomeration-based Poisson program is publicly available
+First, the agglo\-me\-ration-based Poisson program is publicly available
 through the official deal.II Code Gallery and provides a user-facing
 introduction to single-level polygonal DG discretization. Second, the
 public \texttt{polyDEAL} tutorial demonstrates MPI-parallel multigrid
@@ -773,7 +775,7 @@ on nested R-tree agglomeration hierarchies. It supports alternative
 constructions of the level operators by direct assembly on each
 agglomerated level and by recursive Galerkin projection from the finer
 levels. Third, reusable agglomeration infrastructure has been submitted
-to the deal.II core library through pull request~\#19891. At the reporting date, the core pull request remains open and is awaiting maintainer review. Its eventual upstream integration is the next software step.
+to the deal.II core library through pull request~\href{https://github.com/dealii/dealii/pull/19891}{\#19891}. At the reporting date, the core pull request remains open and is awaiting maintainer review. Its eventual upstream integration is the next software step.
 \begin{thebibliography}{10}
 
 \bibitem[Cangiani et al., 2014]{polyDG}
