@@ -28,7 +28,7 @@
 
 % Main Table using the new environment and command
 \begin{deliverableTable}
-    \tableEntry{Deliverable title}{Co-Design and Energy Efficiency Report - II}
+    \tableEntry{Deliverable title}{Co-Design and Energy Efficiency Report II}
     \tableEntry{Deliverable number}{D3.4}
     \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{July 31, 2026}
@@ -137,7 +137,7 @@ To avoid duplication, the following material is documented elsewhere and only re
 
 We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs).
 The matrix-free framework and its initial implementations are described in Deliverable 1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}).
-To evaluate these problems, we adopt the bake-off benchmarks \cite{bakeoff} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
+To evaluate these problems, we adopt the bake-off benchmarks \cite{Fischer20scalability} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
 Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \cite{tens_prod}. This approach causes low-order elements to underutilize
 the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \cite{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
 leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
