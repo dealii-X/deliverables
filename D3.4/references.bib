@@ -1,0 +1,171 @@
+@article{Cielo25,
+  author    = {Cielo, Salvatore and Pöppl, Alexander and Pribec, Ivan},
+  title     = {{SYCL} for Energy-Efficient Numerical Astrophysics: the case of {DPE}cho},
+  journal   = {arXiv preprint arXiv:2508.14117},
+  year      = {2025}
+}
+
+@article{Chalmers20,
+  author    = {Chalmers, Noel and Warburton, Tim},
+  title     = {Portable high-order finite element kernels I: Streaming operations},
+  journal   = {arXiv preprint arXiv:2009.10917},
+  year      = {2020}
+}
+
+
+@article{Kronbichler19,
+  author  = {Kronbichler, Martin and Kormann, Katharina},
+  title   = {Fast Matrix-Free Evaluation of Discontinuous {G}alerkin
+             Finite Element Operators},
+  journal = {ACM Transactions on Mathematical Software},
+  volume  = {45},
+  number  = {3},
+  pages   = {29:1--29:40},
+  year    = {2019},
+  doi     = {10.1145/3325864}
+}
+
+@inproceedings{supermucng_energy_2026,
+  author        = {Salvatore Cielo and Elmira Birang and Alexander P{\"o}ppl and
+                   Sajad Azizi and Plamen Dobrev and Margarita Egelhofer and
+                   Ivan Pribec and Gerald Mathias},
+  title         = {Node-Level Performance and Energy Characterization of
+                   Flagship Science Applications on {SuperMUC-NG} {P}hase 2},
+  booktitle     = {IXPUG Workshop, ISC High Performance 2026},
+  address       = {Hamburg, Germany},
+  month         = jun,
+  year          = {2026},
+  note          = {arXiv:2606.23265},
+  eprint        = {2606.23265},
+  archivePrefix = {arXiv},
+}
+
+@article{Fischer20scalability,
+  author  = {Paul Fischer and Misun Min and Thilina Rathnayake and Som Dutta
+             and Tzanio Kolev and Veselin Dobrev and Jean-Sylvain Camier and
+             Martin Kronbichler and Tim Warburton and Kasia {\'S}wirydowicz and
+             Jed Brown},
+  title   = {Scalability of high-performance {PDE} solvers},
+  journal = {The International Journal of High Performance Computing Applications},
+  volume  = {34},
+  number  = {5},
+  pages   = {562--586},
+  year    = {2020},
+  doi     = {10.1177/1094342020915762},
+}
+
+% FIX: the surname was raw UTF-8 here while bakeoff already used {\'S}. BibTeX
+% compares bytes, so the raw form sorted after T and put this entry out of
+% alphabetical order in the bibliography.
+@article{tens_prod,
+  author  = {Kasia {\'S}wirydowicz and Noel Chalmers and Ali Karakus and
+             Tim Warburton},
+  title   = {Acceleration of tensor-product operations for high-order finite
+             element methods},
+  journal = {The International Journal of High Performance Computing Applications},
+  volume  = {33},
+  number  = {4},
+  pages   = {735--757},
+  year    = {2019},
+  doi     = {10.1177/1094342018816368},
+}
+
+@article{kokkos,
+  author  = {Trott, Christian R. and Lebrun-Grandi{\'e}, Damien and Arndt, Daniel
+             and Ciesko, Jan and Dang, Vinh and Ellingwood, Nathan and
+             Gayatri, Rahulkumar and Harvey, Evan and Hollman, Daisy S. and
+             Ibanez, Dan and Liber, Nevin and Madsen, Jonathan and Miles, Jeff
+             and Poliakoff, David and Powell, Amy and Rajamanickam,
+             Sivasankaran and Simberg, Mikael and Sunderland, Dan and
+             Turcksin, Bruno and Wilke, Jeremiah},
+  title   = {{Kokkos} 3: Programming Model Extensions for the Exascale Era},
+  journal = {IEEE Transactions on Parallel and Distributed Systems},
+  volume  = {33},
+  number  = {4},
+  pages   = {805--817},
+  year    = {2022},
+  doi     = {10.1109/TPDS.2021.3097283},
+}
+
+% FIX (this entry and the three below): howpublished/note carried the link in a
+% \url{}, and the url field carried it again. plainnat prints the url field
+% itself, so every one of these references printed its URL twice. The \url{}
+% copies are removed; the url field is kept.
+@misc{nvidia_hopper_tuning,
+  author       = {{NVIDIA Corporation}},
+  title        = {{NVIDIA} Hopper Tuning Guide},
+  year         = {2026},
+  note         = {Accessed 2026-06-22},
+  url          = {https://docs.nvidia.com/cuda/hopper-tuning-guide/index.html},
+  urldate      = {2026-06-22},
+}
+
+@misc{nvidia_mma,
+  author       = {{NVIDIA Corporation}},
+  title        = {{NVIDIA} {MMA} instruction},
+  year         = {2026},
+  note         = {Accessed 2026-06-23},
+  url          = {https://docs.nvidia.com/cuda/parallel-thread-execution/#warp-level-matrix-instructions-for-mma},
+  urldate      = {2026-06-23},
+}
+
+@misc{hager_wccm2026,
+  author       = {Georg Hager and Martin Mayr and Aditya Ujeniya and
+                  Lukas Schr{\"o}der and Gerhard Wellein},
+  title        = {Understanding performance and energy efficiency trade-offs
+                  under power capping and frequency scaling scenarios},
+  year         = {2026},
+  howpublished = {Keynote, mini-symposium MS045A ``Energy-Aware
+                  High-Performance Computing I'', WCCM-ECCOMAS 2026, Munich,
+                  Germany},
+  note         = {Presented 23 July 2026},
+  url          = {https://wccm-eccomas2026.org/event/contribution/a30ad571-0366-11f1-919d-000c29ddfc0c},
+  urldate      = {2026-07-31},
+}
+
+@misc{pribec_wccm2026,
+  author       = {Ivan Pribec and Enes Soydan and Momme Allalen and
+                  Gerald Mathias and Ivan Prusak and Martin Kronbichler},
+  title        = {Energy Usage of Matrix-Free Finite Element Methods on Modern
+                  {GPU} Architectures},
+  year         = {2026},
+  howpublished = {Mini-symposium MS045B ``Energy-Aware High-Performance
+                  Computing II'', WCCM-ECCOMAS 2026, Munich, Germany},
+  note         = {Presented 23 July 2026},
+  url          = {https://wccm-eccomas2026.org/event/contribution/f0e0ab35-05d3-11f1-919d-000c29ddfc0c},
+  urldate      = {2026-07-31},
+}
+
+@article{amati2021projecting,
+  title     = {Projecting {LBM} performance on Exascale class Architectures:
+               A tentative outlook},
+  author    = {Amati, Giorgio and Succi, Sauro and Fanelli, Pierluigi and
+               Krastev, Vesselin K and Falcucci, Giacomo},
+  journal   = {Journal of Computational Science},
+  volume    = {55},
+  pages     = {101447},
+  year      = {2021},
+  publisher = {Elsevier},
+}
+
+@article{turisini2024cineca,
+  title   = {{LEONARDO}: A Pan-European Pre-Exascale Supercomputer for {HPC}
+             and {AI} applications},
+  author  = {Turisini, M and Cestari, M and Amati, G},
+  journal = {Journal of Large-Scale Research Facilities},
+  volume  = {9},
+  year    = {2024},
+  doi     = {10.17815/jlsrf-8-186},
+}
+
+@inproceedings{turisini2024energy,
+  author    = {Turisini, Matteo and Amati, Giorgio and Acquaviva, Andrea},
+  title     = {Energy efficiency: a {Lattice Boltzmann} study},
+  booktitle = {Proceedings of the 4th Workshop on Performance and Energy
+               Efficiency in Concurrent and Distributed Systems (PECS '24)},
+  address   = {Pisa, Italy},
+  publisher = {Association for Computing Machinery},
+  pages     = {17--23},
+  year      = {2024},
+  doi       = {10.1145/3659997.3660034},
+}

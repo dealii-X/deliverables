@@ -1,0 +1,241 @@
+\section{Energy Efficiency of High Order Finite Element Kernels}
+\label{sec:energy}
+
+This section describes ongoing work in task WP3.4 on energy and performance profiling.
+The object of study is the matrix-free evaluation of high-order finite element operators, i.e.\ the kernels that dominate the run time of implicit and explicit high-order solvers.
+These kernels are characterised by a small arithmetic footprint per degree of freedom at low polynomial degree and a rapidly growing one at high degree, so that the same operator traverses the memory-bound and the compute-bound regime as the degree is varied.
+This makes the family a convenient probe of the energy behaviour of a node, and it also places the code-generation strategy and the compiler among the parameters under study rather than outside them.
+
+The motivation is one of scale.
+A single NVIDIA H100 held at 61\,\% of its 700\,W thermal design power over a full year consumes
+%
+\[
+  0.700\,\mathrm{kW} \times 0.61 \times 8760\,\mathrm{h} \approx 3740\,\mathrm{kWh},
+\]
+%
+which is more than the 3500\,kWh of the reference household commonly used in German electricity statistics, and this is the bare accelerator, before cooling, the host and the rest of the node are accounted for.
+A production system aggregates tens of thousands of such devices: JUPITER drew close to 16\,MW during its exascale TOP500 run, with an average operational demand estimated at some 11\,MW, which over a year is of the order of the household electricity consumption of a small town.
+At this scale the Joules spent by a kernel are a first-order concern, and energy-conscious HPC --- treating energy-to-solution as a figure of merit on the same footing as time-to-solution --- becomes a design constraint on codes and not only on machines.
+This is the perspective from which the present task approaches EuroHPC systems.
+
+% Sources: BDEW reference household 3500 kWh, cf. https://www.cleanenergywire.org/factsheets/what-german-households-pay-electricity
+% JUPITER 15.87 MW (TOP500 Nov 2025); 11 MW average estimate, FZJ press release
+% https://www.fz-juelich.de/en/news/archive/press-release/2024/european-exascale-supercomputer-jupiter-sets-new-energy-efficiency-standards-with-1-ranking-on-green500
+
+The massive parallelism and comparatively low clock frequency of GPUs can offer significant advantages for scientific codes in comparison to CPUs.
+Power, however, grows super-linearly with frequency, so the operating point that minimises time-to-solution is in general \emph{not} the one that minimises energy-to-solution.
+Quantifying the gap between the two, for a kernel class of practical relevance, is the purpose of this task.
+
+\subsection{Metrics}
+
+Energy-to-solution is, by definition, the integral of the instantaneous power dissipation over the measured interval,
+%
+\begin{equation}
+  E = \int_{0}^{T} P(t)\,\mathrm{d}t .
+\end{equation}
+%
+The power dissipation $P$ can in principle be modelled as a function of clock frequency and of the achieved performance, and there is a substantial literature doing so.
+Within WP3.4 we measure $E$ directly and proceed empirically, with the aim of establishing where our kernels currently stand and what can be gained by tuning them, rather than of producing a predictive power model.
+
+Performance is reported as the number of degree-of-freedom updates per second (GDoF/s), the customary throughput metric for matrix-free operator evaluation.
+Energy efficiency is reported as the number of \emph{DoF updates per Joule}, which is simply the throughput normalised by the average power drawn during the measured region,
+%
+\begin{equation}
+  \eta = \frac{\text{DoF updates}}{E} = \frac{\text{DoF updates}/t}{\bar{P}} .
+\end{equation}
+%
+Reporting $\eta$ alongside GDoF/s makes the trade-off explicit: a configuration that is faster but disproportionately more power-hungry shows up immediately as a loss in $\eta$.
+
+Where a single figure of merit is needed, the energy--delay product $\mathrm{EDP} = E \cdot t$ serves as a secondary metric.
+It penalises an operating point that lowers energy merely by running longer, which a criterion counting Joules alone would reward.
+We report $\eta$ and $R$ separately throughout.
+
+\subsection{Measurement methodology}
+
+Measurements are driven by \texttt{p3em} \cite{Cielo25}, an open source approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
+Rather than wrapping the benchmark binary as a whole, it instruments a local scope of the program: a background thread queries a power meter running as a separate process and integrates the returned power readings over the lifetime of the scope.
+Three properties of this design matter for the study.
+First, it is selective: the measured region can be restricted to the parts of the program that are of interest, such as the operator evaluation, the preconditioner or the solve, while excluding I/O and set-up phases that would otherwise dilute the result.
+Second, it is portable, since support for a new machine requires only a different meter script, the rest of the instrumentation being unchanged; in the common case the whole chain runs in user space, without privileged access.
+Third, we can measure CPU and GPU energy usage separately, accounting for different phases of the process.
+
+The approach is not specific to the kernels studied here.
+It has been applied to a set of flagship science applications on SuperMUC-NG Phase~2, in a study presented at the IXPUG workshop of ISC~2026 which documents the methodology and its validation in more detail~\cite{supermucng_energy_2026}.
+That work measures whole applications rather than isolated kernels, and is the natural counterpart to the kernel- and problem-level measurements reported below.
+
+Around this instrumentation, the study of a given system consists of the following components:
+%
+\begin{itemize}
+    \item Investigating the operating points exposed by the device and by the host: the clock frequencies the hardware supports and the range over which they may be set, together with any power-cap and memory clock settings that are available.
+    \item Setting an operating point and running the kernel sweep (polynomial degree, number of elements, precision) with the instrumented region active.
+    \item Recording one entry per (kernel, degree, operating point) tuple, so that performance and energy come from the same run and are directly comparable.
+\end{itemize}
+%
+The meter scripts build on NVML on NVIDIA devices, the AMD SMI library on AMD devices, and the Level~Zero Sysman interface on Intel devices.
+Three methodological points require care and are documented together with the results: the sampling rate of the meter and its latency relative to short measured regions, the treatment of idle power, and the attribution of energy on tightly coupled packages such as the GH200 superchip, where the CPU, the GPU and the memory share a configurable power budget.
+
+Systematically analysing power limits and frequency settings in this way allows the project to make informed decisions about optimising energy efficiency while maintaining a satisfactory level of performance, and to state the cost of that trade-off in concrete terms, e.g.\ the energy saved at a prescribed loss in time-to-solution.
+
+Tables~\ref{tab:nvidia} and~\ref{tab:amd} collect the devices of interest.
+Where possible the data is taken from the models used in the EuroHPC~JU systems.
+A model name does not identify a single product, however: form factor, memory configuration, enabled SM count and clock range all vary between variants, so the figures describe the specific parts installed in the named systems rather than the model as such.
+
+% EuroHPC GPUs
+%---------------------------
+% JUPITER - GH200
+% LUMI - AMD EPYC + AMD Instinct MI250X
+% LEONARDO - Intel Xeon (ICX, SPR) + Nvidia Ampere "Da Vinci"
+% MARENOSTRUM5 - Intel Xeon (SPR) + Nvidia Grace + Nvidia H100
+% MELUXINA - AMD EPYC + Nvidia Ampere A100
+% KAROLINA - AMD EPYC, Intel Xeon + Nvidia A100
+% VEGA - AMD EPYC + Nvidia A100
+% DISCOVERER - AMD EPYC + Nvidia DGX H200
+% DEUCALION - Arm A64FX, AMD EPYC, Nvidia A100
+% DAEDALUS - Nvidia GH200
+% ARRHENIUS - AMD EPYC Turin, GH200
+% ALICE RECOQUE - AMD EPYC Venice + AMD Instinct MI430X
+
+\begin{center}
+\begin{table}[h!]
+\centering
+\small
+\caption{Characteristics of the Nvidia and Intel GPUs of interest. The figures describe the parts installed in the named systems, not the catalogue specifications of a model.}
+\label{tab:nvidia}
+\medskip
+\begin{tabular}{l|cccc}
+                      & \shortstack{Nvidia\\A100} & \shortstack{Nvidia\\H100} & \shortstack{Nvidia\\GH200} & \shortstack{Intel\\GPU Max 1550} \\ \hline
+Variant               & SXM 64GB & 64GB     & superchip       & --     \\
+System                & Leonardo & MareNostrum5 & JUPITER     & SuperMUC-NG Ph.~2 \\ \hline
+TDP [W]               & 440   & 350-400  & 680 (superchip) & 600    \\
+FP32 [TFLOPS]         & 22.4  & 60       & 67              & 52.4   \\
+Peak Bandwidth [TB/s]      & 1.64  & 3.9      & 4               & 3.2    \\
+Base Frequency [MHz]  & 1245  & --       & --              & 900    \\
+Boost Frequency [MHz] & 1395  & --       & 1980            & 1600   \\
+Memory Size [GB]      & 64    & 64       & 96              & 128    \\
+Memory Type           & HBM2  & HBM2e    & HBM3            & HBM2e  \\
+\end{tabular}
+\end{table}
+\end{center}
+% NOTE: the 64 GB figures are correct and deliberate -- they are the custom
+% Leonardo A100 and the
+% MareNostrum5 ACC H100 64GB (TOP500 lists the system as "NVIDIA H100 64GB").
+% They are NOT the catalogue 40/80 GB A100 or 94 GB H100 NVL parts.
+%
+% Sources for the Leonardo A100 form factor -- note that CINECA's own pages
+% disagree with each other on SXM4 vs SXM6:
+%   "A customized version of NVIDIA Ampere GPUs, called A100 SXM6 64GB"
+%     https://leonardo-supercomputer.cineca.eu/about/
+%   "four NVIDIA A100 SXM4 64GB GPUs"
+%     https://leonardo-supercomputer.cineca.eu/hpc-system/
+%   "4x NVIDIA custom Ampere A100 GPU 64GB HBM2e, NVLink 3.0 (200GB/s)"
+%     https://www.hpc.cineca.it/systems/hardware/leonardo/
+%   "NVIDIA Ampere A100-64 accelerators"
+%     https://docs.hpc.cineca.it/hpc/leonardo.html
+% MareNostrum5 H100 64 GB HBM2e: arXiv:2503.09917 (cited below), and the
+% TOP500 entry names the system "NVIDIA H100 64GB".
+%   https://top500.org/system/180238/
+
+% A100 data is provided for the system in LEONARDO (CINECA)
+% The values are taken from the work
+%  https://jlsrf.org/index.php/lsf/article/view/186/345
+% Frequencies for the A100 are taken from the work of Amati and Turisini,
+%  https://arxiv.org/pdf/2406.11498
+
+% H100 data is taken for Marenostrum5
+%  https://arxiv.org/pdf/2503.09917v1
+
+% GH200 data for JUPITER Booster
+% https://www.fz-juelich.de/en/jsc/jupiter/tech
+% https://apps.fz-juelich.de/jsc/hps/jupiter/configuration.html#jupiter-booster-design
+%
+% In general GH200 power is configurable from 450 to 1000 (Memory + CPU + GPU)
+% https://nvdam.widen.net/s/rrgqqnpbz8/grace-datasheet-gh200-grace-hopper-superchip-3773000%20
+
+\begin{center}
+\begin{table}[h!]
+\centering
+\small
+\caption{Characteristics of AMD GPUs of interest. The MI430X has not been released at the time of writing; its figures are pre-production estimates.}
+\label{tab:amd}
+\medskip
+\begin{tabular}{l|ccc}
+                          & \shortstack{AMD\\MI250X} & \shortstack{AMD\\MI300X} & \shortstack{AMD\\MI430X} \\ \hline
+System                    & LUMI       & --         & Alice Recoque \\ \hline
+TDP [W]                   & 500        & 750        & 2500 (est.) \\
+FP32 [TFLOPS]             & 47.9       & 81.72      & 288 (fp64)  \\
+Peak Bandwidth [TB/s]     & 3.28       & 5.32       & 19.6        \\
+Base Frequency [MHz]      & 1000       & 1000       & --          \\
+Boost Frequency [MHz]     & 1700       & 2100       & --          \\
+Memory Size [GB]          & 128        & 192        & 432         \\
+Memory Type               & HBM2e      & HBM3       & HBM4        \\
+\end{tabular}
+\end{table}
+\end{center}
+% Performance rows are FP32 throughout, except the MI430X, for which only an
+% fp64 estimate is available (marked in the cell).
+
+\subsection{The efficiency--performance plane}
+
+The most informative single view of a frequency sweep plots energy efficiency $\eta$ (GDoF/J) on the vertical axis against performance $R$ (GDoF/s) on the horizontal axis, with the clock frequency or the power cap as the parameter along the curve.
+Both quantities are oriented so that larger is better, so the desirable region is the upper right corner.
+This way of presenting the trade-off follows the analysis of power capping and frequency scaling given by Hager et al.~\cite{hager_wccm2026}.
+% TODO: a small sketch of the plane would illustrate the approach here. A
+% ready-made one is commented out below; it needs \usepackage{tikz}.
+%
+% \begin{figure}[htbp]
+%     \centering
+%     \begin{tikzpicture}[>=stealth]
+%       \draw[->] (0,0) -- (7,0) node[right] {\small $R$ [GDoF/s]};
+%       \draw[->] (0,0) -- (0,4.6) node[above] {\small $\eta$ [GDoF/J]};
+%       \draw[thick] plot[smooth,tension=0.8] coordinates {(0.7,1.1) (2.0,2.6) (3.6,3.5) (5.2,3.3) (6.1,2.6)};
+%       \fill (6.1,2.6) circle (2pt) node[right,align=left] {\scriptsize default\\\scriptsize (max.\ clock)};
+%       \fill (3.6,3.5) circle (2pt) node[above] {\scriptsize best $\eta$};
+%       \draw[->,gray] (5.6,1.5) -- (2.6,1.5) node[midway,below] {\scriptsize decreasing frequency / power cap};
+%       \draw[->,gray] (6.4,3.6) -- (6.4,4.4) node[above] {\scriptsize better};
+%     \end{tikzpicture}
+%     \caption{Sketch of the efficiency--performance plane. Shape shown is illustrative only.}
+%     \label{fig:plane_sketch}
+% \end{figure}
+How the curves are shaped depends heavily on whether the kernel is memory bound or compute bound, and beyond that there is little we can say before the measurements have been made.
+Since the polynomial degree moves our kernels between these two regimes, the family of curves should change character across the degree range.
+
+The same plane may accommodate more than the frequency knob: curves parameterised by polynomial degree, by the choice of algorithm or implementation, or by compiler and code-generation strategy can be drawn on the same axes.
+It thereby shows in one picture which combination of runtime and build-time parameters places a given application where it wants to be on the trade-off.
+
+Better algorithms, better methods and better implementations can move energy-to-solution by a larger factor than any frequency or power cap.
+Mixed precision is the obvious example: evaluating the operator in single precision, or storing geometry and interpolation data in reduced precision while accumulating in double, cuts the data volume moved and thereby the dominant energy cost for the memory-bound part of the degree range.
+Such choices are not free, however, and have to be weighed carefully against the accuracy the application requires.
+The distinction matters for how the two are treated: a power cap can be changed and reverted without affecting the computed result, whereas a change of precision changes the answer and must be justified numerically.
+The two lines of work are complementary, and the plane described above is precisely the instrument for placing them on common axes.
+
+\subsection{Preliminary results}
+
+For the BK1 mass operator we have measured the performance and the energy efficiency of the OpenMP, Kokkos and TinyTC implementations on a single device at its default operating point, shown in Figure~\ref{fig:intel_pvc_bk1_energy} and presented in preliminary form at the WCCM-ECCOMAS 2026 congress~\cite{pribec_wccm2026}.
+The two groups of bars are essentially proportional to one another: the ranking of the implementations by GDoF/s is also their ranking by DoF updates per Joule, and the ratios between them are nearly the same in both metrics.
+This is what one expects whenever the average power drawn is similar for all variants, since $\eta = R/\bar{P}$ then reduces to $R$ up to a common factor; the recorded power traces allow this reading to be checked directly, and $\bar{P}$ is therefore reported alongside the two metrics.
+The practical consequence is a negative but useful result.
+At a fixed operating point there is no trade-off to be made, and an implementation optimised for time-to-solution is also the one optimised for energy-to-solution.
+A trade-off can only appear once the operating point itself is varied.
+No frequency or power-cap sweep has been performed so far, and this is precisely the motivation for the study described below.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/dealii_bk1.png}
+    \caption{
+            Performance (GDoF/s) and energy efficiency (DoF updates per Joule) of the OpenMP, Kokkos and TinyTC implementations of the BK1 mass operator for degree $p = 2$ in 32-bit precision. The setup consists of 1000 billion elements per GPU tile (Intel Ponte Vecchio).
+    }
+    \label{fig:intel_pvc_bk1_energy}
+\end{figure}
+
+\subsection{Work plan}
+\label{sec:wp34plan}
+
+The work planned for months M17--M22 of the project comprises:
+%
+\begin{itemize}
+    \item Consolidation of \texttt{p3em}: a uniform output format across meter scripts, documented sampling and idle-power conventions, and documentation of which part of the package each device counter actually measures, so that figures obtained on different vendors' hardware can be brought onto a common basis.
+    \item Extension of coverage on a single reference GPU, at both kernel and problem level, over the polynomial degree range of interest and in single, double and mixed precision, for the implementations already compared above as well as our own CUDA/Kokkos variants.
+    \item A cross-platform campaign at default settings on the devices of Tables~\ref{tab:nvidia} and~\ref{tab:amd}, with identical benchmarks, metrics and sweep configuration.
+    \item The frequency and power-cap scaling study: $\eta$ and $R$ measured across the supported frequency range and the admissible power caps, and presented in the efficiency--performance plane, one curve per benchmark and polynomial degree. The quantity of interest is the energy saved at a fixed, small loss in time-to-solution.
+    \item Extension beyond the operator evaluation to the solver and preconditioner phases, which introduce outer iterations and more involved access patterns, may move part of the work back onto the host, and involve communication and therefore the power drawn by the network cards, together with a comparison against the host processors of the same systems.
+\end{itemize}
