@@ -55,6 +55,7 @@
 		\addVersion{0.2}{28.07.2026}{Ivan Prusak}{Techical WP summary}
 		\addVersion{0.2}{29.07.2026}{Ivan Prusak}{Non--technical WP summary}
 		\addVersion{0.3}{30.07.2026}{Ivan Prusak}{RP1 project review integration}
+		\addVersion{0.4}{31.07.2026}{Ivan Prusak}{Update partner contributions}
 		\addVersion{1.0}{31.07.2026}{Martin Kronbichler}{Final version}
 	\end{documentControl}
 	
@@ -554,116 +555,86 @@ Simulations track the space--time relocation of transmembrane receptors on the d
 \subsection{Objectives}
 
 WP3 focuses on advancing co-design, technology exploitation, and energy efficiency within the dealii-X project. The objectives are:
-
 \begin{itemize}[left=1em, itemsep=0pt, topsep=0pt]
-\item investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing to achieve optimal performance;
-\item identify and evaluate emerging technologies that can be exploited to enhance the capabilities of the exascale computing system;
-\item explore and implement techniques to optimize energy consumption and power efficiency in the exascale computing infrastructure;
-\item identify and address bottlenecks in the system to improve overall computational efficiency.
+	\item Investigate novel hardware and software solutions to leverage the latest advancements in high-performance computing to achieve optimal performance.
+	\item Identify and evaluate emerging technologies that can be exploited to enhance the capabilities of the exascale computing system.
+	\item Explore and implement techniques to optimize energy consumption and power efficiency in the exascale computing infrastructure.
+	\item Identify and address bottlenecks in the system to improve overall computational efficiency.
+	\item Foster collaboration within the CASTIEL2 network and other relevant HPC initiatives to leverage shared expertise and resources (reported in Section~\ref{sec:wp4_communication}).
 \end{itemize}
+
+Two deliverables were submitted during this reporting period: D3.3 \emph{Integration of performance measuring tools} (M17) and D3.4 \emph{Co-Design and Energy Efficiency Report~II} (M22). The performance results obtained with the resulting workflow are reported in Section~\ref{sec:wp1_dealii} where they concern the \dealii{} kernels themselves; this section reports the co-design analysis, the assessment of programming models, and the measurement methodology.
 
 
 \subsection{WP3.1: Benchmarking on emerging hardware}
 
-\subsubsection*{Poisson Solver Proxy App and CEED Bakeoff Benchmarks}
+\subsubsection*{Co-Design of Batched Operator Evaluation}
 
-\noindent A Poisson solver proxy app based on the CEED Bakeoff Problems (BP3/BP3.5)\footnote{\url{https://libceed.org/en/latest/examples/bps/}, retrieved on 29.07.2026} serves as a benchmark demonstrator to evaluate matrix-free finite element performance on modern hardware.
+\noindent The single-element-per-thread-block mapping used in the first co-design report leaves hardware resources idle at low polynomial order. Assigning several elements to each thread block removes this limitation, and the analysis of why it does so illustrates the co-design methodology applied throughout the work package.
 
-\noindent\textbf{Matrix-free implementation and algorithmic design.}
-The proxy app solves the 3D Poisson equation over a deformed domain discretized with hexahedral elements using high-order tensor-product polynomials at Gauss--Legendre--Lobatto (GLL) nodes. To mirror complex biological geometries, full geometric transformation metrics (Jacobians) are evaluated on the fly. An unpreconditioned Conjugate Gradient (CG) solver computes matrix-free operator evaluations without assembling sparse matrices, prioritizing arithmetic intensity and floating-point throughput over memory-bandwidth-bound matrix assembly strategies.
+\noindent\textbf{Occupancy analysis.}
+Profiling the Laplace operator (BK3) with $12.5$ million linear elements ($p=1$) in double precision using NVIDIA Nsight Compute shows that, under the single-element mapping, $18.8\%$ of registers and $31\%$ of shared memory remain unused, because the limit of 32 thread blocks per streaming multiprocessor is reached before the register and shared-memory capacity is exhausted. Under the batched mapping, in which up to 11 elements are assigned to a thread block for BK3 at $p=1$, register usage becomes the occupancy limiter instead, which is the desired regime. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{Cross-Platform Hardware Performance.}
-Publicly available within the repository\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/bakeoff_problems_dealii}, retrieved on 28.07.2026}, the BP3.5 proxy was evaluated on Intel Data Center GPU Max 1550 platforms using Kokkos backend kernels. Performance data demonstrated good portability across heterogeneous architectures, achieving solid throughput trends comparable to prior baseline measurements on NVIDIA GH200 systems. The results are reported in Deliverables D1.9, D3.3 and D3.4.
+\noindent\textbf{Roofline assessment.}
+On the GH200, with a streaming global memory bandwidth of $3.6$ TB/s and a theoretical FP64 peak of $33$ TFLOP/s, the low arithmetic intensity of low-order matrix-free elements ($1.3$ FLOP/B at $p=1$) caps the attainable performance at $5.2$ TFLOP/s. The single-element kernel reaches $1.4$ TFLOP/s, or $27\%$ of that limit, whereas the batched kernel reaches $2.5$ TFLOP/s, or $48\%$, corresponding to the $2\times$ speedup reported in Section~\ref{sec:wp1_dealii}. The same mechanism addresses wavefront underutilization on AMD hardware. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{Linear solver efficiency and inter-GPU communication.}
-Laplace operator evaluations were extended into full linear solvers to assess parallel overheads across multi-GPU Superchip architectures. Evaluations of the Laplace operator (BK3) and complete CG solvers (BP3)\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}, retrieved on 28.07.2026} on single- and multi-GPU NVIDIA GH200 nodes highlight performance differences stemming from peer-to-peer (P2P) MPI communications and gather-scatter operations. Throughput metrics [$\text{GDOF} \times \text{CG}_{\text{iter}} / (\text{s} \cdot \text{process})$] confirm that increasing polynomial degree $p$ enhances computational efficiency by leveraging tensor-product shape function evaluations. The results are reported in Deliverables D1.9, D3.3 and D3.4.
+\subsubsection*{Extension of the Benchmark Suite}
 
-\subsubsection*{Raviart--Thomas Kernels and Emerging Accelerator Support}
+\noindent\textbf{Raviart--Thomas vector kernels.}
+The benchmark suite was extended beyond the scalar, $H^1$-conforming kernels of the first report to the $H(\mathrm{div})$-conforming Raviart--Thomas element family required by mixed formulations of the Navier--Stokes equations. Vector mass, mixed divergence and mixed gradient operators were implemented and measured in FP32 and FP64 on the NVIDIA GH200 and on the AMD MI250X of LUMI, whose $1.3$ TB/s STREAM bandwidth it exploits well; only polynomial order 8 performs significantly worse, most likely because of register file capacity constraints on that architecture. Initial implementations targeting NVIDIA tensor cores in FP64 and TF32 are also available. The results are reported in Deliverable D3.4.
 
-\noindent Benchmark capabilities were expanded beyond $H^1$-conforming spaces to $H(\mathrm{div})$-conforming Raviart--Thomas vector spaces required for mixed formulations.
+\noindent\textbf{From kernels to full solvers.}
+Operator evaluation was embedded in a complete conjugate gradient solver corresponding to the CEED Bake-Off Problem 3, evaluated on single- and multi-GPU configurations of the GH200 with peer-to-peer MPI communication. This closes the gap between kernel-level and problem-level figures, and the remaining difference is attributable to gather--scatter overheads and inter-GPU communication rather than to operator evaluation itself, which confirms that further application-level gains must come from the solver and communication layers. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{H(div) kernel implementations.}
-Vector mass, mixed divergence, and mixed gradient operators were benchmarked\footnote{\url{https://github.com/dealii-X/benchmarks/tree/main/rt_kernels}, retrieved on 28.07.2026} across FP32 and FP64 precisions on NVIDIA GH200 and AMD MI250X platforms. Batch processing yielded high GDOF/s throughput across polynomial orders, with performance reductions at $p=8$ on AMD MI250X attributed to register file capacity constraints. The results are reported in Deliverables D1.9 and D3.4.
-
-\noindent\textbf{Tensor Core Optimization.}
-To target modern hardware matrix accelerators, specialized operator evaluation kernels were developed leveraging NVIDIA Tensor Cores (\texttt{mma}). Initial implementations support double-precision (FP64) and TensorFloat-32 (TF32) matrix-matrix multiplication routines to maximize floating-point throughput during high-order tensor updates. Preliminary results are reported in Deliverables D1.9 and D3.4.
+\noindent\textbf{Portability to Intel accelerators.}
+Complementing the results obtained on NVIDIA and AMD hardware, the BP3.5 proxy was evaluated on the Intel Data Center GPU Max 1550 using the Kokkos backend. Throughput per GPU remains considerably below the $8$--$10$ GDOF/s achieved on the Hopper GPU, but the measurement demonstrates that portability with usable performance is attainable across all three vendor ecosystems present in the EuroHPC infrastructure. The results are reported in Deliverable D3.3.
 
 \subsection{WP3.2: Supporting accelerator programming paradigms}
 
-Different accelerator programming models and specialized compilation toolchains have been investigated to maximize hardware utilization under diverse computational workloads. The evaluation focuses on three critical performance indicators: time-to-solution, throughput, and memory bandwidth.
+\subsubsection*{Domain-specific optimization with the Tiny Tensor Compiler}
 
-\subsubsection*{Domain-specific optimizations and TinyTC}
+\noindent\textbf{Tile-based code generation.}
+Kernel optimization on Intel GPU hardware was pursued through the Tiny Tensor Compiler, an open-source toolchain exposing a tensor language with matrix-multiplication primitives, cooperative matrix operations, strided array views and fused array dimensions, which makes the tensor contractions underlying matrix-free finite element methods amenable to automated optimization. The BK1 and BK5 kernels were implemented in its intermediate representation and approach the theoretical machine bandwidth limits of Intel GPUs, maintaining consistent performance across polynomial orders where directive-based implementations do not. Performance degradation at significantly higher orders is expected to be addressable through shared memory allocation and padding tuning. This approach shares its philosophy with emerging tile-based domain-specific languages, in which fine-grained thread mapping, vectorization and matrix-unit utilization are delegated to the compiler. The results are reported in Deliverable D3.4.
 
-\noindent Specialized compiler toolchains and tile-based Domain-Specific Languages (DSLs) provide targeted optimizations for matrix-free tensor evaluations.
+\subsubsection*{Kernel Specialization and JIT Compilation}
 
-\noindent\textbf{Tiny Tensor Compiler (TinyTC).}
-With technical support from WP1, accelerator toolchains, focusing on Intel GPU optimization via the open-source Tiny Tensor Compiler (TinyTC)\footnote{\url{https://intel.github.io/tiny-tensor-compiler/}, retrieved on 29.07.2026}, were explored. TinyTC utilizes a specialized tensor language exposing matrix-multiplication primitives, cooperative matrix operations, and strided tensor array views to formulate matrix-free finite element tensor contractions.
+\noindent\textbf{Static sizing and its cost.}
+Finite element kernels involve nested loops with small trip counts, and providing the compiler with static knowledge of these dimensions enables complete loop unrolling and improved register pressure management. Transitioning from dynamic to static loop bounds yielded a consistent $2\times$ performance improvement across all polynomial orders. The associated cost is a substantial increase in compilation time as the number of specialized variants grows, mitigated through just-in-time strategies: CUDA Jitify for NVIDIA hardware, SYCL specialization constants within oneAPI, and the JIT workflow native to the Tiny Tensor Compiler. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{Tile-Based Optimization and Efficiency.}
-Implementations of BK1 and BK5 kernels using TinyTC intermediate representations achieved near-theoretical machine memory bandwidth limits on Intel GPUs, maintaining consistent performance across polynomial orders compared to high-level directive models. TinyTC achieves this by delegating thread mapping, vectorization, and matrix unit utilization to the compiler while enabling aggressive operation fusing. More details are reported in Deliverable D3.4.
-
-\subsubsection*{Kernel Specialization and JIT Compilation Strategies}
-
-\noindent Static templating and compile-time specialization optimize nested finite element loops with small trip counts to maximize instruction-level parallelism.
-
-\noindent\textbf{Performance Impact of Static Sizing.}
-Transitioning from dynamic loop bounds to compile-time static constants yielded a consistent $2\times$ throughput speedup across all polynomial orders. Exposing loop dimensions statically enables backend compilers to perform complete loop unrolling, optimize register allocation, and improve instruction scheduling.
-
-\noindent\textbf{Mitigation of Compilation Overhead via JIT.}
-To mitigate long offline build times and binary bloat resulting from static specialization, Just-In-Time (JIT) compilation strategies were integrated into runtime workflows. Implemented JIT mechanisms include CUDA Jitify for NVIDIA architectures, SYCL specialization constants within Intel oneAPI, and TinyTC's native execution-time JIT workflow for specialized tensor shape generation. More details are reported in Deliverable D3.4.
 
 
 \subsection{WP3.3: Performance portability}
 
-To establish compiler maturity and weigh the trade-offs between cross-architecture portability and peak hardware performance, benchmarks were implemented across a broad spectrum of programming paradigms.
-
 \subsubsection*{Evaluation of Cross-Platform Programming Paradigms}
 
-\noindent Performance evaluation across vendor-native and vendor-agnostic paradigms establishes the viability of unified codebases across heterogeneous HPC systems.
+\noindent\textbf{Paradigm comparison.}
+The original Kokkos (vendor-agnostic) and CUDA (vendor-optimized) implementations were extended at LRZ to OpenMP target offloading (\texttt{omp target teams loop}), OpenCL and SYCL within the Intel oneAPI ecosystem, assessed against time to solution, throughput and memory bandwidth. OpenMP performs adequately at low polynomial orders but struggles with arithmetically intensive kernels, failing to manage shared memory allocation and register pressure efficiently. OpenCL delivers performance comparable to Kokkos and reaches an unusually broad range of hardware, but lacks primary vendor support --- notably, NVIDIA profiling tools offer no native OpenCL support. SYCL aligns closely with OpenCL in both execution speed and hardware utilization. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{Paradigm expansion.}
-Evaluations extended original Kokkos (vendor-agnostic) and CUDA (NVIDIA-optimized) implementations to include OpenMP target offloading (\texttt{omp target teams loop}), OpenCL for cross-architecture reach, and SYCL within the Intel oneAPI ecosystem.
+\noindent\textbf{Assessment.}
+High-level directive-based abstractions provide ease of use for simpler workloads but currently lack the granularity required to reach machine limits in complex, high-order finite element computations. Conversely, while OpenCL and SYCL offer robust performance, the maturity of the profiling and vendor support ecosystem remains a decisive factor in selecting a long-term implementation strategy.
 
-\noindent\textbf{Comparative performance and efficiency.}
-OpenMP target offloading provided adequate baseline performance at lower polynomial orders but struggled on arithmetically intensive kernels due to suboptimal register allocation and shared memory management. OpenCL and SYCL matched Kokkos in throughput performance and execution efficiency across evaluated platforms. The results are reported in Deliverable D3.4.
-
-\subsubsection*{Ecosystem Trade-Offs and Abstraction Limits}
-
-\noindent Long-term selection of performance-portable abstractions requires balancing ease of development against profiling infrastructure and compiler maturity.
-
-\noindent\textbf{Toolchain and Profiling Ecosystems.}
-While OpenCL and SYCL deliver competitive runtime efficiency, toolchain ecosystem support varies significantly across vendors; notably, OpenCL lacks native profiling support from primary GPU vendors such as NVIDIA.
-
-\noindent\textbf{Hardware Abstraction Limits.}
-While high-level directive abstractions (e.g., OpenMP) simplify code portability and maintenance across target architectures, reaching machine hardware limits in complex, high-order finite element tensor kernels requires fine-grained abstractions supported by mature, vendor-backed profiling and compiler ecosystems. More details are reported in Deliverable D3.4.
 
 \subsection{WP3.4: Energy and performance profiling}
+\subsubsection*{Performance Analysis Workflow (D3.3)}
 
-\subsubsection*{Performance Analysis Tools}
+\noindent Deliverable D3.3 \emph{Integration of performance measuring tools} was submitted in M17. It establishes a portable performance-analysis workflow intended as a blueprint for the library and application developers of WP1 and WP2, organised in three tiers of increasing granularity and implementation effort --- application-level profiling and roofline analysis, instrumentation-based tools, and sampling-based tools --- so that the appropriate instrument can be selected for a given analysis task. The workflow is demonstrated on a Poisson solver proxy based on the CEED Bake-Off Problems, deliberately using deformed elements so that the full metric terms are evaluated and the proxy remains representative of the complex geometries arising in the biomedical applications.
 
-\noindent Hardware performance counter profiling, micro-benchmarking, and automated timeline analysis enable in-depth optimization of matrix-free finite element kernels beyond application-level timer reporting. Detailed description of the performance analysis tools and the associated results are provided in Deliverables D3.3 and D3.4.
+\noindent\textbf{Tool chain.}
+NVIDIA Nsight Systems provides the system-wide timeline view of CPU and GPU execution together with API and memory-transfer statistics. The Intel VTune Profiler contributes the Application Performance Snapshot for a first compute-, memory- or I/O-bound classification, and the \texttt{gpu-offload} and \texttt{gpu-hotspots} collectors for offload analysis; source instrumentation through the Intel Tracing Technology API restricts collection to the solver loop, which matters in finite element applications where mesh setup would otherwise dominate the measurement. Intel Advisor supplies GPU roofline and source-linked line profiling. LIKWID, through its Marker API, isolates named regions such as the matrix-vector product or the linear solver loop with minimal intrusion, and supports MPI-parallel collection. The tool chain is described in Deliverable D3.3.
 
-\noindent\textbf{NVIDIA Nsight Systems.} Timeline visualizations track concurrent CPU/GPU execution, API invocation overheads, and host-to-device (H2D) / device-to-host (D2H) memory transfers. Command-line profiling (\texttt{nsys profile}) captures system-level metrics to isolate kernel dispatch bottlenecks.
+\noindent\textbf{Representative measurement.}
+Applied to a BP3-inspired benchmark on a two-socket Intel Xeon Platinum 8360Y system using 72 cores, the instrumented workflow reports $1.80$ TFLOP/s in double precision at an operational intensity of $0.97$ FLOP/B and an aggregate memory bandwidth of $102.6$ GB/s, together with $2889$ J of energy at an average power of $499$ W, of which $160$ J is attributable to DRAM. Measurements of this kind feed a ``measure--refine'' cycle in which the effect of individual optimizations is quantified immediately and fed back into the algorithm design. The results are reported in Deliverable D3.3.
 
-\noindent\textbf{Intel Application Performance Snapshot (APS).}
-Intel APS delivers rapid compute-bound, memory-bound, and I/O-bound profiling summaries. To isolate target numerical solver loops from initialization phases, source code is instrumented via the Intel Tracing Technology (ITT) API (\texttt{\_\_itt\_resume()} / \texttt{\_\_itt\_pause()}). Fine-grained GPU offload and hotspot analysis are conducted via VTune Profiler CLI collectors (\texttt{gpu-offload}, \texttt{gpu-hotspots}).
+\subsubsection*{Energy Measurement Methodology}
 
-\noindent\textbf{Intel Advisor Roofline Profiling.}
-Intel Advisor collects GPU roofline and source-linked line-profiling data (\texttt{icpx -fdebug-info-for-profiling}). This quantifies memory bandwidth saturation against compute capacity for high-order finite element implementations.
+\noindent\textbf{Portable energy metering.}
+Energy consumption is measured with \texttt{p3em}\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 31.07.2026}, a minimal header-only C++ library offering a RAII-based region-of-interest interface analogous to a timer class. It spawns a background thread driving a sub-process that queries vendor- or OS-specific interfaces and reports a single monotonically increasing value in Joules, which keeps the API hardware-agnostic across NVIDIA, AMD and Intel devices. Complementary telemetry is available from the Slurm scheduler, which reports a single integrated value per job and therefore cannot be correlated with individual application phases, from \texttt{likwid-powermeter} through the RAPL interfaces on Intel and AMD CPUs, and from the vendor system management interfaces for GPU devices. The methodology is described in Deliverable D3.3.
 
+\noindent\textbf{Preliminary energy results.}
+For the BK1 mass operator, performance and energy efficiency were measured for the OpenMP, Kokkos and Tiny Tensor Compiler implementations on a single Intel Data Center GPU Max device at its default operating point, and presented in preliminary form at the WCCM--ECCOMAS 2026 congress. The ranking of the implementations by throughput (GDoF/s) coincides with their ranking by energy efficiency (DoF updates per Joule), and the ratios between them are nearly identical in the two metrics. This follows from the average power drawn being similar across the variants, in which case efficiency reduces to throughput up to a common factor. The practical consequence is a negative but useful result: at a fixed operating point there is no trade-off to be made, and an implementation optimised for time-to-solution is simultaneously optimised for energy-to-solution. A trade-off can only arise once the operating point itself is varied, which motivates the frequency and power-cap sweep planned for the remaining period. The results are reported in Deliverable D3.4.
 
-\noindent\textbf{LIKWID Performance Tools and Empirical Metrics.}
-The LIKWID suite provides lightweight CPU and GPU hardware performance counter monitoring and region instrumentation. LIKWID isolates specific computational blocks (e.g., matrix-vector products, linear solver loops) via the LIKWID Marker API (\texttt{LIKWID\_MARKER\_START} / \texttt{STOP}) with minimal execution overhead. Command-line profiling tools (\texttt{likwid-perfctr}, \texttt{likwid-mpirun}) measure operational intensity (FLOP/Byte), double-precision throughput (MFLOP/s), vectorization ratios, and memory read/write bandwidth across parallel MPI ranks.
-
-\subsubsection*{Energy Measurement Tools}
-
-\noindent Heterogeneous C++ energy metering abstraction enables region-of-interest (ROI) power profiling. Detailed description of the energy measurement tools and the associated results are provided in Deliverables D3.3 and D3.4.
-
-\noindent\textbf{Header-only p3em framework.}
-The \texttt{p3em}\footnote{\url{https://github.com/svtcli/p3em}, retrieved on 29.07.2026} library provides an RAII-based C++ interface that launches a background thread to manage subprocess energy queries. Subprocesses interface with OS/driver counters (e.g., \texttt{pyNVML}, \texttt{nvidia-smi}, Linux \texttt{perf}) to compute cumulative Joules via numerical integration or hardware energy registers across target GPU architectures. 
-
-\noindent\textbf{Scheduler and RAPL profiling.}
-Alternative energy telemetry utilities at system level complement application-level instrumentation at varying granularities. The Slurm workload manager provides coarse, job-level aggregate energy summaries. LIKWID PowerMeter utilizes CPU Running Average Power Limit (RAPL) interfaces to log power draw over target intervals. Vendor System Management Interfaces (\texttt{nvidia-smi}, \texttt{rocm-smi}, \texttt{xpu-smi}) report continuous telemetry data for external orchestration.
+\noindent\textbf{Status of the energy assessment.}
+The measurement campaign is being extended to the full range of target platforms; a consolidated assessment of energy efficiency across the benchmark suite and the participating architectures will be presented in the final project report.
 
 \newpage
 
