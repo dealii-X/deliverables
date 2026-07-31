@@ -118,7 +118,7 @@ Approval Date: 31.07.2026
 The dealii-X project is extending the \texttt{deal.II} finite element library and its surrounding solver ecosystem with numerical methods, software abstractions, and high-performance implementations required by exascale simulations of digital twins of the human body. Reaching this objective requires more than increasing the size of existing computations. It also requires reducing data movement, exposing sufficient parallelism on heterogeneous architectures, improving the scalability and robustness of linear and nonlinear solvers, and introducing modelling strategies that preserve the relevant physical information at substantially lower computational cost.
 
 \subsection{{Purpose of the Document}}
-This deliverable reports the improvements developed during the fourth project semester. The contributions address complementary layers of the simulation stack. UNIPI develops geometrically reduced flow models on metric graphs and an implicit HDG implementation for network haemodynamics; INPT advances block low-rank and mixed-precision algorithms in MUMPS; SISSA develops polygonal and unfitted discretization technology; RUB improves performance-portable matrix-free kernels and multigrid infrastructure; and UNITOV completes the integration of PSBLAS into \texttt{deal.II}, advances the AMG4PSBLAS interface, and evaluates the resulting algebraic multigrid solvers on MareNostrum~5. The UNITOV contribution is particularly important because it turns PSCToolkit from an external capability into a native \texttt{deal.II} linear-algebra backend with familiar vector, matrix, solver, and preconditioner interfaces, thereby making scalable sparse algebra directly available to application developers.
+This deliverable reports the improvements developed during the fourth project seme\-ster. The contributions address complementary layers of the simulation stack. UNIPI develops geometrically reduced flow models on metric graphs and an implicit HDG implementation for network haemodynamics; INPT advances block low-rank and mixed-precision algorithms in MUMPS; SISSA develops polygonal and unfitted discretization technology; RUB improves performance-portable matrix-free kernels and multigrid infrastructure; and UNITOV completes the integration of PSBLAS into the \texttt{deal.II} library, advances the AMG4PSBLAS interface, and evaluates the resulting algebraic multigrid solvers on MareNostrum~5. The UNITOV contribution is particularly important because it turns PSCToolkit from an external capability into a native \texttt{deal.II} linear-algebra backend with familiar vector, matrix, solver, and preconditioner interfaces, thereby making scalable sparse algebra directly available to application developers.
 
 A common theme of the reported work is the use of mathematical and computational structure to reduce time-to-solution. Depending on the problem, this structure may be algebraic, geometric, induced by the discretization, or exposed by the hardware. Algebraic low-rank approximations compress matrix blocks whose action can be represented accurately in a lower-dimensional subspace. Geometrical model reduction replaces selected three-dimensional network-like subdomains by lower-dimensional representations when the dominant dynamics are constrained by their slender geometry. Polygonal and unfitted methods increase geometric flexibility, matrix-free methods reduce memory traffic, and scalable sparse algebra supplies robust solvers for problems for which explicit matrices remain necessary. Although these approaches operate at different levels, they pursue the same objective: representing and solving the relevant high-dimensional problem with fewer degrees of freedom, less data movement, or fewer arithmetic and communication operations, while retaining controlled accuracy.
 
@@ -143,15 +143,16 @@ A common theme of the reported work is the use of mathematical and computational
 
 \subsection{{Performance Evaluations of High Order Finite Element Kernels on Modern Accelerators}}
 
-We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs).
-The matrix-free framework and its initial implementations are described in Deliverable D1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}).
-To evaluate these problems, we adopt the bake-off benchmarks \cite{bakeoff} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
-Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \cite{tens_prod}. This approach causes low-order elements to underutilize
-the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \cite{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
+We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on graphics processing units (GPUs).
+The matrix-free framework and its initial implementations are described in Deliverable D1.3
+{\footnotesize \url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}.\\}
+To evaluate these problems, we adopt the bake-off benchmarks \citep{bakeoff} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
+Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \citep{tens_prod}. This approach causes low-order elements to underutilize
+the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \citep{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
 leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
 Based on a batch processing approach, our technique assigns multiple elements to each thread block to overcome these limitations. For example, a polynomial order of 1 in the Laplace operator evaluation (Bake-Off Kernel 3 in the CEED benchmarks) can fit 11 elements per thread block.
 A performance comparison between the single-element-per-thread-block and the batched processing approaches is given in Figure~\ref{fig:BK3_1_10}. The new technique achieves a 2$\times$ speedup for polynomial order 1 on the NVIDIA GH200 Superchip at the JUPITER supercomputer located at the Jülich Research Centre.
-New batched implementations are available at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_BK}\footnote{retrieved on 28.07.2026}.
+New batched implementations are available at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_BK}.\footnote{retrieved on 28.07.2026}
 \\
 
 \begin{figure}[htbp]
@@ -175,15 +176,15 @@ We refer to Deliverable D3.4 for the detailed performance analysis with NVIDIA N
 	\label{fig:BK_BP}
 \end{figure}
 
-We extend our operator evaluation to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem 3 (BP3) benchmark.
-The solver, implemented within the \texttt{deal.II} finite element library framework is evaluated on both single and multi-GPU configurations of the NVIDIA GH200 Superchip, utilizing MPI with peer-to-peer (P2P) communication enabled. Figure~\ref{fig:BK_BP} illustrates the initial performance results,
+We have extended our operator evaluation to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem 3 (BP3) benchmark.
+The solver, implemented within the \texttt{deal.II} finite element library framework, is evaluated on both single and multi-GPU configurations of the NVIDIA GH200 Superchip, utilizing MPI with peer-to-peer (P2P) communication enabled. Figure~\ref{fig:BK_BP} illustrates the initial performance results,
 highlighting that the performance difference between operator evaluations (BK) and full linear solvers (BP)
 is primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the results confirm the computational efficiency of high-order elements which directly leverage the tensor-product formulation of the shape functions to increase arithmetic intensity.
-The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}\footnote{retrieved on 28.07.2026}.
+The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}.\footnote{retrieved on 28.07.2026}
 
 
 
-\subsection{Raviart-Thomas Elements and Kernel Performance}
+\subsection{Raviart--Thomas Elements and Kernel Performance}
 
 \begin{figure}[htbp]
 	\centering
@@ -200,20 +201,20 @@ The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree
 \end{figure}
 $H^1$-conforming elements (as used in the CEED Bake-Off kernels) enforce continuity of all vector components across elements, whereas the Navier-Stokes equations
 in mixed formulations often require continuity of the normal component of the flux across element boundaries which is a property of $H(\mathrm{div})$-conforming spaces.
-Elements designed for this purpose are known as Raviart-Thomas finite elements. We developed the vector Mass, mixed divergence and mixed gradient operators, which are the core operations
-in Raviart-Thomas kernel design, and implemented them in our benchmarks. These benchmarks are available at \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}\footnote{retrieved on 28.07.2026}.
+One element type designed for this purpose are the Raviart--Thomas finite elements. We developed the vector Mass, mixed divergence and mixed gradient operators, which are the core operations
+in Raviart-Thomas kernel design, and implemented them in our benchmarks. These benchmarks are available at \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.\footnote{retrieved on 28.07.2026}
 
 
 
 
 Figure \ref{fig:GH200_vector_Mass} shows the performance of the vector Mass operator on the NVIDIA GH200 in both FP32 and FP64 precisions. Batch processing enabled all polynomial orders to achieve similar throughput (GDOF/s). Similar trends are observed for the AMD MI250X
 GPU om the LUMI supercomputer, which performs well given its $1.3\text{ TB/s}$ STREAM bandwidth. Only polynomial order 8 performs significantly worse than the other orders, as shown in Figure \ref{fig:MI250x_vector_Mass}.
-This drop in performance is likely due to register file capacity constraints in this slightly older AMD architecture.
+This drop in performance is likely due to register file capacity constraints on this slightly older AMD architecture.
 
 
-We also introduce a new technique to target NVIDIA tensor cores \cite{nvidia_mma}
+We also introduce a new technique to target NVIDIA tensor cores \citep{nvidia_mma}
 which are designed to perform fast matrix-matrix multiplication in different precisions. Initial implementations for FP64 and non-IEEE-compliant TensorFloat-32 (TF32) are available
-in the same rt\_kernels benchmarks repository.
+in the same \texttt{rt\_kernels} benchmarks repository.
 
 
 \newcommand{\average}[1]{\left\{\!\left\{#1\right\}\!\right\}}
@@ -222,7 +223,7 @@ in the same rt\_kernels benchmarks repository.
 
 \subsection{Discontinuous Galerkin kernels and multigrid solvers}
 
-Another contribution by the RUB group is the developement of Discontinuous Galerkin (DG) kernels including the face integration. In particular, the main interest lies in the matrix-free evaluation of, for instance,  the symmetric interior penalty (Nitsche) discretization of the Laplace operator which reads as
+Another contribution by the RUB group is the developement of Discontinuous Galer\-kin (DG) kernels including the face integration. In particular, the main interest lies in the matrix-free evaluation of, for instance,  the symmetric interior penalty (Nitsche) discretization of the Laplace operator which reads as
 \[
 \sum\limits_{K \in \text{cells}} \left(\nabla \varphi_i, \nabla u_h \right)_{K} + \sum\limits_{F \in \text{faces}} \big( -\left< \jump{\varphi_i}, \average{\nabla u_h} \right>_{F} - \left< \average{\nabla \varphi_i}, \jump{u_h}\right>_F  + \left< \jump{\varphi_i}, \sigma \jump{u_h}\right>_F \big),
 \]
@@ -230,7 +231,7 @@ where $\average{v} = \frac{v^{-}+v^{+}}{2}$ and $\jump{v} = n^{-}v^{-}+n^{+}v^{+
 
 
 
-As a first approach, the face-centric loop (FCL) with global temporary storage has been implemented~\cite{KronbichlerAllalen2018, KronbichlerKormann2019}. The FCL algorithm is described as follows:
+As a first approach, the face-centric loop (FCL) with global temporary storage has been implemented~\citep{KronbichlerAllalen2018, KronbichlerKormann2019}. The FCL algorithm is described as follows:
 
 \noindent\rule{\textwidth}{1pt}\\[-0.5em]
 \textbf{FCL algorithm:} Face-centric loop (FCL) with global temporary storage.\\[-0.5em]
@@ -270,13 +271,13 @@ Nevertheless, two key differences are worth highlighting: the DG elements reach 
 
 \input{figures/dg_mg_jupiter.tex}
 
-particular, we consider the cph-MG variant, which is the most performant one on CPUs: the discontinuous space is first embedded into the corresponding continuous space on the finest level, and the resulting problem is then treated by the ph-multigrid solver developed previously for continuous elements~\cite{Fehn2020}. The performance of the mixed-precision cph-MG solver is shown in Figure~\ref{fig:cph_mg}.
+To evaluate the performance of the entire solver chain on GPUs, we consider multigrid in the cph-MG variant, which is the most performant one on CPUs: the discontinuous space is first embedded into the corresponding continuous space on the finest level, and the resulting problem is then treated by the ph-multigrid solver developed previously for continuous elements~\citep{Fehn2020}. The performance of the mixed-precision cph-MG solver is shown in Figure~\ref{fig:cph_mg}.
 
-The implementation of the algorithms is available at \url{https://github.com/dealii-X/portable-multigrid}\footnote{retrieved on 28.07.2026}.
+The implementation of the algorithms is available at \\ \url{https://github.com/dealii-X/portable-multigrid}.\footnote{retrieved on 28.07.2026}
 
 \subsection{Portable multigrid infrastructure in deal.II}
 
-Developments of the portable multigrid infrastructure is gradually migrating to \texttt{deal.II}. Matrix-free geometric transfer operators were introduced in PR~\href{https://github.com/dealii/dealii/pull/19347}{\#19347}\footnote{retrieved on 28.07.2026} (opened in February 2026 and merged in June 2026). This functionality was subsequently extended to support systems of finite elements in PR~\href{https://github.com/dealii/dealii/pull/20023}{\#20023}\footnote{retrieved on 28.07.2026} (opened and merged in July 2026). Both pull requests are included in the upcoming \texttt{deal.II} release 9.8, scheduled for the coming weeks. Furthermore, the latter PR has been successfully utilized in the new tutorial Step-104\footnote{\url{https://github.com/dealii/dealii/pull/20026}, retrieved on 28.07.2026}, demonstrating a substantial speedup of the transfer operators and boosting the overall solver speed by a factor of 3.
+Developments of the portable multigrid infrastructure is gradually migrating to \texttt{deal.II}. Matrix-free geometric transfer operators were introduced in PR~\href{https://github.com/dealii/dealii/pull/19347}{\#19347}\footnote{retrieved on 28.07.2026} (opened in February 2026 and merged in June 2026). This functionality was subsequently extended to support systems of finite elements in PR~\href{https://github.com/dealii/dealii/pull/20023}{\#20023}\footnote{retrieved on 28.07.2026} (opened and merged in July 2026). Both pull requests are included in the upcoming \texttt{deal.II} release 9.8, scheduled for early August 2026. Furthermore, the latter PR has been successfully utilized in the new tutorial Step-104,\footnote{\url{https://github.com/dealii/dealii/pull/20026}, retrieved on 28.07.2026} demonstrating a substantial speedup of the transfer operators and boosting the overall solver speed by a factor of 3.
 
 \newpage
 
@@ -348,7 +349,7 @@ The main components implemented in the HDG solver are summarized below:
 
 \subsection{Results}
 %\lipsum[7]
-The developed HDG solver has been validated using the well-established 37-artery human systemic network benchmark proposed in ~\cite{matthys2007pulse}. The network consists of 37 arterial segments connected through 21 bifurcations and is driven by a physiological inflow waveform. At each terminal vessel, a single-resistance outlet condition,
+The developed HDG solver has been validated using the well-established 37-artery human systemic network benchmark proposed in~\cite{matthys2007pulse}. The network consists of 37 arterial segments connected through 21 bifurcations and is driven by a physiological inflow waveform. At each terminal vessel, a single-resistance outlet condition,
 \[
     P-P_{\mathrm{out}} = RQ,
 \]
@@ -361,7 +362,7 @@ is imposed, while the bifurcations are coupled through the proposed HDG trace fo
     \label{fig:37network}
 \end{figure}
 
-The numerical solution is validated against the finite-volume benchmark of Boileau \emph{et al.}~\cite{boileau2015benchmark}. For comparison, the pressure, flow rate, and cross-sectional area are monitored at the midpoint of the thoracic aorta II, which is one of the major arteries close to the heart. Figure~\ref{fig:thoracic_results} shows an excellent agreement of the computed solution with the benchmark reference throughout one cardiac cycle.
+The numerical solution is verified against the finite-volume benchmark of \cite{boileau2015benchmark}. For comparison, the pressure, flow rate, and cross-sectional area are monitored at the midpoint of the thoracic aorta II, which is one of the major arteries close to the heart. Figure~\ref{fig:thoracic_results} shows an excellent agreement of the computed solution with the benchmark reference throughout one cardiac cycle.
 
 \begin{figure}[ht]
     \centering
@@ -403,7 +404,7 @@ To further demonstrate that the numerical solution is independent of the spatial
 \label{sec:sissa}
 
 \subsection{Polygonal Discretization Module}
-The polygonal discretization activity defined in Work Package 1.3 aims to integrate general-mesh discretization capabilities into \texttt{deal.II}, with particular emphasis on discontinuous Galerkin methods on agglomerated polygonal and polyhedral meshes and on the automatic construction of coarse polygonal grid hierarchies. Deliverable D1.5 introduced the external \texttt{Polydeal} library and described a Poisson tutorial on agglomerated polytopic meshes. Deliverable D1.7 subsequently reported the testing and validation of the library, the opening of a separate, self-contained Code Gallery contribution through pull request \href{https://github.com/dealii/code-gallery/pull/233}{\#233}\footnote{retrieved on 28.07.2026}, and the ongoing refactoring of reusable components in preparation for their integration into \texttt{deal.II}. During the present reporting period, the Code Gallery contribution was reviewed and merged, and the complete \texttt{agglomeration\_poisson} program, its documentation, and its numerical results became publicly available on the official \href{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}{\texttt{deal.II} Code Gallery page}\footnote{retrieved on 28.07.2026}. A follow-up documentation update improving figure rendering and page layout was subsequently submitted through pull request \href{https://github.com/dealii/code-gallery/pull/244}{\#244}\footnote{retrieved on 28.07.2026}.
+The polygonal discretization activity defined in Work Package 1.3 aims to integrate general-mesh discretization capabilities into \texttt{deal.II}, with particular emphasis on discontinuous Galerkin methods on agglomerated polygonal and polyhedral meshes and on the automatic construction of coarse polygonal grid hierarchies. Deliverable D1.5 introduced the external \texttt{Polydeal} library and described a Poisson tutorial on agglomerated polytopic meshes. Deliverable D1.7 subsequently reported the testing and validation of the library, the opening of a separate, self-contained Code Gallery contribution through pull request \href{https://github.com/dealii/code-gallery/pull/233}{\#233},\footnote{retrieved on 28.07.2026} and the ongoing refactoring of reusable components in preparation for their integration into \texttt{deal.II}. During the present reporting period, the Code Gallery contribution was reviewed and merged, and the complete \texttt{agglomeration\_poisson} program, its documentation, and its numerical results became publicly available on the official \href{https://dealii.org/developer/doxygen/deal.II/code_gallery_agglomeration_poisson.html}{\texttt{deal.II} Code Gallery page}.\footnote{retrieved on 28.07.2026} A follow-up documentation update improving figure rendering and page layout was subsequently submitted through pull request \href{https://github.com/dealii/code-gallery/pull/244}{\#244}.\footnote{retrieved on 28.07.2026}
 
 In parallel, the integration activity announced in D1.7 has progressed to a concrete submission to the \texttt{deal.II} core library. The central reusable components originating from \texttt{Polydeal} were separated from application-specific code, adapted to \texttt{deal.II} interfaces and coding conventions, and extended into a framework for DG discretizations on agglomerated meshes. The resulting \texttt{deal.II} pull request \href{https://github.com/dealii/dealii/pull/19891}{\#19891}\footnote{retrieved on 28.07.2026} includes agglomeration management, \texttt{deal.II}-style accessor and iterator interfaces, agglomerated degree-of-freedom and sparsity-pattern construction, agglomeration-aware mapping and quadrature, and R-tree-based hierarchical agglomeration. At the reporting date, the pull request is open and under review. A detailed description of this integration activity is provided in Deliverable D1.8, Polygonal discretization in deal.II – II.
 
@@ -449,12 +450,12 @@ and to avoid regressions in future developments.
 
 In the same fashion, AMG preconditioners are provided through AMG4PSBLAS, a dedicated package
 of algebraic multilevel preconditioners tailored for PSBLAS data structures. Its integration is
-carried out in PR~\href{https://github.com/dealii/dealii/pull/19398}{\#19398}\footnote{retrieved on 30.07.2026}, and is currently under review.
+carried out in PR~\href{https://github.com/dealii/dealii/pull/19398}{\#19398},\footnote{retrieved on 30.07.2026} and is currently under review.
 
 This interface is realized by the class \texttt{PreconditionAMG}, which provides
 a minimal set of methods for constructing and applying AMG preconditioners. The action of
 the (inverse of the) preconditioner on a vector is realized through the standardized \texttt{vmult()} method. The preconditioner is easily customizable through an \texttt{AdditionalData} object, which allows specifying the
-type of smoothers, the coarsening strategy, and the coarse grid solver. An example of the usage of the AMG4PSBLAS preconditioner is shown in Listing~\ref{lst:linear_solve}.
+type of smoothers, the coarsening strategy, and the coarse grid solver. An example of the usage of the preconditioner from AMG4PSBLAS is shown in Listing~\ref{lst:linear_solve}.
 We refer to the AMG4PSBLAS documentation for a complete and detailed description of the available options.
 
 \begin{lstlisting}[language=C++,caption={Preconditioned conjugate gradient solver class with PSCToolkit wrappers.}, label=lst:linear_solve]
@@ -592,7 +593,7 @@ Data sparsity within a matrix results in a low numerical rank. We can
 take advantage of this fact by using a low-rank approximation for the
 respective matrix. MUMPS uses the Block Low-Rank approach to
 represent low rank blocks within the dense frontal matrices during the
-numerical factorization phase~\cite{a.b.h.l.:22,a.b.l.m:17}. This can
+numerical factorization phase~\citep{a.b.h.l.:22,a.b.l.m:17}. This can
 result in a significant reduction in memory consumption and
 consequently lower operation count. The accuracy of the low rank
 representation is controlled by a user-defined parameter
@@ -604,7 +605,7 @@ where $X\Sigma Y^T$ represents the truncated SVD of $A$.
 Additionally, MUMPS is capable of storing different columns of the
 factorized block, i.e. $X$ and $Y$ in the above example, at different
 precisions, based on the magnitude of the corresponding singular
-value. This is referred to as adaptive precision BLR~\cite{a.b.b.g:22}
+value. This is referred to as adaptive precision BLR~\citep{a.b.b.g:22}
 and leads to a further reduction in memory footprint.
 
 \begin{figure}
@@ -661,8 +662,8 @@ Mixed precision algorithms refer to the use of multiple floating point formats w
 		\REPEAT  
 		\STATE \quad $r_i = b - Ax_i$ \hfill (in precision fp64)
 		\STATE \quad Solve $Ad_i=r_i$ via $d_i=U^{-1}(L^{-1}r_i)$ \hfill (in precision fp32)
-		\STATE \quad $x_{i+1} = x_i + d_i$ \hfill (in precision fp64)
-		\UNTIL until  
+		\STATE \quad $x_{i+1} = x_i + d_i$ \hfill (in precision fp64)\;
+		\UNTIL target tolerance reached
 	\end{algorithmic}
 \end{algorithm}
 
@@ -672,7 +673,7 @@ iteration. It is guaranteed to converge in double precision given that
 $\kappa(A) < \frac{1}{u_{\text{fp32}}}=1.6 \times 10^7$, where
 $\kappa(A)$ is the condition number of the matrix $A$ and
 $u_{\text{fp32}}$ is the unit round-off for single precision
-float~\cite{a.b.h.l.:22,c.h:18}.
+float~\citep{a.b.h.l.:22,c.h:18}.
 
 \begin{table}[htbp]
 	\centering
