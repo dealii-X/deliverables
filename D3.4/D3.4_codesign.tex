@@ -6,14 +6,12 @@
 % Tell LaTeX where to find graphics files
 \graphicspath{{../common/logos/}{./figures/}{../}}
 
-\usepackage{xspace}
-\usepackage{lipsum}
+%\usepackage{xspace}
 
 % --- Packages ---
-\usepackage{listings}
+%\usepackage{listings}
 \usepackage{graphicx}          % Include images
 \usepackage{amsmath}
-\usepackage{hyperref}
 
 % Set the deliverable number (without the D prefix, it's added automatically)
 \setdeliverableNumber{3.4}
@@ -22,7 +20,7 @@
 \begin{document}
 
 % Create the title page with the title as argument
-\maketitlepage{Co-Design and Energy Efficiency Report - II}
+\maketitlepage{Co-Design and Energy Efficiency Report II}
 
 \newpage
 
@@ -138,6 +136,9 @@ To avoid duplication, the following material is documented elsewhere and only re
 We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs).
 The matrix-free framework and its initial implementations are described in Deliverable 1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}).
 To evaluate these problems, we adopt the bake-off benchmarks \cite{Fischer20scalability} as our baseline problems. In this report, we also implement a new technique to improve operator performance for low-order elements.
+
+\subsection{Batched Operator Evaluation}
+
 Previous high-order matrix-free GPU implementations were based on assigning a single element per thread block \cite{tens_prod}. This approach causes low-order elements to underutilize
 the streaming multiprocessors (SMs) because NVIDIA only allows each SM to schedule 32 thread blocks \cite{nvidia_hopper_tuning}. Consequently, low-order elements reach this limit,
 leaving registers and shared memory underutilized within each SM. On AMD GPUs, the single element per thread block approach leaves the 64-thread wavefront underutilized for low-order elements, consequently causing poor performance.
@@ -154,7 +155,7 @@ v5.1 \cite{kokkos} was used to target traditional compute cores. For tensor core
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/GH200_fp64_BK3_1KB_10KB}
-    \caption{Performance comparison of the Laplace operator (BK3) in FP64 on the NVIDIA GH200. Single-element-per-thread-block approach (Left); proposed multiple-elements-per-thread-block approach (right).}
+    \caption{Performance comparison of the Laplace operator (BK3) in FP64 on the NVIDIA GH200. (Left) Single-element-per-thread-block approach; (Right) Proposed multiple-elements-per-thread-block approach .}
     \label{fig:BK3_1_10}
 \end{figure}
 
@@ -177,10 +178,10 @@ On the other hand, Figure~\ref{fig:occ_10kb} shows 10 allocated blocks. In this 
     \label{fig:occ_10kb}
 \end{figure}
 
-To further analyze performance, we also leveraged NVIDIA Nsight Compute’s roofline model to effectively compare a kernel's achieved performance with the hardware bandwidth and FLOP/s limits.
+To further analyze performance, we also leveraged NVIDIA Nsight Compute's roofline model to effectively compare a kernel's achieved performance with the hardware bandwidth and FLOP/s limits.
 Figure~\ref{fig:roof_1kb} shows the hierarchical roofline model for the single element per thread block technique, evaluated with the same 12.5 million linear element Laplace kernel.
 The plot includes the L1, L2 and global memory bandwidth boundaries. On this target GH200 GPU, the streaming global memory bandwidth is 3.6 TB/s, whereas its theoretical FP64 peak performance is 33 TFLOPS.
-Due to the low arithmetic intensity of low-order elements in matrix-free methods, polynomial order 1 has an global memory arithmetic intensity of only 1.3~FLOP/B, achieving a performance of 1.4 TFLOPS.
+Due to the low arithmetic intensity of low-order elements in matrix-free methods, polynomial order 1 has a global memory arithmetic intensity of only 1.3~FLOP/B, achieving a performance of 1.4 TFLOPS.
 This achieves only 27\% of the theoretical roofline limit (5.2 TFLOPS) at that arithmetic intensity. In contrast, the batched processing approach achieves 2.5~TFLOPS at the same arithmetic intensity, reaching 48\%
 of the theoretical throughput limit.
 
@@ -206,15 +207,15 @@ of the theoretical throughput limit.
 We extend our operator evaluation to a complete linear solver by embedding the Laplace operator within a Conjugate Gradient (CG) method, corresponding to the CEED Bake-Off Problem 3 (BP3) benchmark.
 The solver, implemented within the deal.II finite element library framework is evaluated on both single and multi-GPU configurations of the NVIDIA GH200 Superchip, utilizing MPI with peer-to-peer (P2P) communication enabled. Figure~\ref{fig:BK_BP} illustrates the initial performance results,
 highlighting that the performance difference between operator evaluations (BK) and full linear solvers (BP)
-is primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the results confirm the computational efficiency of high-order elements which directly leverages the tensor-product formulation of the shape functions to increase arithmetic intensity.
+is primarily driven by gather-scatter overheads and inter-GPU communication. Additionally, the results confirm the computational efficiency of high-order elements which directly leverage the tensor-product formulation of the shape functions to increase arithmetic intensity.
 The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree/main/CEED_bp}.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.5\textwidth]{figures/GH200_BK_BP}
+    \includegraphics[width=0.8\textwidth]{figures/GH200_BK_BP}
     \caption{
-        Performance results for the Laplace Operator (CEED BK3) \& Problem (CEED BP3) are evaluated across various polynomial orders and problem sizes on the GH200 GPU. Both Bake-Off Kernel performance (GDOF/s)
-        and Bake-Off Problem performance ($\text{GDOF} \times \text{CG}_{\text{iter}} / (\text{second} \times \text{process})$) are measured using the global degrees of freedom (the T-vector in CEED).
+        Performance results for the Laplace Operator (CEED BK3) \& Problem (CEED BP3) are evaluated across various polynomial orders and problem sizes on the GH200 GPU. Both Bake-Off Kernel performance (GDoF/s)
+        and Bake-Off Problem performance ($\text{GDoF} \times \text{CG}_{\text{iter}} / (\text{second} \times \text{process})$) are measured using the global degrees of freedom (the T-vector in CEED).
     }
     \label{fig:BK_BP}
 \end{figure}
@@ -223,12 +224,12 @@ The source code can be found at \url{https://github.com/dealii-X/benchmarks/tree
 
 $H^1$-conforming elements (as used in the CEED Bake-Off kernels) enforce continuity of all vector components across elements, whereas the Navier-Stokes equations, in mixed formulations often require continuity of the normal component of the flux across element boundaries which is a property of $H(\mathrm{div})$-conforming spaces.
 Elements designed for this purpose are known as Raviart-Thomas finite elements.
-We developed the vector mass, mixed divergence and mixed gradient operators the core operations in Raviart-Thomas kernel design and implemented them in our benchmarks: \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
+We implement the vector mass, mixed divergence and mixed gradient operators -- the core operations in Raviart-Thomas kernel design -- in our benchmarks repository: \url{https://github.com/dealii-X/benchmarks/tree/main/rt\_kernels}.
 
-Figure \ref{fig:GH200_vector_Mass} shows the performance of the vector Mass operator on the NVIDIA GH200 in both FP32 and FP64 precisions.
-Batch processing enabled all polynomial orders to achieve similar throughput (GDOF/s).
+Figure\ref{fig:GH200_vector_Mass} shows the performance of the vector Mass operator on the NVIDIA GH200 in both FP32 and FP64 precisions.
+Batch processing enabled all polynomial orders to achieve similar throughput (GDoF/s).
 Similar trends are observed for the AMD MI250X GPU from the LUMI supercomputer, which performs well given its $1.3\text{ TB/s}$ STREAM bandwidth.
-Only polynomial order 8 performs significantly worse than the other orders, as shown in Figure \ref{fig:MI250x_vector_Mass}.
+Only polynomial order 8 performs significantly worse than the other orders, as shown in Figure~\ref{fig:MI250x_vector_Mass}.
 This drop in performance is likely due to register file capacity constraints in this slightly older AMD architecture.
 
 \begin{figure}[htbp]
@@ -241,7 +242,7 @@ This drop in performance is likely due to register file capacity constraints in 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/MI250x_Mass_32_64}
-    \caption{Performance comparison of the vector Mass operator using FP32 (left) and FP64 (right) precisions on the single AMD MI250x GPU tile.}
+    \caption{Performance comparison of the vector Mass operator using FP32 (left) and FP64 (right) precisions on the single AMD MI250X GPU tile.}
     \label{fig:MI250x_vector_Mass}
 \end{figure}
 
@@ -292,7 +293,7 @@ This is pronounced at low polynomial order but does not carry over to high order
 On NVIDIA GPUs, where the kernels are thread-based, a second and more persistent mechanism dominates.
 Recovering the tensor-product indices $(i,j,k)$ of a degree of freedom from its linear index requires integer division and modulo, among the more expensive scalar instructions on these devices.
 Templating the quadrature point counts makes the divisors compile-time constants, letting the compiler substitute a multiply-and-shift sequence.
-Profiling bears this out: for a variant with two-dimensional thread mapping within the block, kernels with runtime loop bounds issue some 8.8 times as many integer instructions as their statically sized counterparts -- and without the higher register usage the unrolling argument alone would predict.
+Analysis with Nvidia Nsight Compute bears this out: for a variant with two-dimensional thread mapping within the block, kernels with runtime loop bounds issue some 8.8 times as many integer instructions as their statically sized counterparts.
 
 Static specialization therefore pays off for different reasons on different targets; on thread-based kernels the benefit is tied to index arithmetic rather than to a favourable unrolling decision.
 
@@ -343,6 +344,7 @@ The energy-efficiency measurements reported in Section~\ref{sec:energy} are, at 
 A consolidated assessment of energy efficiency across the benchmark suite and the participating architectures will therefore be presented in the final project report.
 
 \clearpage
+
 \bibliographystyle{plainnat}
 \bibliography{references}
 
