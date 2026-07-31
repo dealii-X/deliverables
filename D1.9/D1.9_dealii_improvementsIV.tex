@@ -84,9 +84,11 @@
 
 \begin{documentControl}
     \addVersion{0.1}{July 18, 2026}{Biswajeet Rath}{Initial draft}
-    \addVersion{0.2}{July 18, 2026}{Ivan Prusak}{Intermediate review and adjustments}
+    \addVersion{0.2}{July 18, 2026}{Ivan Prusak}{Restructuring and adjustments}
     \addVersion{0.3}{July 30, 2026}{Marco Feder}{Update with PSCToolkit}
-    \addVersion{1.0}{July 31, 2026}{Ivan Prusak}{Final review and adjustments}
+    \addVersion{0.4}{July 31, 2026}{Luca Heltai}{Refinement on UNIPI part}
+    \addVersion{0.5}{July 31, 2026}{Ivan Prusak}{Final review and adjustments}
+    \addVersion{1.0}{July 31, 2026}{Luca Heltai}{Final version for submission}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -113,46 +115,25 @@ Approval Date: 31.07.2026
 
 \section{{Introduction}}
 
-The dealii-X project develops an exascale-ready simulation environment for
-computational medicine, built on the open-source finite element library
-\texttt{deal.II}. Work Package 1 is dedicated to the library itself: it provides the
-numerical and computational infrastructure on which the organ-scale simulators
-developed in the other work packages rely. The work is organised in five tasks, each
-led by a different partner and each addressing a distinct layer of that
-infrastructure: the exascale capabilities of the core matrix-free framework (RUB), the
-improvement of pre-exascale modules (UNIPI), an experimental polygonal discretization
-module (SISSA), and the integration of two external solver packages, PSCToolkit
-(UNITOV) and MUMPS (INPT).
-
-The present document is the fourth in the series of semestral reports on these
-activities and covers the developments carried out during the fourth semester of the
-project. During this period the emphasis shifted from prototyping towards
-consolidation: several components previously developed in external repositories were
-prepared for, or merged into, the \texttt{deal.II} core library, and the benchmark
-suites assembled in earlier semesters were used to quantify the performance of the
-resulting implementations on the JUPITER, LUMI, MareNostrum 5 and CALMIP systems.
-The results reported here therefore combine algorithmic developments, software
-integration work, and performance measurements on current European pre-exascale and
-exascale hardware.
+The dealii-X project is extending the \texttt{deal.II} finite element library and its surrounding solver ecosystem with numerical methods, software abstractions, and high-performance implementations required by exascale simulations of digital twins of the human body. Reaching this objective requires more than increasing the size of existing computations. It also requires reducing data movement, exposing sufficient parallelism on heterogeneous architectures, improving the scalability and robustness of linear and nonlinear solvers, and introducing modelling strategies that preserve the relevant physical information at substantially lower computational cost.
 
 \subsection{{Purpose of the Document}}
-This document reports the technical work carried out in Work Package 1 during the
-fourth reporting semester. For each task it describes the algorithmic and
-implementation developments, the software artefacts produced -- pull requests to
-\texttt{deal.II} and to its Code Gallery, benchmark repositories and tutorial
-programs -- and the performance results obtained on the target architectures. Where
-an activity is documented in detail elsewhere, in particular in Deliverables D1.8 and
-D3.4, the relevant deliverable is referenced rather than reproduced.
+This deliverable reports the improvements developed during the fourth project semester. The contributions address complementary layers of the simulation stack. UNIPI develops geometrically reduced flow models on metric graphs and an implicit HDG implementation for network haemodynamics; INPT advances block low-rank and mixed-precision algorithms in MUMPS; SISSA develops polygonal and unfitted discretization technology; RUB improves performance-portable matrix-free kernels and multigrid infrastructure; and UNITOV completes the integration of PSBLAS into \texttt{deal.II}, advances the AMG4PSBLAS interface, and evaluates the resulting algebraic multigrid solvers on MareNostrum~5. The UNITOV contribution is particularly important because it turns PSCToolkit from an external capability into a native \texttt{deal.II} linear-algebra backend with familiar vector, matrix, solver, and preconditioner interfaces, thereby making scalable sparse algebra directly available to application developers.
+
+A common theme of the reported work is the use of mathematical and computational structure to reduce time-to-solution. Depending on the problem, this structure may be algebraic, geometric, induced by the discretization, or exposed by the hardware. Algebraic low-rank approximations compress matrix blocks whose action can be represented accurately in a lower-dimensional subspace. Geometrical model reduction replaces selected three-dimensional network-like subdomains by lower-dimensional representations when the dominant dynamics are constrained by their slender geometry. Polygonal and unfitted methods increase geometric flexibility, matrix-free methods reduce memory traffic, and scalable sparse algebra supplies robust solvers for problems for which explicit matrices remain necessary. Although these approaches operate at different levels, they pursue the same objective: representing and solving the relevant high-dimensional problem with fewer degrees of freedom, less data movement, or fewer arithmetic and communication operations, while retaining controlled accuracy.
+
+
 
 
 \subsection{{Structure of the Document}}
 \begin{itemize}
-    \item Section \ref{sec:rub}: WP1.1: Extending and improving the exascale capabilities of deal.II (RUB)
-    \item Section \ref{sec:unipi}: WP1.2: Improvement of pre-exascale modules of the deal.II library (UNIPI)
-    \item Section \ref{sec:sissa}: WP1.3: Experimental polygonal discretization module for deal.II (SISSA)
-    \item Section \ref{sec:unitov}: WP1.4: Integration of PSCToolkit within deal.II (UNITOV)
-    \item Section \ref{sec:inpt}: WP1.5: Integration of MUMPS within deal.II (INPT)
+    \item Section~\ref{sec:rub}: WP1.1: Extending and improving the exascale capabilities of deal.II (RUB)
+    \item Section~\ref{sec:unipi}: WP1.2: Improvement of pre-exascale modules of the deal.II library (UNIPI)
+    \item Section~\ref{sec:sissa}: WP1.3: Experimental polygonal discretization module for deal.II (SISSA)
+    \item Section~\ref{sec:unitov}: WP1.4: Integration of PSCToolkit within deal.II (UNITOV)
+    \item Section~\ref{sec:inpt}: WP1.5: Integration of MUMPS within deal.II (INPT)
 \end{itemize}
+
 
 \newpage
 
@@ -303,7 +284,23 @@ Developments of the portable multigrid infrastructure is gradually migrating to 
 \section{WP1.2: Improvement of pre-exascale modules of the deal.II library (UNIPI)}
 \label{sec:unipi}
 %\lipsum[4-5]
-The objective of this work is to develop an implicit hybridizable discontinuous Galerkin (HDG) solver for reduced order one-dimensional blood flow in complex vascular networks within \texttt{deal.II} library. The implementation combines the Harten Lax van Leer (HLL) numerical flux integrated with the SUNDIALS IDA solver for efficient implicit time integration. We implement a fully coupled monolithic Newton solver, eliminating the need for sub-Newton iterations within each global Newton step.
+Many physiological flow domains are slender and organized as branching networks. Blood vessels and conducting airways have a small cross-section compared with their axial length, while the complete vascular or bronchial tree may contain a very large number of interconnected branches. Resolving every branch with a fully three-dimensional mesh is therefore often unnecessary and, at organ scale, computationally prohibitive. Away from localized regions with strong secondary flow or complex geometric detail, the dominant dynamics can be represented by quantities averaged over each cross-section and evolved along the branch centreline.
+
+This motivates a geometrical reduced-order modelling strategy in which a three-dimensional tubular network is replaced by a one-dimensional metric graph. Graph edges represent individual vessels or airways, while graph vertices represent bifurcations, junctions, inlets, and outlets. The reduced equations retain axial wave propagation, conservation across junctions, compliant-wall effects, and reduced terminal impedances, while eliminating the transverse degrees of freedom associated with a complete three-dimensional discretization. This class of models is directly relevant to systemic and microvascular blood flow and to airway-flow models for the lungs, where a 3D--1D--0D hierarchy can retain detailed three-dimensional descriptions in selected regions and use graph and lumped-parameter models for the many unresolved downstream branches.
+
+Geometrical reduction is complementary to projection-based reduced-order modelling. In a local axial--transverse parametrization, a full-dimensional field may be viewed formally as
+\[
+u(s,\boldsymbol{\xi},t) \simeq \sum_{k=1}^{r} u_k(s,t)\,\phi_k(\boldsymbol{\xi};s),
+\]
+where only a small number of transverse modes is retained. The standard one-dimensional model corresponds to an extremely low-rank representation in the cross-sectional variables, usually dominated by averaged area, pressure, and axial velocity or flow rate. Geometrical model reduction can therefore be interpreted as a structured low-rank approximation of the continuous problem: unlike a purely algebraic factorization, the low-rank structure is selected before discretization from geometric slenderness and physical conservation laws. This interpretation connects the UNIPI activity to the broader approximate-computing strategy of dealii-X, in which both geometric and algebraic low-rank approximations replace expensive high-dimensional representations by smaller models while preserving the relevant input--output behaviour.
+
+Within this framework, UNIPI has developed an implicit hybridizable discontinuous Galerkin (HDG) solver for one-dimensional flow on complex metric graphs using \texttt{deal.II}. Blood flow is the principal validation problem, but the core infrastructure---edge-local discretization, numerical traces, conservative junction conditions, implicit time integration, and reduced terminal models---is reusable for other conservation laws on physiological networks, including reduced airway-flow models. The implementation combines Harten--Lax--van Leer (HLL) numerical fluxes with the \textsc{SUNDIALS} IDA solver and uses a fully coupled monolithic Newton method, avoiding nested nonlinear solves at graph junctions and terminal models.
+
+\subsection{Open-source software delivery}
+
+A major result of the UNIPI activity is not only the formulation and validation of the numerical method, but its delivery as openly available and reusable research software. The implementation has been released in the public GitHub repository \url{https://github.com/luca-heltai/metric-flow-x} under the permissive MIT license. The repository contains the C++ implementation in \texttt{source/} and \texttt{include/}, executable drivers in \texttt{apps/}, parameter files, unit and regression tests, mathematical documentation, and benchmark material. Its documented build uses CMake and \texttt{deal.II}. The public release is therefore an explicit software deliverable of the UNIPI contribution, enabling independent inspection, reproduction of the reported results, reuse in other mixed-dimensional applications, and continued community development.
+
+As of 31 July 2026, the repository is public and actively maintained. Its development history returns more than 100 commits, with recent work covering the HDG formulation, the transition to \textsc{SUNDIALS} IDA, analytical-Jacobian verification, MPI compatibility, benchmark networks with 37 and 56 arteries, continuous integration, and user/developer documentation.
 
 \subsection{Governing System}
 %\lipsum[6]
@@ -331,7 +328,7 @@ $E$ is the wall Young's modulus,
 $h_w(x)$ is the wall thickness, and
 $A_d(x)$ is the \emph{local diastolic area}, tube law constant $m =0.5$.
 
-\subsubsection{HDG Implementation}
+\subsection{HDG Implementation}
 The main components implemented in the HDG solver are summarized below:
 \begin{itemize}
     \item Implemented the Hybridizable Discontinuous Galerkin (HDG) discretization for the one-dimensional blood flow equations.
@@ -517,6 +514,26 @@ stays constant at almost $2$, indicating that the hierarchy quality is preserved
     \label{fig:psctoolkit_weak_scaling}
 \end{figure}
 
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/left_ventricle_view.pdf}
+		\caption{Left ventricle mesh.}
+		\label{fig:left_ventricle_mesh}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.55\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/strong_scaling_ventricle.png}
+		\caption{Strong-scaling analysis on MN5.}
+		\label{fig:left_ventricle_strong_scaling_plot}
+	\end{subfigure}
+	\caption{Strong-scaling study of AMG4PSBLAS on an unstructured left ventricle mesh ($\approx 2.4\times 10^7$ DoFs) for the monodomain model in cardiac
+		electrophysiology. Left: the computational mesh. Right: solve time as a function of the
+		number of MPI ranks.}
+	\label{fig:left_ventricle_strong_scaling}
+\end{figure}
 
 To assess the performance of the AMG preconditioners with a more realistic test case, we
 consider the linear system arising from the monodomain model in cardiac electrophysiology.
@@ -528,26 +545,7 @@ With this configuration, the conjugate gradient solver reduces the relative resi
 in $12$ iterations, independently of the number of MPI ranks employed. Figure~\ref{fig:left_ventricle_strong_scaling}
 reports the strong-scaling behavior.
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/left_ventricle_view.pdf}
-        \caption{Left ventricle mesh.}
-        \label{fig:left_ventricle_mesh}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.55\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/strong_scaling_ventricle.png}
-        \caption{Strong-scaling analysis on MN5.}
-        \label{fig:left_ventricle_strong_scaling_plot}
-    \end{subfigure}
-    \caption{Strong-scaling study of AMG4PSBLAS on an unstructured left ventricle mesh ($\approx 2.4\times 10^7$ DoFs) for the monodomain model in cardiac
-        electrophysiology. Left: the computational mesh. Right: solve time as a function of the
-        number of MPI ranks.}
-    \label{fig:left_ventricle_strong_scaling}
-\end{figure}
+
 
 \subsection{Ongoing and future work}
 
