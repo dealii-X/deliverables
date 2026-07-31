@@ -49,8 +49,8 @@
 
 \begin{documentControl}
     \addVersion{0.1}{29/06/2026}{Ivan Pribec}{Initial draft}
-    \addVersion{0.2}{[Date]}{[Author name]}{[Description of changes]}
-    \addVersion{0.3}{[Date]}{[Author name]}{[Description of changes]}
+    \addVersion{0.2}{30/06/2026}{Enes Soydan}{Added Performance Results}
+    \addVersion{0.3}{31/06/2026}{Gerald Mathias}{Review}
     \addVersion{1.0}{[Date]}{[Author name]}{Final version}
 \end{documentControl}
 
@@ -76,36 +76,61 @@ Approval Date: [Date]
 
 \newpage
 
-\section{{Introduction}}
+\section{Introduction}
+\label{sec:intro}
 
-Comprehensive report on co-design activities, technology exploitation, and energy efficiency, including profiling runs
-and hardware benchmarking.
+This report is the second and final co-design and energy-efficiency report of the dealii-X project.
+It is a direct continuation of Deliverable D3.2, \emph{Co-Design and Energy Efficiency Report~I}, and should be read together with it.
+The motivation for the work, the selection of the CEED Bake-Off Kernels (BK) and Bake-Off Problems (BP) \citep{Fischer20scalability} and the streaming kernels \citep{Chalmers20} as proxies for the algorithmic core of high-order finite element codes, and the description of the benchmark repository\footnote{\url{https://github.com/dealii-X/benchmarks/}} are given in D3.2 and are not repeated here.
 
-\subsection{{Purpose of the Document}}
-\lipsum[3]
+D3.2 established a performance baseline for the scalar operator-evaluation kernels BK1, BK3 and BK5 on NVIDIA, AMD and Intel accelerators, using a range of programming models (CUDA, Kokkos, OpenCL, OpenMP target offloading and the Tiny Tensor Compiler), together with an initial characterization of the streaming kernels on CPUs.
+It closed by identifying three directions for the remaining project period: the exploitation of matrix instructions and cross-element vectorization, the extension from isolated operator evaluation to the complete solver chain including multigrid preconditioners, and the adoption of a portable, process-based methodology for energy measurement.
+The present report reports on the outcome of those three directions.
 
-% TODO: rewording
-
-Concomitant to the previous task we will ensure that programs deliver good performance across diverse computing architectures and require only minor platform and simulations specific tuning.
-Achieving performance portability involves several considerations and practices such as:
+Since D3.2, the performance optimization effort has concentrated on three new areas:
 
 \begin{itemize}
-    \item Utilizing high-level programming models, such as OpenMP or OpenACC, to express parallelism and optimize
-    performance without extensive modification for different hardware.
-    \item Leveraging compiler optimizations to automatically adapt code for specific architectures, enhancing performance
-    across a variety of platforms.
-    \item Designing and tuning computational kernels to be efficient across different hardware, considering factors like
-    vectorization and parallelization
+    \item \textbf{Batched (thread-coarsened) kernels.}
+    The single-element-per-thread-block mapping used in D3.2 leaves registers, shared memory and -- on AMD hardware -- the wavefront underutilized at low polynomial order.
+    Assigning several elements to each thread block removes this limitation and yields a $2\times$ speedup for $p=1$ on the NVIDIA GH200 (Section~\ref{sec:codesign}).
+    This directly addresses the poor low-order performance that was observed but left unresolved in D3.2.
+    \item \textbf{Raviart--Thomas vector element kernels.}
+    The kernels studied in D3.2 were exclusively $H^1$-conforming and scalar-valued.
+    Mixed formulations of the Navier--Stokes equations instead require $H(\mathrm{div})$-conformity, and we therefore extend the benchmark suite with the vector mass, mixed divergence and mixed gradient operators of the Raviart--Thomas element family.
+    \item \textbf{Full bake-off problems including solvers and preconditioners.}
+    Operator evaluation is embedded in a conjugate gradient solver and in multigrid-preconditioned solvers within the deal.II framework, so that gather--scatter overheads, inter-GPU communication and preconditioner cost enter the measurement.
+    This closes the gap between the BK and BP figures of merit that was left open in D3.2.
 \end{itemize}
 
-\subsection{{Structure of the Document}}
+The energy-efficiency analysis has likewise moved from plan to practice.
+Where D3.2 could only outline the process-based measurement strategy of \citet{Cielo25}, this report presents measurements obtained with the \texttt{p3em} energy meter, together with the efficiency metrics used to interpret them.
+
+\subsection{Purpose of the Document}
+
+The purpose of this document is to report the co-design outcomes of Work Package~3 in the second half of the project: which implementation techniques were found to reach hardware limits on current accelerators, which programming models are mature enough to be relied upon, and what the associated energy cost is.
+The findings are intended to inform the library developments in WP1 and the application developments in WP2, as well as the wider finite element and GPU computing communities.
+
+The performance-portability objectives stated in D3.2 remain unchanged: programs should deliver good performance across diverse computing architectures while requiring only minor platform- and simulation-specific tuning.
+
+\subsection{Relation to Other Deliverables}
+
+To avoid duplication, the following material is documented elsewhere and only referenced here:
+
 \begin{itemize}
-    \item Section \ref{sec:section2}: [Section Title]
-    \item Section \ref{sec:section3}: [Section Title]
-    \item Section \ref{sec:section4}: [Section Title]
-    \item Section \ref{sec:section5}: [Section Title]
-    \item Section \ref{sec:section6}: [Section Title]
+    \item \textbf{D1.3} -- the matrix-free framework and its initial deal.II implementations.
+    \item \textbf{D1.7} -- extensive BP results on NVIDIA, AMD and Intel hardware, and the portable GPU multigrid preconditioners.
+    \item \textbf{D3.2} -- motivation, benchmark definitions, the programming-model survey and the baseline BK1/BK3/BK5 and streaming-kernel results.
+    \item \textbf{D3.3} -- the performance-analysis tool chain (NVIDIA Nsight Systems, Intel VTune and Intel Advisor, LIKWID) and the description of the \texttt{p3em} energy-measurement library and its instrumentation API.
 \end{itemize}
+
+\subsection{Structure of the Document}
+
+\begin{itemize}
+    \item Section~\ref{sec:codesign}: co-design for high-performance finite element kernels -- batched operator evaluation, Raviart--Thomas kernels, solver-level (BP) performance, and an updated assessment of alternative programming models.
+    \item Section~\ref{sec:energy}: energy efficiency -- metrics, measurement methodology and results.
+    \item Section~\ref{sec:conclusion}: conclusions and outlook.
+\end{itemize}
+
 
 \newpage
 
@@ -114,7 +139,7 @@ Achieving performance portability involves several considerations and practices 
 %  - energy plot (Intel PVC, OpenMP vs TinyTC vs Kokkos)
 
 \section{{Co-design for High-Performance Finite Element Kernels}}
-\label{sec:section2}
+\label{sec:codesign}
 
 We detail the implementation techniques and performance measurements of high-order matrix-free finite element methods on modern graphics processing units (GPUs).
 The matrix-free framework and its initial implementations are described in Deliverable 1.3 (\url{https://github.com/dealii-X/deliverables/blob/main/D1.3/D1.3_dealii_report.pdf}).
@@ -129,7 +154,7 @@ New batched implementations are available at \url{https://github.com/dealii-X/be
 \subsection{Experimental Setup}
 
 Performance analysis and benchmarks were conducted on the NVIDIA Grace Hopper Superchip (GH200) on the JUPITER supercomputer and on the AMD MI250X GPU on the LUMI supercomputer. The Kokkos performance portability layer
-v5.1 \cite{Kokkos} was used to target traditional compute cores. For tensor core implementations, CUDA PTX mma instructions v9.3 \cite{nvidia_mma} were employed.
+v5.1 \cite{kokkos} was used to target traditional compute cores. For tensor core implementations, CUDA PTX mma instructions v9.3 \cite{nvidia_mma} were employed.
 
 \subsection{Operator Performance and Optimization Analysis}
 \begin{figure}[htbp]
@@ -345,15 +370,14 @@ Communication APIs: NCCL, RCCL, NVSHMEM
 
 \newpage 
 
-\section{{Conclusion}}
+\section{Conclusion}
 \label{sec:conclusion}
+% TODO: findings will be reported in the final project report.
 
-\lipsum[20]
+\clearpage
+\bibliographystyle{plainnat}
+\bibliography{references}
 
 \label{MyLastPage}
-
-%\clearpage
-%\bibliographystyle{plainurl}
-%\bibliography{references}
 
 \end{document}

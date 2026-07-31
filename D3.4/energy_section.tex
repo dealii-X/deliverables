@@ -1,10 +1,9 @@
 \section{Energy Efficiency of High Order Finite Element Kernels}
-\label{sec:section2}
+\label{sec:energy}
 
 This section describes ongoing work in task WP3.4 on energy and performance profiling.
 The object of study is the matrix-free evaluation of high-order finite element operators, i.e.\ the kernels that dominate the run time of implicit and explicit high-order solvers.
 These kernels are characterised by a small arithmetic footprint per degree of freedom at low polynomial degree and a rapidly growing one at high degree, so that the same operator traverses the memory-bound and the compute-bound regime as the degree is varied.
-The degree is not merely a runtime parameter, however: efficient implementations specialise for it, through C++ templates or through just-in-time compilation, so that each degree is in effect its own generated code.
 This makes the family a convenient probe of the energy behaviour of a node, and it also places the code-generation strategy and the compiler among the parameters under study rather than outside them.
 
 The motivation is one of scale.
@@ -18,6 +17,7 @@ which is more than the 3500\,kWh of the reference household commonly used in Ger
 A production system aggregates tens of thousands of such devices: JUPITER drew close to 16\,MW during its exascale TOP500 run, with an average operational demand estimated at some 11\,MW, which over a year is of the order of the household electricity consumption of a small town.
 At this scale the Joules spent by a kernel are a first-order concern, and energy-conscious HPC --- treating energy-to-solution as a figure of merit on the same footing as time-to-solution --- becomes a design constraint on codes and not only on machines.
 This is the perspective from which the present task approaches EuroHPC systems.
+
 % Sources: BDEW reference household 3500 kWh, cf. https://www.cleanenergywire.org/factsheets/what-german-households-pay-electricity
 % JUPITER 15.87 MW (TOP500 Nov 2025); 11 MW average estimate, FZJ press release
 % https://www.fz-juelich.de/en/news/archive/press-release/2024/european-exascale-supercomputer-jupiter-sets-new-energy-efficiency-standards-with-1-ranking-on-green500
@@ -35,7 +35,6 @@ Energy-to-solution is, by definition, the integral of the instantaneous power di
 \end{equation}
 %
 The power dissipation $P$ can in principle be modelled as a function of clock frequency and of the achieved performance, and there is a substantial literature doing so.
-This is deliberately not the route taken here.
 Within WP3.4 we measure $E$ directly and proceed empirically, with the aim of establishing where our kernels currently stand and what can be gained by tuning them, rather than of producing a predictive power model.
 
 Performance is reported as the number of degree-of-freedom updates per second (GDoF/s), the customary throughput metric for matrix-free operator evaluation.
@@ -55,11 +54,12 @@ We report $\eta$ and $R$ separately throughout.
 
 % TODO: add a proper reference for p3em itself -- the GitHub repository or the
 % arXiv paper -- and cite it here alongside (or instead of) the WCCM abstract.
-Measurements are driven by \texttt{p3em}, our in-house approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
-Rather than wrapping the benchmark binary as a whole, it instruments a local scope of the program: a background thread queries a power meter running as a separate process, over a rudimentary client--server interface, and integrates the returned power readings over the lifetime of the scope.
-Two properties of this design matter for the study.
+Measurements are driven by \texttt{p3em}, an open source approach to power, performance and energy measurement~\cite{pribec_wccm2026}.
+Rather than wrapping the benchmark binary as a whole, it instruments a local scope of the program: a background thread queries a power meter running as a separate process and integrates the returned power readings over the lifetime of the scope.
+Three properties of this design matter for the study.
 First, it is selective: the measured region can be restricted to the parts of the program that are of interest, such as the operator evaluation, the preconditioner or the solve, while excluding I/O and set-up phases that would otherwise dilute the result.
 Second, it is portable, since support for a new machine requires only a different meter script, the rest of the instrumentation being unchanged; in the common case the whole chain runs in user space, without privileged access.
+Third, we can measure CPU and GPU energy usage separately, accounting for different phases of the process.
 
 The approach is not specific to the kernels studied here.
 It has been applied to a set of flagship science applications on SuperMUC-NG Phase~2, in a study presented at the IXPUG workshop of ISC~2026 which documents the methodology and its validation in more detail~\cite{supermucng_energy_2026}.
@@ -188,6 +188,8 @@ Memory Clock [MHz]        & 1600       & 1300       & --          \\
 % reference point rather than as a target platform.
 
 \subsection{The efficiency--performance plane}
+
+% TODO: describe the general principle, don't describe plots we don't have.
 
 The most informative single view of a frequency sweep plots energy efficiency $\eta$ (GDoF/J) on the vertical axis against performance $R$ (GDoF/s) on the horizontal axis, with the clock frequency or the power cap as the parameter along the curve.
 Both quantities are oriented so that larger is better, so the desirable region is the upper right corner.
