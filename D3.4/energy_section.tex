@@ -73,7 +73,7 @@ Around this instrumentation, the study of a given system consists of the followi
     \item Recording one entry per (kernel, degree, operating point) tuple, so that performance and energy come from the same run and are directly comparable.
 \end{itemize}
 %
-The meter scripts build on NVML on NVIDIA devices, the AMD SMI library on AMD devices, and the Level~Zero sysman interface on Intel devices.
+The meter scripts build on NVML on NVIDIA devices, the AMD SMI library on AMD devices, and the Level~Zero Sysman interface on Intel devices.
 Three methodological points require care and are documented together with the results: the sampling rate of the meter and its latency relative to short measured regions, the treatment of idle power, and the attribution of energy on tightly coupled packages such as the GH200 superchip, where the CPU, the GPU and the memory share a configurable power budget.
 
 Systematically analysing power limits and frequency settings in this way allows the project to make informed decisions about optimising energy efficiency while maintaining a satisfactory level of performance, and to state the cost of that trade-off in concrete terms, e.g.\ the energy saved at a prescribed loss in time-to-solution.
