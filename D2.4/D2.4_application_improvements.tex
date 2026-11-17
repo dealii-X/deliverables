@@ -9,7 +9,6 @@
 \usepackage{xspace}
 \usepackage{lipsum}
 \usepackage{booktabs}
-\usepackage{longtable}
 \usepackage{multirow}
 \usepackage{makecell}
 %\usepackage{subfigure}
@@ -36,7 +35,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Report on application improvements -- IV semester}
     \tableEntry{Deliverable number}{D2.4}
-    \tableEntry{Deliverable version}{v1.1}
+    \tableEntry{Deliverable version}{v1}
     \tableEntry{Date of delivery}{July 31, 2026}
     \tableEntry{Actual date of delivery}{July 31, 2026}
     \tableEntry{Nature of deliverable}{Report}
@@ -58,7 +57,6 @@
     \addVersion{0.2}{26.07.2026}{Alberto Salvadori (UNIBS)}{Collected input from all partners}
     \addVersion{0.3}{29.07.2026}{Ivan Prusak}{Review and adjustments}
    	\addVersion{1.0}{31.07.2026}{Ivan Prusak}{Final review and adjustments}
-    \addVersion{1.1}{03.09.2026}{Luca Heltai}{Revision following the intermediate review}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -98,85 +96,6 @@ In this document, we report on the status of the exascale human applications par
 \subsection{{Purpose of the Document}}
 
 This report collects the updates from the project application partners TUM, POLIMI, FAU, FVB-WIAS and UNIBS into a single document. Each section reports on advancements on the corresponding application, and identifies the upcoming steps in the project.
-
-
-\subsection{Integration of WP1 technologies in the lighthouse applications}
-\label{sec:wp1_wp2_mapping}
-
-A central objective of WP2 is to provide application-level integration and
-validation of the numerical and software technologies developed in WP1.
-Table~\ref{tab:wp1_wp2_mapping} makes this relationship explicit and
-distinguishes technologies already used in the application codes from those
-that are still being integrated or evaluated.
-
-\begingroup
-\small
-\renewcommand{\arraystretch}{1.2}
-\begin{longtable}{p{2.2cm}p{6.5cm}p{4.4cm}}
-\caption{Use of \texttt{deal.II} and dealii-X technologies in the WP2
-lighthouse applications.}
-\label{tab:wp1_wp2_mapping}\\
-\toprule
-\textbf{Application} & \textbf{WP1 functionalities employed} &
-\textbf{Role and integration status} \\
-\midrule
-\endfirsthead
-\toprule
-\textbf{Application} & \textbf{WP1 functionalities employed} &
-\textbf{Role and integration status} \\
-\midrule
-\endhead
-WP2.1 Lungs &
-Matrix-free kernels; polynomial multigrid; mixed-precision preconditioning &
-Polynomial multigrid has been evaluated for the structural solver and in
-initial studies on alveolar meshes. Matrix-free and mixed-precision
-developments provide the shared infrastructure for the planned large-scale
-GPU simulations. \\
-\midrule
-WP2.2 Heart &
-Matrix-free evaluation through \texttt{FEEvaluation}; $p$-multigrid with
-Chebyshev smoothing; block preconditioners; agglomeration-based multigrid for
-electrophysiology; AMG4PSBLAS (PSCToolkit) preconditioning &
-Matrix-free methods, $p$-multigrid and block preconditioners are integrated
-in the cardiac framework. AMG4PSBLAS has been assessed on the cardiac
-electrophysiology monodomain problem; integration into the application codes
-is planned for the final project period. \\
-\midrule
-WP2.3 Brain &
-MUMPS direct solver with block low-rank compression and mixed precision;
-distributed triangulations &
-MUMPS with BLR compression is used in the current solver strategy and is
-being evaluated with the MUMPS developers for memory-intensive full-brain
-systems. Distributed triangulations have been introduced to reduce memory
-consumption and improve scalability. \\
-\midrule
-WP2.4 Liver &
-Coupling operators for non-matching grids; augmented-Lagrangian
-preconditioners; Gmsh-based geometry and mesh generation &
-These components support the mixed-dimensional 3D--1D vascular--tissue
-model. Gmsh is used in the geometry-generation pipeline, while the
-non-matching coupling and preconditioners provide the numerical
-infrastructure for coupling vascular networks to surrounding tissue. \\
-\midrule
-WP2.5 Mechanobiology &
-Distributed triangulations with independent adaptive mesh refinement;
-non-matching field transfer between bulk and surface meshes &
-These capabilities are used in the dual-mesh architecture that couples the
-three-dimensional cell-mechanics problem to the two-dimensional membrane
-reaction--diffusion problem across independently distributed meshes. \\
-\bottomrule
-\end{longtable}
-\endgroup
-
-The mapping illustrates the different roles of the WP1 developments.
-Matrix-free methods and multigrid target high-throughput iterative solution
-of large finite-element systems; PSCToolkit supplies scalable sparse
-algebraic preconditioning; MUMPS supplies a robust direct-solver option for
-difficult and strongly coupled systems; Gmsh and the mesh interfaces support
-complex biomedical geometries; and the generalized coupling infrastructure
-enables multiphysics and mixed-dimensional applications on non-matching
-meshes. The table will be updated in subsequent reporting as technologies
-move from integration and benchmarking to production use.
 
 \subsection{{Structure of the Document}}
 \begin{itemize}

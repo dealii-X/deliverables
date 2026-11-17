@@ -25,7 +25,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Connection to other CoEs}
     \tableEntry{Deliverable number}{D3.1}
-    \tableEntry{Deliverable version}{1.1}
+    \tableEntry{Deliverable version}{1.0}
     \tableEntry{Date of delivery}{31 March 2025}
     \tableEntry{Actual date of delivery}{31 March 2025}
     \tableEntry{Nature of deliverable}{Report}
@@ -57,7 +57,6 @@
     \addVersion{0.2}{27.03.2025}{I. Pribec, G. Mathias, M. Allalen}{Augment Document}
     \addVersion{0.3}{27.03.2025}{M. Kronbichler}{Minor Additions}
     \addVersion{1.0}{31.03.2025}{I. Pribec}{Final Version}
-    \addVersion{1.1}{03.09.2026}{L. Heltai}{Revision following the intermediate review}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -307,41 +306,6 @@ feature an open users and developers workshop, followed by project-specific
 sessions addressing critical topics such as co-design, exascale computing, and
 machine learning/deep learning. These sessions aim to strengthen partner
 collaboration and foster multidisciplinary research.
-
-
-\section{Post-review update: collaboration with POP3}
-\label{sec:pop3}
-
-Following the intermediate project review, dealii-X established a direct
-collaboration with the POP3 (Performance Optimisation and Productivity)
-Centre of Excellence. The collaboration addresses a scalability limitation
-identified in the portable multigrid solver during large-scale experiments
-on the JUPITER supercomputer.
-
-The measurements performed by dealii-X distinguish between the matrix-free
-operator evaluation, which retains good weak-scaling behaviour, and the
-complete multigrid cycle, whose efficiency is increasingly affected by
-communication latency on the coarser levels of the grid hierarchy. At these
-levels, the amount of local computational work becomes small while ghost
-exchanges and synchronization remain necessary. Fixed overheads of at least
-$7\times10^{-4}\,\mathrm{s}$ per step for these small-message exchanges
-therefore become a dominant contribution to time-to-solution at large node
-counts.
-
-The consortium has secured a POP3 performance assessment of this
-representative JUPITER workload. It complements the profiling and co-design
-activities carried out within WP3 and is intended to independently
-characterize the communication behaviour and formulate optimization
-recommendations. At the time of this revision, the analysis report is
-expected in September 2026. Its findings will feed into work on communication
-reduction, communication--computation overlap, coarse-grid execution, and
-large-scale solver optimization. In parallel, a researcher with extensive
-experience in MPI and communication-avoiding methods has joined the project
-for its remaining duration.
-
-This focused performance-engineering activity extends the broader
-coordination and knowledge exchange with the European HPC ecosystem already
-established through CASTIEL~2 and the other Centres of Excellence.
 
 \label{MyLastPage}
 

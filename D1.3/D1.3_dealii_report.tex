@@ -29,7 +29,7 @@
 \begin{deliverableTable}
     \tableEntry{Deliverable title}{Report on deal.II improvements}
     \tableEntry{Deliverable number}{D1.3}
-    \tableEntry{Deliverable version}{v1}
+    \tableEntry{Deliverable version}{v1.1}
     \tableEntry{Date of delivery}{August 31, 2025}
     \tableEntry{Actual date of delivery}{August 30, 2025}
     \tableEntry{Nature of deliverable}{Report}
@@ -53,6 +53,7 @@
     \addVersion{0.4}{August 30, 2025}{Luca Heltai}{Small fixes to UNIPI contribution}
     \addVersion{0.5}{August 30, 2025}{Martin Kronbichler}{Small fixes to RUB contribution}
     \addVersion{1.0}{August 30, 2025}{Martin Kronbichler}{Final version}
+    \addVersion{1.1}{17.11.2026}{L. Heltai}{Post-review POP3 update}
 \end{documentControl}
 
 \subsection*{{Approval Details}}
@@ -394,6 +395,43 @@ The updates have been included in the release candidates for the PSCToolkit comp
   In the last semester our activity was focused towards the integration of the MUMPS solver within the deal.II software. The deal.II package used to support a direct MUMPS integration in the past. This support was subsequently removed in favor of an indirect use of MUMPS through the PETSc library. As a first step towards the objectives of WP1 of the dealii-X
 project, this support was reverted and improved. The MUMPS interface in deal.II was extended to support distributed memory parallelism through the use of distributed matrix and vector datatypes as defined in the deal.II PETSc and Trilinos wrappers. This allows for a completely parallel initialization of the MUMPS data structure (that includes the system matrix and the right-hand sides) prior to the symbolic analysis, numerical factorization and forward/backward substitution. This ultimately allows for the solution of problems of a much larger size. Setting up MUMPS internal configuration parameters was not possible in original
 deal.II MUMPS interface which, therefore, had to be extended to enable the use of the more advanced features of the MUMPS solver; these include the Block Low-Rank approximations, the GPU support and numerous other parameters that allow for fine-tuning both the performance and the numerical robustness of the solver. The full details of this work and the corresponding software documentation are reported in deliverable D1.1.
+
+\section{Post-review update: collaboration with POP3}
+\label{sec:pop3}
+
+Following the intermediate project review, dealii-X established a direct
+collaboration with the POP3 (Performance Optimisation and Productivity)
+Centre of Excellence. The collaboration addresses a scalability limitation
+identified in the portable multigrid solver during large-scale experiments
+on the JUPITER supercomputer.
+
+The measurements performed by dealii-X distinguish between the matrix-free
+operator evaluation, which retains good weak-scaling behaviour, and the
+complete multigrid cycle, whose efficiency is increasingly affected by
+communication latency on the coarser levels of the grid hierarchy. At these
+levels, the amount of local computational work becomes small while ghost
+exchanges and synchronization remain necessary. Fixed overheads of at least
+$7\times10^{-4}\,\mathrm{s}$ per step for these small-message exchanges
+therefore become a dominant contribution to time-to-solution at large node
+counts.
+
+The consortium has secured a POP3 performance assessment of this
+representative JUPITER workload. It complements the profiling and co-design
+activities carried out within WP3 and is intended to independently
+characterize the communication behaviour and formulate optimization
+recommendations. The report has been delayed by difficulties with JUPITER
+and the deal.II installation. These difficulties were reported as
+resolved during the November 2026 review of this revision, but the POP3
+report remains pending and no revised delivery date has been confirmed.
+Its findings will feed into work on communication
+reduction, communication--computation overlap, coarse-grid execution, and
+large-scale solver optimization. In parallel, a researcher with extensive
+experience in MPI and communication-avoiding methods has joined the project
+for its remaining duration.
+
+This focused performance-engineering activity extends the broader
+coordination and knowledge exchange with the European HPC ecosystem already
+established through CASTIEL~2 and the other Centres of Excellence.
 
 \bibliographystyle{plainnat}
 %\bibliography{../common/bibliography.bib}
